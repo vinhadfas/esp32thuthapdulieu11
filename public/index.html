@@ -47,44 +47,56 @@
   </div>
 
   <script>
-    const MAX_POINTS = 20; // số lượng điểm lưu trữ tối đa
+    const MAX_POINTS = 20;
     const charts = {};
+
     const chartOptions = (title, unit) => ({
-  chart: {
-    type: 'spline',
-    animation: Highcharts.svg,
-    marginRight: 10
-  },
-  time: {
-    useUTC: false
-  },
-  title: { text: title },
-  xAxis: {
-    type: 'datetime',
-    tickInterval: 30000,
-    labels: {
-      format: '{value:%I:%M:%S %p}'
-    },
-    tickPixelInterval: 150
-  },
-  yAxis: {
-    title: { text: unit },
-    plotLines: [{
-      value: 0,
-      width: 1,
-      color: '#808080'
-    }]
-  },
-  tooltip: {
-    formatter: function () {
-      return Highcharts.dateFormat('%I:%M:%S %p', this.x);
-    }
-  
-  },
-  legend: { enabled: false },
-  exporting: { enabled: false },
-  series: [{ name: title, data: [] }]
-});
+      chart: {
+        type: 'spline',
+        animation: Highcharts.svg,
+        marginRight: 10
+      },
+      time: {
+        useUTC: false
+      },
+      title: { text: title },
+      xAxis: {
+        type: 'datetime',
+        tickInterval: 30000,
+        labels: {
+          format: '{value:%I:%M:%S %p}'
+        },
+        tickPixelInterval: 150
+      },
+      yAxis: {
+        title: { text: unit },
+        plotLines: [{
+          value: 0,
+          width: 1,
+          color: '#808080'
+        }]
+      },
+      tooltip: {
+        formatter: function () {
+          return `<b>${this.series.name}</b><br/>` +
+                 Highcharts.dateFormat('%I:%M:%S %p', this.x) +
+                 `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
+        }
+      },
+      legend: { enabled: true },
+      exporting: { enabled: false },
+      series: [{
+        name: title,
+        data: [],
+        color: {
+          'Voltage': '#f94144',
+          'Current': '#f3722c',
+          'Power': '#f9c74f',
+          'Frequency': '#43aa8b',
+          'Temperature': '#577590'
+        }[title] || undefined
+      }]
+    });
 
     charts.voltage = Highcharts.chart('voltageChart', chartOptions('Voltage', 'V'));
     charts.current = Highcharts.chart('currentChart', chartOptions('Current', 'A'));
@@ -131,11 +143,11 @@
       }
     }
 
-    window.addEventListener('beforeunload', saveLocalData); // đảm bảo lưu khi tắt tab
+    window.addEventListener('beforeunload', saveLocalData);
 
     loadLocalData();
     fetchSensorData();
-    setInterval(fetchSensorData, 30000); // cập nhật mỗi 30s
+    setInterval(fetchSensorData, 30000);
   </script>
 </body>
 </html>
