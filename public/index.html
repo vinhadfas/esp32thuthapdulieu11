@@ -19,12 +19,6 @@
       font-size: 2rem;
       font-weight: bold;
     }
-    #status {
-      text-align: center;
-      color: red;
-      font-weight: bold;
-      padding: 0.5rem;
-    }
     .chart-container {
       display: flex;
       flex-direction: column;
@@ -44,7 +38,6 @@
 </head>
 <body>
   <div class="header">Thông số cảm biến</div>
-  <div id="status"></div>
   <div class="chart-container">
     <div id="voltageChart" class="chart-box"></div>
     <div id="currentChart" class="chart-box"></div>
@@ -56,8 +49,9 @@
   <script>
     const MAX_POINTS = 20;
     const charts = {};
-    let fetchInterval = null;
     let isOnline = true;
+    let fetchInterval = null;
+    const localKey = 'sensor_data_cache';
 
     const chartOptions = (title, unit) => ({
       chart: {
@@ -113,8 +107,6 @@
     charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
     charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
 
-    const localKey = 'sensor_data_cache';
-
     function loadLocalData() {
       const raw = localStorage.getItem(localKey);
       if (!raw) return;
@@ -136,10 +128,25 @@
 
     async function fetchSensorData() {
       try {
-        const res = await fetch('/api/sensor');
-        if (!res.ok) throw new Error('Network response not ok');
+        const res = await fetch('/api/sensor', { cache: 'no-store' });
         const d = await res.json();
         const now = new Date().getTime();
+
+        if (!d.alive) {
+          if (isOnline) {
+            isOnline = false;
+            clearInterval(fetchInterval);
+            fetchInterval = null;
+            alert('ESP32 mất kết nối. Đồ thị tạm dừng.');
+          }
+          return;
+        }
+
+        if (!isOnline) {
+          isOnline = true;
+          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật đồ thị.');
+          startFetching();
+        }
 
         if (!isNaN(d.voltage)) charts.voltage.series[0].addPoint([now, d.voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
         if (!isNaN(d.current)) charts.current.series[0].addPoint([now, d.current], true, charts.current.series[0].data.length >= MAX_POINTS);
@@ -148,20 +155,13 @@
         if (!isNaN(d.temp)) charts.temp.series[0].addPoint([now, d.temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
 
         saveLocalData();
-
-        if (!isOnline) {
-          isOnline = true;
-          document.getElementById('status').innerText = '';
-          startFetching();
-        }
-
       } catch (e) {
-        console.error('ESP32 mất kết nối:', e);
+        console.warn('Lỗi khi kết nối tới API: ', e);
         if (isOnline) {
           isOnline = false;
           clearInterval(fetchInterval);
           fetchInterval = null;
-          document.getElementById('status').innerText = 'ESP32 mất kết nối. Đồ thị tạm dừng.';
+          alert('Lỗi kết nối tới máy chủ. Đồ thị tạm dừng.');
         }
       }
     }
@@ -174,7 +174,6 @@
     }
 
     window.addEventListener('beforeunload', saveLocalData);
-
     loadLocalData();
     startFetching();
   </script>
