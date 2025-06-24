@@ -49,9 +49,9 @@
   <script>
     const MAX_POINTS = 20;
     const charts = {};
-    const localKey = 'sensor_data_cache';
-    let fetchInterval = null;
     let isOnline = true;
+    let fetchInterval = null;
+    const localKey = 'sensor_data_cache';
 
     const chartOptions = (title, unit) => ({
       chart: {
@@ -129,15 +129,24 @@
     async function fetchSensorData() {
       try {
         const res = await fetch('/api/sensor', { cache: 'no-store' });
+        const d = await res.json();
+        const now = new Date().getTime();
+
+        if (!d.alive) {
+          if (isOnline) {
+            isOnline = false;
+            clearInterval(fetchInterval);
+            fetchInterval = null;
+            alert('ESP32 mất kết nối. Đồ thị tạm dừng.');
+          }
+          return;
+        }
 
         if (!isOnline) {
           isOnline = true;
-          alert('ESP32 đã kết nối lại. Đồ thị sẽ tiếp tục cập nhật.');
-          startFetching(); // tiếp tục nếu kết nối lại
+          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật đồ thị.');
+          startFetching();
         }
-
-        const d = await res.json();
-        const now = new Date().getTime();
 
         if (!isNaN(d.voltage)) charts.voltage.series[0].addPoint([now, d.voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
         if (!isNaN(d.current)) charts.current.series[0].addPoint([now, d.current], true, charts.current.series[0].data.length >= MAX_POINTS);
@@ -147,13 +156,12 @@
 
         saveLocalData();
       } catch (e) {
-        console.warn('ESP32 không phản hồi. Tạm dừng cập nhật.');
-
+        console.warn('Lỗi khi kết nối tới API: ', e);
         if (isOnline) {
           isOnline = false;
           clearInterval(fetchInterval);
           fetchInterval = null;
-          alert('Mất kết nối WiFi hoặc ESP32 đã ngắt! Đồ thị sẽ tạm dừng.');
+          alert('Lỗi kết nối tới máy chủ. Đồ thị tạm dừng.');
         }
       }
     }
@@ -166,7 +174,6 @@
     }
 
     window.addEventListener('beforeunload', saveLocalData);
-
     loadLocalData();
     startFetching();
   </script>
