@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thông số cảm biến</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+  <style>
+    body { font-family: Arial, sans-serif; background: #eef9f8; margin:0; text-align:center; }
+    h1 { background: #50B8B4; color:#fff; padding:20px; margin:0; }
+    .sensor-box { margin:30px auto; max-width:400px; padding:50px;
+      background:#fff; border-radius:80px; box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+    .sensor-item { font-size:1.8rem; margin:20px 0; }
+    .units { font-size:1rem; color:gray; }
+    .back-button { margin-top:20px; padding:12px 24px; border:none;
+      background:#50B8B4; color:#fff; font-size:1.1rem; border-radius:8px;
+      cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,0.3);
+    }
+    .back-button:hover { background:#3a8f8d; }
+  </style>
+</head>
+<body>
+  <h1>Thông số cảm biến</h1>
+  <div class="sensor-box">
+    <div class="sensor-item"><i class="fas fa-charging-station"></i>
+      Voltage: <span id="voltage">--</span> <sup class="units">V</sup>
+    </div>
+    <div class="sensor-item"><i class="fas fa-bolt"></i>
+      Current: <span id="current">--</span> <sup class="units">A</sup>
+    </div>
+    <div class="sensor-item"><i class="fas fa-lightbulb"></i>
+      Power: <span id="power">--</span> <sup class="units">W</sup>
+    </div>
+    <div class="sensor-item"><i class="fas fa-battery-full"></i>
+      Energy: <span id="energy">--</span> <sup class="units">kWh</sup>
+    </div>
+    <div class="sensor-item"><i class="fas fa-broadcast-tower"></i>
+      Frequency: <span id="frequency">--</span> <sup class="units">Hz</sup>
+    </div>
+    <div class="sensor-item"><i class="fas fa-thermometer-half"></i>
+      Nhiệt độ: <span id="temp">--</span> <sup class="units">°C</sup>
+    </div>
+  </div>
+
+  <script>
+    async function fetchData() {
+      try {
+        const res = await fetch('/api/sensor');
+        const d = await res.json();
+        document.getElementById('voltage').innerText   = d.voltage.toFixed(2);
+        document.getElementById('current').innerText   = d.current.toFixed(2);
+        document.getElementById('power').innerText     = d.power.toFixed(2);
+        document.getElementById('energy').innerText    = d.energy.toFixed(3);
+        document.getElementById('frequency').innerText = d.frequency.toFixed(2);
+        document.getElementById('temp').innerText      = d.temp.toFixed(2);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    setInterval(fetchData, 10000);
+    fetchData();
+  </script>
+</body>
+</html>
