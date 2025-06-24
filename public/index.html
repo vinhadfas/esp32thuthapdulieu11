@@ -1,65 +1,141 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Thông số cảm biến</title>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #eef9f8; margin:0; text-align:center; }
-    h1 { background: #50B8B4; color:#fff; padding:20px; margin:0; }
-    .sensor-box { margin:30px auto; max-width:400px; padding:50px;
-      background:#fff; border-radius:80px; box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef9f8;
+      margin: 0;
+      padding: 0;
     }
-    .sensor-item { font-size:1.8rem; margin:20px 0; }
-    .units { font-size:1rem; color:gray; }
-    .back-button { margin-top:20px; padding:12px 24px; border:none;
-      background:#50B8B4; color:#fff; font-size:1.1rem; border-radius:8px;
-      cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,0.3);
+    .header {
+      background-color: #4eb9b7;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 2rem;
+      font-weight: bold;
     }
-    .back-button:hover { background:#3a8f8d; }
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .chart-box {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 800px;
+    }
   </style>
 </head>
 <body>
-  <h1>Thông số cảm biến</h1>
-  <div class="sensor-box">
-    <div class="sensor-item"><i class="fas fa-charging-station"></i>
-      Voltage: <span id="voltage">--</span> <sup class="units">V</sup>
-    </div>
-    <div class="sensor-item"><i class="fas fa-bolt"></i>
-      Current: <span id="current">--</span> <sup class="units">A</sup>
-    </div>
-    <div class="sensor-item"><i class="fas fa-lightbulb"></i>
-      Power: <span id="power">--</span> <sup class="units">W</sup>
-    </div>
-    <div class="sensor-item"><i class="fas fa-battery-full"></i>
-      Energy: <span id="energy">--</span> <sup class="units">kWh</sup>
-    </div>
-    <div class="sensor-item"><i class="fas fa-broadcast-tower"></i>
-      Frequency: <span id="frequency">--</span> <sup class="units">Hz</sup>
-    </div>
-    <div class="sensor-item"><i class="fas fa-thermometer-half"></i>
-      Nhiệt độ: <span id="temp">--</span> <sup class="units">°C</sup>
-    </div>
+  <div class="header">Thông số cảm biến</div>
+  <div class="chart-container">
+    <div id="voltageChart" class="chart-box"></div>
+    <div id="currentChart" class="chart-box"></div>
+    <div id="powerChart" class="chart-box"></div>
+    <div id="frequencyChart" class="chart-box"></div>
+    <div id="tempChart" class="chart-box"></div>
   </div>
 
   <script>
-    async function fetchData() {
+    const MAX_POINTS = 20; // số lượng điểm lưu trữ tối đa
+    const charts = {};
+    const chartOptions = (title, unit) => ({
+  chart: {
+    type: 'spline',
+    animation: Highcharts.svg,
+    marginRight: 10
+  },
+  time: {
+    useUTC: false
+  },
+  title: { text: title },
+  xAxis: {
+    type: 'datetime',
+    tickInterval: 30000,
+    labels: {
+      format: '{value:%I:%M:%S %p}'
+    },
+    tickPixelInterval: 150
+  },
+  yAxis: {
+    title: { text: unit },
+    plotLines: [{
+      value: 0,
+      width: 1,
+      color: '#808080'
+    }]
+  },
+  tooltip: {
+    formatter: function () {
+      return Highcharts.dateFormat('%I:%M:%S %p', this.x);
+    }
+  
+  },
+  legend: { enabled: false },
+  exporting: { enabled: false },
+  series: [{ name: title, data: [] }]
+});
+
+    charts.voltage = Highcharts.chart('voltageChart', chartOptions('Voltage', 'V'));
+    charts.current = Highcharts.chart('currentChart', chartOptions('Current', 'A'));
+    charts.power = Highcharts.chart('powerChart', chartOptions('Power', 'W'));
+    charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
+    charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
+
+    const localKey = 'sensor_data_cache';
+
+    function loadLocalData() {
+      const raw = localStorage.getItem(localKey);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      for (const key in data) {
+        if (charts[key]) {
+          charts[key].series[0].setData(data[key]);
+        }
+      }
+    }
+
+    function saveLocalData() {
+      const data = {};
+      for (const key in charts) {
+        data[key] = charts[key].series[0].data.map(p => [p.x, p.y]);
+      }
+      localStorage.setItem(localKey, JSON.stringify(data));
+    }
+
+    async function fetchSensorData() {
       try {
         const res = await fetch('/api/sensor');
         const d = await res.json();
-        document.getElementById('voltage').innerText   = d.voltage.toFixed(2);
-        document.getElementById('current').innerText   = d.current.toFixed(2);
-        document.getElementById('power').innerText     = d.power.toFixed(2);
-        document.getElementById('energy').innerText    = d.energy.toFixed(3);
-        document.getElementById('frequency').innerText = d.frequency.toFixed(2);
-        document.getElementById('temp').innerText      = d.temp.toFixed(2);
+        const now = new Date().getTime();
+
+        if (!isNaN(d.voltage)) charts.voltage.series[0].addPoint([now, d.voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
+        if (!isNaN(d.current)) charts.current.series[0].addPoint([now, d.current], true, charts.current.series[0].data.length >= MAX_POINTS);
+        if (!isNaN(d.power)) charts.power.series[0].addPoint([now, d.power], true, charts.power.series[0].data.length >= MAX_POINTS);
+        if (!isNaN(d.frequency)) charts.frequency.series[0].addPoint([now, d.frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS);
+        if (!isNaN(d.temp)) charts.temp.series[0].addPoint([now, d.temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
+
+        saveLocalData();
       } catch (e) {
         console.error(e);
       }
     }
-    setInterval(fetchData, 10000);
-    fetchData();
+
+    window.addEventListener('beforeunload', saveLocalData); // đảm bảo lưu khi tắt tab
+
+    loadLocalData();
+    fetchSensorData();
+    setInterval(fetchSensorData, 30000); // cập nhật mỗi 30s
   </script>
 </body>
 </html>
