@@ -49,6 +49,9 @@
   <script>
     const MAX_POINTS = 20;
     const charts = {};
+    const localKey = 'sensor_data_cache';
+    let fetchInterval = null;
+    let isOnline = true;
 
     const chartOptions = (title, unit) => ({
       chart: {
@@ -104,8 +107,6 @@
     charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
     charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
 
-    const localKey = 'sensor_data_cache';
-
     function loadLocalData() {
       const raw = localStorage.getItem(localKey);
       if (!raw) return;
@@ -127,7 +128,14 @@
 
     async function fetchSensorData() {
       try {
-        const res = await fetch('/api/sensor');
+        const res = await fetch('/api/sensor', { cache: 'no-store' });
+
+        if (!isOnline) {
+          isOnline = true;
+          alert('ESP32 đã kết nối lại. Đồ thị sẽ tiếp tục cập nhật.');
+          startFetching(); // tiếp tục nếu kết nối lại
+        }
+
         const d = await res.json();
         const now = new Date().getTime();
 
@@ -139,15 +147,28 @@
 
         saveLocalData();
       } catch (e) {
-        console.error(e);
+        console.warn('ESP32 không phản hồi. Tạm dừng cập nhật.');
+
+        if (isOnline) {
+          isOnline = false;
+          clearInterval(fetchInterval);
+          fetchInterval = null;
+          alert('Mất kết nối WiFi hoặc ESP32 đã ngắt! Đồ thị sẽ tạm dừng.');
+        }
+      }
+    }
+
+    function startFetching() {
+      if (!fetchInterval) {
+        fetchSensorData();
+        fetchInterval = setInterval(fetchSensorData, 30000);
       }
     }
 
     window.addEventListener('beforeunload', saveLocalData);
 
     loadLocalData();
-    fetchSensorData();
-    setInterval(fetchSensorData, 30000);
+    startFetching();
   </script>
 </body>
 </html>
