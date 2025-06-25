@@ -128,7 +128,7 @@
     }
 
     function updateChartsFromData(payload) {
-      if (!isOnline) return; // ⛔ Dừng cập nhật nếu đã mất kết nối
+      if (!isOnline) return;
 
       const { timestamp, voltage, current, power, frequency, temp } = payload;
 
@@ -151,7 +151,7 @@
           if (isOnline) {
             isOnline = false;
             alert('ESP32 mất kết nối. Dừng cập nhật dữ liệu.');
-            localStorage.removeItem(syncKey); // xoá dữ liệu đồng bộ cũ
+            localStorage.removeItem(syncKey);
           }
           return;
         }
