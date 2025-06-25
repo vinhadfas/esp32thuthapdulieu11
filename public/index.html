@@ -73,6 +73,7 @@
     let fetchTimeout = null;
     const localKey = 'sensor_data_cache';
     const syncKey = 'latest_sensor_data';
+    const TIME_OFFSET = 7 * 60 * 60 * 1000; // UTC+7
 
     const chartOptions = (title, unit) => ({
       chart: {
@@ -80,12 +81,16 @@
         animation: Highcharts.svg,
         marginRight: 10
       },
-      time: { useUTC: false },
+      time: { useUTC: true },
       title: { text: title },
       xAxis: {
         type: 'datetime',
         tickInterval: 60000,
-        labels: { format: '{value:%H:%M:%S}' },
+        labels: {
+          formatter: function () {
+            return Highcharts.dateFormat('%H:%M:%S', this.value + TIME_OFFSET);
+          }
+        },
         tickPixelInterval: 150
       },
       yAxis: {
@@ -94,8 +99,9 @@
       },
       tooltip: {
         formatter: function () {
+          const vnTime = this.x + TIME_OFFSET;
           return `<b>${this.series.name}</b><br/>` +
-                 Highcharts.dateFormat('%H:%M:%S', this.x) +
+                 Highcharts.dateFormat('%H:%M:%S', vnTime) +
                  `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
         }
       },
@@ -190,7 +196,7 @@
         }
 
         const payload = {
-          timestamp: now.getTime(), // ✅ ĐÚNG: không cộng thêm 7 giờ nữa
+          timestamp: now.getTime(),
           voltage: d.voltage,
           current: d.current,
           power: d.power,
