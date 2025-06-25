@@ -50,7 +50,7 @@
     const MAX_POINTS = 20;
     const charts = {};
     let isOnline = true;
-    let fetchTimeout = null;
+    let fetchInterval = null;
     const localKey = 'sensor_data_cache';
     const syncKey = 'latest_sensor_data';
 
@@ -66,9 +66,9 @@
       title: { text: title },
       xAxis: {
         type: 'datetime',
-        tickInterval: 60000,
+        tickInterval: 30000,
         labels: {
-          format: '{value:%H:%M:%S}'
+          format: '{value:%I:%M:%S %p}'
         },
         tickPixelInterval: 150
       },
@@ -83,7 +83,7 @@
       tooltip: {
         formatter: function () {
           return `<b>${this.series.name}</b><br/>` +
-                 Highcharts.dateFormat('%H:%M:%S', this.x) +
+                 Highcharts.dateFormat('%I:%M:%S %p', this.x) +
                  `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
         }
       },
@@ -128,8 +128,6 @@
     }
 
     function updateChartsFromData(payload) {
-      if (!isOnline) return;
-
       const { timestamp, voltage, current, power, frequency, temp } = payload;
 
       if (!isNaN(voltage)) charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
@@ -145,24 +143,26 @@
       try {
         const res = await fetch('/api/sensor', { cache: 'no-store' });
         const d = await res.json();
-        const now = new Date();
+        const now = new Date().getTime();
 
         if (!d.alive) {
           if (isOnline) {
             isOnline = false;
-            alert('ESP32 mất kết nối. Dừng cập nhật dữ liệu.');
-            localStorage.removeItem(syncKey);
+            clearInterval(fetchInterval);
+            fetchInterval = null;
+            alert('ESP32 mất kết nối. Đồ thị tạm dừng.');
           }
           return;
         }
 
         if (!isOnline) {
           isOnline = true;
-          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật dữ liệu.');
+          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật đồ thị.');
+          startFetching();
         }
 
         const payload = {
-          timestamp: now.getTime(),
+          timestamp: now,
           voltage: d.voltage,
           current: d.current,
           power: d.power,
@@ -172,42 +172,36 @@
 
         updateChartsFromData(payload);
 
-        if (isOnline) {
-          localStorage.setItem(syncKey, JSON.stringify(payload));
-        }
+        // Đồng bộ qua localStorage cho các tab khác
+        localStorage.setItem(syncKey, JSON.stringify(payload));
       } catch (e) {
         console.warn('Lỗi khi kết nối tới API: ', e);
+        // Không cần alert nhiều tab, chỉ cảnh báo nhẹ
         if (isOnline) {
           isOnline = false;
-          alert('Mất kết nối ESP32. Dừng cập nhật dữ liệu.');
-          localStorage.removeItem(syncKey);
+          clearInterval(fetchInterval);
+          fetchInterval = null;
         }
       }
     }
 
-    function scheduleNextFetch() {
-      if (fetchTimeout) clearTimeout(fetchTimeout);
-
-      const now = new Date();
-      const delay = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
-
-      fetchTimeout = setTimeout(async () => {
-        await fetchSensorData();
-        scheduleNextFetch();
-      }, delay);
+    function startFetching() {
+      if (!fetchInterval) {
+        fetchSensorData();
+        fetchInterval = setInterval(fetchSensorData, 30000);
+      }
     }
 
     window.addEventListener('storage', (event) => {
-      if (event.key === syncKey && event.newValue && isOnline) {
+      if (event.key === syncKey && event.newValue) {
         const data = JSON.parse(event.newValue);
         updateChartsFromData(data);
       }
     });
 
     window.addEventListener('beforeunload', saveLocalData);
-
     loadLocalData();
-    scheduleNextFetch();
+    startFetching();
   </script>
 </body>
 </html>
