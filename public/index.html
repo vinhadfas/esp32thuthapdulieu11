@@ -52,6 +52,7 @@
     let isOnline = true;
     let fetchInterval = null;
     const localKey = 'sensor_data_cache';
+    const syncKey = 'latest_sensor_data';
 
     const chartOptions = (title, unit) => ({
       chart: {
@@ -126,6 +127,18 @@
       localStorage.setItem(localKey, JSON.stringify(data));
     }
 
+    function updateChartsFromData(payload) {
+      const { timestamp, voltage, current, power, frequency, temp } = payload;
+
+      if (!isNaN(voltage)) charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
+      if (!isNaN(current)) charts.current.series[0].addPoint([timestamp, current], true, charts.current.series[0].data.length >= MAX_POINTS);
+      if (!isNaN(power)) charts.power.series[0].addPoint([timestamp, power], true, charts.power.series[0].data.length >= MAX_POINTS);
+      if (!isNaN(frequency)) charts.frequency.series[0].addPoint([timestamp, frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS);
+      if (!isNaN(temp)) charts.temp.series[0].addPoint([timestamp, temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
+
+      saveLocalData();
+    }
+
     async function fetchSensorData() {
       try {
         const res = await fetch('/api/sensor', { cache: 'no-store' });
@@ -148,20 +161,26 @@
           startFetching();
         }
 
-        if (!isNaN(d.voltage)) charts.voltage.series[0].addPoint([now, d.voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
-        if (!isNaN(d.current)) charts.current.series[0].addPoint([now, d.current], true, charts.current.series[0].data.length >= MAX_POINTS);
-        if (!isNaN(d.power)) charts.power.series[0].addPoint([now, d.power], true, charts.power.series[0].data.length >= MAX_POINTS);
-        if (!isNaN(d.frequency)) charts.frequency.series[0].addPoint([now, d.frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS);
-        if (!isNaN(d.temp)) charts.temp.series[0].addPoint([now, d.temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
+        const payload = {
+          timestamp: now,
+          voltage: d.voltage,
+          current: d.current,
+          power: d.power,
+          frequency: d.frequency,
+          temp: d.temp
+        };
 
-        saveLocalData();
+        updateChartsFromData(payload);
+
+        // Đồng bộ qua localStorage cho các tab khác
+        localStorage.setItem(syncKey, JSON.stringify(payload));
       } catch (e) {
         console.warn('Lỗi khi kết nối tới API: ', e);
+        // Không cần alert nhiều tab, chỉ cảnh báo nhẹ
         if (isOnline) {
           isOnline = false;
           clearInterval(fetchInterval);
           fetchInterval = null;
-          alert('Lỗi kết nối tới máy chủ. Đồ thị tạm dừng.');
         }
       }
     }
@@ -172,6 +191,13 @@
         fetchInterval = setInterval(fetchSensorData, 30000);
       }
     }
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === syncKey && event.newValue) {
+        const data = JSON.parse(event.newValue);
+        updateChartsFromData(data);
+      }
+    });
 
     window.addEventListener('beforeunload', saveLocalData);
     loadLocalData();
