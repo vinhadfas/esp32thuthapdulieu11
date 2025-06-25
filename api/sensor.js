@@ -10,6 +10,9 @@ let latest = {
   timestamp: Date.now()
 };
 
+let history = []; // Lưu dữ liệu trôi
+const MAX_POINTS = 20;
+
 export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -19,20 +22,18 @@ export default function handler(req, res) {
 
   if (req.method === 'POST') {
     const { voltage, current, power, energy, frequency, temp } = req.body;
-    latest = {
-      voltage,
-      current,
-      power,
-      energy,
-      frequency,
-      temp,
-      timestamp: Date.now()
-    };
+    const timestamp = Date.now();
+
+    latest = { voltage, current, power, energy, frequency, temp, timestamp };
+    history.push({ timestamp, voltage, current, power, frequency, temp });
+    if (history.length > MAX_POINTS) history.shift();
+
     return res.status(200).json({ message: 'Updated' });
   }
 
   const now = Date.now();
   const alive = (now - latest.timestamp) < 40000;
 
-  return res.status(200).json({ ...latest, alive });
+  // Trả về danh sách MAX_POINTS cuối
+  return res.status(200).json({ history, alive });
 }
