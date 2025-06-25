@@ -60,17 +60,25 @@
         animation: Highcharts.svg,
         marginRight: 10
       },
-      time: { useUTC: false },
+      time: {
+        useUTC: false
+      },
       title: { text: title },
       xAxis: {
         type: 'datetime',
         tickInterval: 60000,
-        labels: { format: '{value:%H:%M:%S}' },
+        labels: {
+          format: '{value:%H:%M:%S}'
+        },
         tickPixelInterval: 150
       },
       yAxis: {
         title: { text: unit },
-        plotLines: [{ value: 0, width: 1, color: '#808080' }]
+        plotLines: [{
+          value: 0,
+          width: 1,
+          color: '#808080'
+        }]
       },
       tooltip: {
         formatter: function () {
@@ -120,6 +128,8 @@
     }
 
     function updateChartsFromData(payload) {
+      if (!isOnline) return; // ⛔ Dừng cập nhật nếu đã mất kết nối
+
       const { timestamp, voltage, current, power, frequency, temp } = payload;
 
       if (!isNaN(voltage)) charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
@@ -140,14 +150,15 @@
         if (!d.alive) {
           if (isOnline) {
             isOnline = false;
-            alert('ESP32 mất kết nối. Đồ thị tạm dừng.');
+            alert('ESP32 mất kết nối. Dừng cập nhật dữ liệu.');
+            localStorage.removeItem(syncKey); // xoá dữ liệu đồng bộ cũ
           }
           return;
         }
 
         if (!isOnline) {
           isOnline = true;
-          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật đồ thị.');
+          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật dữ liệu.');
         }
 
         const payload = {
@@ -160,10 +171,17 @@
         };
 
         updateChartsFromData(payload);
-        localStorage.setItem(syncKey, JSON.stringify(payload));
+
+        if (isOnline) {
+          localStorage.setItem(syncKey, JSON.stringify(payload));
+        }
       } catch (e) {
         console.warn('Lỗi khi kết nối tới API: ', e);
-        isOnline = false;
+        if (isOnline) {
+          isOnline = false;
+          alert('Mất kết nối ESP32. Dừng cập nhật dữ liệu.');
+          localStorage.removeItem(syncKey);
+        }
       }
     }
 
@@ -171,7 +189,7 @@
       if (fetchTimeout) clearTimeout(fetchTimeout);
 
       const now = new Date();
-      const delay = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds()); // Đợi đến đầu phút kế tiếp
+      const delay = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
 
       fetchTimeout = setTimeout(async () => {
         await fetchSensorData();
@@ -180,7 +198,7 @@
     }
 
     window.addEventListener('storage', (event) => {
-      if (event.key === syncKey && event.newValue) {
+      if (event.key === syncKey && event.newValue && isOnline) {
         const data = JSON.parse(event.newValue);
         updateChartsFromData(data);
       }
@@ -189,7 +207,7 @@
     window.addEventListener('beforeunload', saveLocalData);
 
     loadLocalData();
-    scheduleNextFetch(); // bắt đầu đồng bộ theo phút
+    scheduleNextFetch();
   </script>
 </body>
 </html>
