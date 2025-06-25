@@ -5,12 +5,7 @@
   <title>Thông số cảm biến</title>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script>
-    // Tắt UTC để hiển thị đúng giờ hệ thống
-    Highcharts.setOptions({
-      time: {
-        useUTC: false
-      }
-    });
+    Highcharts.setOptions({ time: { useUTC: false } });
   </script>
   <style>
     body {
@@ -59,31 +54,20 @@
     const charts = {};
     let isOnline = true;
     let fetchInterval = null;
-    const localKey = 'sensor_data_cache';
     const syncKey = 'latest_sensor_data';
 
     const chartOptions = (title, unit) => ({
-      chart: {
-        type: 'spline',
-        animation: Highcharts.svg,
-        marginRight: 10
-      },
+      chart: { type: 'spline', animation: Highcharts.svg, marginRight: 10 },
       title: { text: title },
       xAxis: {
         type: 'datetime',
         tickInterval: 30000,
-        labels: {
-          format: '{value:%H:%M:%S}' // 24h format
-        },
+        labels: { format: '{value:%H:%M:%S}' },
         tickPixelInterval: 150
       },
       yAxis: {
         title: { text: unit },
-        plotLines: [{
-          value: 0,
-          width: 1,
-          color: '#808080'
-        }]
+        plotLines: [{ value: 0, width: 1, color: '#808080' }]
       },
       tooltip: {
         formatter: function () {
@@ -113,42 +97,19 @@
     charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
     charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
 
-    function loadLocalData() {
-      const raw = localStorage.getItem(localKey);
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      for (const key in data) {
-        if (charts[key]) {
-          charts[key].series[0].setData(data[key]);
-        }
-      }
-    }
-
-    function saveLocalData() {
-      const data = {};
-      for (const key in charts) {
-        data[key] = charts[key].series[0].data.map(p => [p.x, p.y]);
-      }
-      localStorage.setItem(localKey, JSON.stringify(data));
-    }
-
     function updateChartsFromData(payload) {
       const { timestamp, voltage, current, power, frequency, temp } = payload;
-
       if (!isNaN(voltage)) charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
       if (!isNaN(current)) charts.current.series[0].addPoint([timestamp, current], true, charts.current.series[0].data.length >= MAX_POINTS);
       if (!isNaN(power)) charts.power.series[0].addPoint([timestamp, power], true, charts.power.series[0].data.length >= MAX_POINTS);
       if (!isNaN(frequency)) charts.frequency.series[0].addPoint([timestamp, frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS);
       if (!isNaN(temp)) charts.temp.series[0].addPoint([timestamp, temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
-
-      saveLocalData();
     }
 
     async function fetchSensorData() {
       try {
         const res = await fetch('/api/sensor', { cache: 'no-store' });
         const d = await res.json();
-        const now = new Date().getTime();
 
         if (!d.alive) {
           if (isOnline) {
@@ -166,17 +127,12 @@
           startFetching();
         }
 
-        const payload = {
-          timestamp: now,
-          voltage: d.voltage,
-          current: d.current,
-          power: d.power,
-          frequency: d.frequency,
-          temp: d.temp
-        };
+        const list = d.history || [];
+        list.forEach(payload => updateChartsFromData(payload));
 
-        updateChartsFromData(payload);
-        localStorage.setItem(syncKey, JSON.stringify(payload));
+        if (list.length > 0) {
+          localStorage.setItem(syncKey, JSON.stringify(list[list.length - 1]));
+        }
       } catch (e) {
         console.warn('Lỗi khi kết nối tới API: ', e);
         if (isOnline) {
@@ -189,20 +145,13 @@
 
     function startFetching() {
       if (fetchInterval) return;
-
-      // Fetch ngay lần đầu
       fetchSensorData();
-
-      // Tính thời gian đến mốc 30s gần nhất
       const now = new Date();
       const seconds = now.getSeconds();
       const ms = now.getMilliseconds();
       const delayToNext30s = ((30 - (seconds % 30)) % 30) * 1000 - ms;
-
       setTimeout(() => {
-        fetchSensorData(); // fetch lần tiếp theo đúng mốc
-
-        // Lặp cố định mỗi 30s
+        fetchSensorData();
         fetchInterval = setInterval(fetchSensorData, 30000);
       }, delayToNext30s);
     }
@@ -214,8 +163,7 @@
       }
     });
 
-    window.addEventListener('beforeunload', saveLocalData);
-    loadLocalData();
+    window.addEventListener('beforeunload', () => {});
     startFetching();
   </script>
 </body>
