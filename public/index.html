@@ -190,7 +190,7 @@
         }
 
         const payload = {
-          timestamp: now.getTime() + (7 * 60 * 60 * 1000), // giờ Việt Nam
+          timestamp: now.getTime(), // ✅ ĐÚNG: không cộng thêm 7 giờ nữa
           voltage: d.voltage,
           current: d.current,
           power: d.power,
