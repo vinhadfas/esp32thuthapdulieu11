@@ -4,14 +4,6 @@
   <meta charset="UTF-8">
   <title>Thông số cảm biến</title>
   <script src="https://code.highcharts.com/highcharts.js"></script>
-  <script>
-    // Cấu hình toàn cục: tắt UTC để hiển thị đúng giờ địa phương (GMT+7)
-    Highcharts.setOptions({
-      time: {
-        useUTC: false
-      }
-    });
-  </script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -68,12 +60,15 @@
         animation: Highcharts.svg,
         marginRight: 10
       },
+      time: {
+        useUTC: false
+      },
       title: { text: title },
       xAxis: {
         type: 'datetime',
         tickInterval: 30000,
         labels: {
-          format: '{value:%H:%M:%S}' // Định dạng giờ 24h (HH:mm:ss)
+          format: '{value:%I:%M:%S %p}'
         },
         tickPixelInterval: 150
       },
@@ -88,7 +83,7 @@
       tooltip: {
         formatter: function () {
           return `<b>${this.series.name}</b><br/>` +
-                 Highcharts.dateFormat('%H:%M:%S', this.x) +
+                 Highcharts.dateFormat('%I:%M:%S %p', this.x) +
                  `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
         }
       },
@@ -181,6 +176,7 @@
         localStorage.setItem(syncKey, JSON.stringify(payload));
       } catch (e) {
         console.warn('Lỗi khi kết nối tới API: ', e);
+        // Không cần alert nhiều tab, chỉ cảnh báo nhẹ
         if (isOnline) {
           isOnline = false;
           clearInterval(fetchInterval);
