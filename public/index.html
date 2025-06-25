@@ -5,7 +5,7 @@
   <title>Thông số cảm biến</title>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script>
-    // Cấu hình toàn cục: tắt UTC để hiển thị đúng giờ địa phương (GMT+7)
+    // Tắt UTC để hiển thị đúng giờ hệ thống
     Highcharts.setOptions({
       time: {
         useUTC: false
@@ -73,7 +73,7 @@
         type: 'datetime',
         tickInterval: 30000,
         labels: {
-          format: '{value:%H:%M:%S}' // Định dạng giờ 24h (HH:mm:ss)
+          format: '{value:%H:%M:%S}' // 24h format
         },
         tickPixelInterval: 150
       },
@@ -176,8 +176,6 @@
         };
 
         updateChartsFromData(payload);
-
-        // Đồng bộ qua localStorage cho các tab khác
         localStorage.setItem(syncKey, JSON.stringify(payload));
       } catch (e) {
         console.warn('Lỗi khi kết nối tới API: ', e);
@@ -190,10 +188,23 @@
     }
 
     function startFetching() {
-      if (!fetchInterval) {
-        fetchSensorData();
+      if (fetchInterval) return;
+
+      // Fetch ngay lần đầu
+      fetchSensorData();
+
+      // Tính thời gian đến mốc 30s gần nhất
+      const now = new Date();
+      const seconds = now.getSeconds();
+      const ms = now.getMilliseconds();
+      const delayToNext30s = ((30 - (seconds % 30)) % 30) * 1000 - ms;
+
+      setTimeout(() => {
+        fetchSensorData(); // fetch lần tiếp theo đúng mốc
+
+        // Lặp cố định mỗi 30s
         fetchInterval = setInterval(fetchSensorData, 30000);
-      }
+      }, delayToNext30s);
     }
 
     window.addEventListener('storage', (event) => {
