@@ -32,7 +32,7 @@ export default function handler(req, res) {
   }
 
   const now = Date.now();
-  const alive = (now - latest.timestamp) < 40000;
+  const alive = (now - latest.timestamp) < 60000;
 
   // Trả về danh sách MAX_POINTS cuối
   return res.status(200).json({ history, alive });
