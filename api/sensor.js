@@ -1,5 +1,3 @@
-// pages/api/sensor.js
-
 let latest = {
   voltage: 0,
   current: 0,
@@ -31,9 +29,6 @@ export default function handler(req, res) {
     return res.status(200).json({ message: 'Updated' });
   }
 
-  const now = Date.now();
-  const alive = (now - latest.timestamp) < 40000;
-
-  // Trả về danh sách MAX_POINTS cuối
-  return res.status(200).json({ history, alive });
+  // Không còn dùng alive nữa
+  return res.status(200).json({ history });
 }
