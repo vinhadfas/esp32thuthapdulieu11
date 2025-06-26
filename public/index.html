@@ -50,7 +50,7 @@
   </div>
 
   <script>
-    const MAX_POINTS = 30;
+    const MAX_POINTS = 20;
     const charts = {};
     const syncKey = 'latest_sensor_data';
 
@@ -117,6 +117,10 @@
         console.warn('Lỗi khi kết nối tới API: ', e);
       }
     }
+
+    // Gọi ngay và lặp mỗi 30s
+    fetchSensorData();
+    setInterval(fetchSensorData, 30000);
   </script>
 </body>
 </html>
