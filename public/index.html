@@ -22,13 +22,6 @@
       font-size: 2rem;
       font-weight: bold;
     }
-    .status {
-      text-align: center;
-      font-size: 1rem;
-      padding: 0.5rem;
-      font-weight: bold;
-      color: red;
-    }
     .chart-container {
       display: flex;
       flex-direction: column;
@@ -48,7 +41,6 @@
 </head>
 <body>
   <div class="header">Thông số cảm biến</div>
-  <p id="espStatus" class="status"></p>
   <div class="chart-container">
     <div id="voltageChart" class="chart-box"></div>
     <div id="currentChart" class="chart-box"></div>
@@ -79,9 +71,9 @@
       },
       tooltip: {
         formatter: function () {
-          return `<b>${this.series.name}</b><br/>` +
+          return <b>${this.series.name}</b><br/> +
                  Highcharts.dateFormat('%H:%M:%S', this.x) +
-                 `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
+                 <br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit};
         }
       },
       legend: { enabled: true },
@@ -105,12 +97,6 @@
     charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
     charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
 
-    function showStatus(message, color = 'red') {
-      const status = document.getElementById("espStatus");
-      status.innerText = message;
-      status.style.color = color;
-    }
-
     function updateChartsFromData(payload) {
       const { timestamp, voltage, current, power, frequency, temp } = payload;
       if (!isNaN(voltage)) charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
@@ -130,15 +116,14 @@
             isOnline = false;
             clearInterval(fetchInterval);
             fetchInterval = null;
-            showStatus('⚠️ ESP32 mất kết nối. Đồ thị tạm dừng.', 'red');
+            alert('ESP32 mất kết nối. Đồ thị tạm dừng.');
           }
           return;
         }
 
         if (!isOnline) {
           isOnline = true;
-          showStatus('✅ ESP32 đã kết nối lại. Tiếp tục cập nhật.', 'green');
-          setTimeout(() => showStatus('', 'green'), 5000); // Ẩn sau 5 giây
+          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật đồ thị.');
           startFetching();
         }
 
@@ -154,7 +139,6 @@
           isOnline = false;
           clearInterval(fetchInterval);
           fetchInterval = null;
-          showStatus('⚠️ Không thể kết nối API.', 'red');
         }
       }
     }
@@ -179,7 +163,10 @@
       }
     });
 
+    window.addEventListener('beforeunload', () => {});
     startFetching();
   </script>
 </body>
 </html>
+
+
