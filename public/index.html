@@ -6,9 +6,7 @@
   <title>Thông số cảm biến</title>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
-  <script>
-    Highcharts.setOptions({ time: { useUTC: false } });
-  </script>
+  <script>Highcharts.setOptions({ time: { useUTC: false } });</script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -91,9 +89,10 @@
   </div>
 
   <script>
-    const MAX_POINTS = 20;
+    const MAX_POINTS = 50; // bạn có thể tăng/giảm theo lịch sử từ backend
     const charts = {};
     const syncKey = 'latest_sensor_data';
+    let lastTimestamp = 0;
 
     const chartColors = {
       'Voltage': '#41f947',
@@ -141,6 +140,11 @@
     function updateChartsFromData(payload) {
       const { timestamp, voltage, current, power, frequency, temp } = payload;
 
+      if (!timestamp || timestamp <= lastTimestamp) return;
+
+      lastTimestamp = timestamp;
+      localStorage.setItem(syncKey, JSON.stringify(payload));
+
       if (!isNaN(voltage)) {
         charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
         document.getElementById('voltage').innerText = voltage.toFixed(2);
@@ -168,15 +172,18 @@
         const res = await fetch('/api/sensor', { cache: 'no-store' });
         const d = await res.json();
         const list = d.history || [];
-        list.forEach(payload => updateChartsFromData(payload));
-        if (list.length > 0) {
-          localStorage.setItem(syncKey, JSON.stringify(list[list.length - 1]));
-        }
+
+        list.forEach(payload => {
+          if (payload.timestamp > lastTimestamp) {
+            updateChartsFromData(payload);
+          }
+        });
       } catch (e) {
         console.warn('Lỗi khi kết nối tới API: ', e);
       }
     }
 
+    // Realtime từ các tab khác
     window.addEventListener('storage', (event) => {
       if (event.key === syncKey && event.newValue) {
         const data = JSON.parse(event.newValue);
