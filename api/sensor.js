@@ -1,3 +1,5 @@
+// pages/api/sensor.js
+
 let latest = {
   voltage: 0,
   current: 0,
@@ -8,8 +10,8 @@ let latest = {
   timestamp: Date.now()
 };
 
-let history = []; // Lưu dữ liệu gần nhất
-const MAX_POINTS = 10;
+let history = []; // Lưu dữ liệu trôi
+const MAX_POINTS = 20;
 
 export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,7 +32,8 @@ export default function handler(req, res) {
   }
 
   const now = Date.now();
-  const alive = (now - latest.timestamp) < 70000; // 70s để chênh lệch vẫn hợp lệ
+  const alive = (now - latest.timestamp) < 40000;
 
+  // Trả về danh sách MAX_POINTS cuối
   return res.status(200).json({ history, alive });
-}
+} 
