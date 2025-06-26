@@ -118,6 +118,14 @@
       }
     }
 
+    // Cập nhật từ tab khác nếu cùng localStorage
+    window.addEventListener('storage', (event) => {
+      if (event.key === syncKey && event.newValue) {
+        const data = JSON.parse(event.newValue);
+        updateChartsFromData(data);
+      }
+    });
+
     // Gọi ngay và lặp mỗi 30s
     fetchSensorData();
     setInterval(fetchSensorData, 30000);
