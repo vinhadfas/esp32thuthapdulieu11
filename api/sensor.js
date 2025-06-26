@@ -36,4 +36,4 @@ export default function handler(req, res) {
 
   // Trả về danh sách MAX_POINTS cuối
   return res.status(200).json({ history, alive });
-} 
+}
