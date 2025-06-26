@@ -71,9 +71,9 @@
       },
       tooltip: {
         formatter: function () {
-          return <b>${this.series.name}</b><br/> +
+          return `<b>${this.series.name}</b><br/>` +
                  Highcharts.dateFormat('%H:%M:%S', this.x) +
-                 <br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit};
+                 `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
         }
       },
       legend: { enabled: true },
@@ -167,4 +167,4 @@
     startFetching();
   </script>
 </body>
-</html> 
+</html>
