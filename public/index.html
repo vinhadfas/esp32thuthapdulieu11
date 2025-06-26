@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Thông số cảm biến</title>
   <script src="https://code.highcharts.com/highcharts.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
   <script>
     Highcharts.setOptions({ time: { useUTC: false } });
   </script>
@@ -37,11 +39,50 @@
       width: 90%;
       max-width: 800px;
     }
+    .sensor-box {
+      margin: 30px auto;
+      max-width: 800px;
+      padding: 60px;
+      background: #fff;
+      border-radius: 60px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+    }
+    .sensor-item {
+      font-size: 1.8rem;
+      margin: 20px 0;
+    }
+    .units {
+      font-size: 1rem;
+      color: gray;
+    }
   </style>
 </head>
 <body>
   <div class="header">Thông số cảm biến</div>
   <div class="chart-container">
+    <div class="sensor-box">
+      <div class="sensor-item">
+        <i class="fas fa-charging-station" style="color: #41f947;"></i>
+        Voltage: <span id="voltage">--</span> <sup class="units">V</sup>
+      </div>
+      <div class="sensor-item">
+        <i class="fas fa-bolt" style="color: #f3722c;"></i>
+        Current: <span id="current">--</span> <sup class="units">A</sup>
+      </div>
+      <div class="sensor-item">
+        <i class="fas fa-lightbulb" style="color: #f9c74f;"></i>
+        Power: <span id="power">--</span> <sup class="units">W</sup>
+      </div>
+      <div class="sensor-item">
+        <i class="fas fa-broadcast-tower" style="color: #43aa8b;"></i>
+        Frequency: <span id="frequency">--</span> <sup class="units">Hz</sup>
+      </div>
+      <div class="sensor-item">
+        <i class="fas fa-thermometer-half" style="color: #07d3f2;"></i>
+        Nhiệt độ: <span id="temp">--</span> <sup class="units">°C</sup>
+      </div>
+    </div>
+
     <div id="voltageChart" class="chart-box"></div>
     <div id="currentChart" class="chart-box"></div>
     <div id="powerChart" class="chart-box"></div>
@@ -53,6 +94,14 @@
     const MAX_POINTS = 20;
     const charts = {};
     const syncKey = 'latest_sensor_data';
+
+    const chartColors = {
+      'Voltage': '#41f947',
+      'Current': '#f3722c',
+      'Power': '#f9c74f',
+      'Frequency': '#43aa8b',
+      'Temperature': '#07d3f2'
+    };
 
     const chartOptions = (title, unit) => ({
       chart: { type: 'line', animation: Highcharts.svg, marginRight: 10 },
@@ -70,8 +119,8 @@
       tooltip: {
         formatter: function () {
           return `<b>${this.series.name}</b><br/>` +
-                 Highcharts.dateFormat('%H:%M:%S', this.x) +
-                 `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
+                 `${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>` +
+                 `Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
         }
       },
       legend: { enabled: true },
@@ -79,13 +128,7 @@
       series: [{
         name: title,
         data: [],
-        color: {
-          'Voltage': '#f94144',
-          'Current': '#f3722c',
-          'Power': '#f9c74f',
-          'Frequency': '#43aa8b',
-          'Temperature': '#577590'
-        }[title] || undefined
+        color: chartColors[title] || undefined
       }]
     });
 
@@ -97,11 +140,27 @@
 
     function updateChartsFromData(payload) {
       const { timestamp, voltage, current, power, frequency, temp } = payload;
-      if (!isNaN(voltage)) charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(current)) charts.current.series[0].addPoint([timestamp, current], true, charts.current.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(power)) charts.power.series[0].addPoint([timestamp, power], true, charts.power.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(frequency)) charts.frequency.series[0].addPoint([timestamp, frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(temp)) charts.temp.series[0].addPoint([timestamp, temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
+
+      if (!isNaN(voltage)) {
+        charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
+        document.getElementById('voltage').innerText = voltage.toFixed(2);
+      }
+      if (!isNaN(current)) {
+        charts.current.series[0].addPoint([timestamp, current], true, charts.current.series[0].data.length >= MAX_POINTS);
+        document.getElementById('current').innerText = current.toFixed(2);
+      }
+      if (!isNaN(power)) {
+        charts.power.series[0].addPoint([timestamp, power], true, charts.power.series[0].data.length >= MAX_POINTS);
+        document.getElementById('power').innerText = power.toFixed(2);
+      }
+      if (!isNaN(frequency)) {
+        charts.frequency.series[0].addPoint([timestamp, frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS);
+        document.getElementById('frequency').innerText = frequency.toFixed(2);
+      }
+      if (!isNaN(temp)) {
+        charts.temp.series[0].addPoint([timestamp, temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
+        document.getElementById('temp').innerText = temp.toFixed(2);
+      }
     }
 
     async function fetchSensorData() {
@@ -118,7 +177,6 @@
       }
     }
 
-    // Cập nhật từ tab khác nếu cùng localStorage
     window.addEventListener('storage', (event) => {
       if (event.key === syncKey && event.newValue) {
         const data = JSON.parse(event.newValue);
@@ -126,7 +184,6 @@
       }
     });
 
-    // Gọi ngay và lặp mỗi 30s
     fetchSensorData();
     setInterval(fetchSensorData, 30000);
   </script>
