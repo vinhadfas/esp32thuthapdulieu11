@@ -131,84 +131,73 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 .link small{color:#333}
 
 /* ---------- MOBILE ≤ 768px ---------- */
+/* ---------- MOBILE ≤ 768px ---------- */
 @media (max-width: 768px) {
 
-/* ===== Header ===== */
-.header{
-  font-size:1.3rem;
-  padding:1rem;
-  text-align:center;
-}
+  /* ===== HEADER ===== */
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
+  }
 
-/* ===== Chart container & card ===== */
-.dashboard{
-  flex-direction:column;
-  align-items:center;
-}
-.chart-container{
-  width:94%;
-  padding:3.2rem 1rem 1rem;
-  margin-bottom:1.5rem;
-}
-.chart-box{height:260px}
-.sensor-card{
-  font-size:1.1rem;
-  padding:.6rem 1rem;
-  top:12px;left:12px;
-}
+  /* ===== CHART ===== */
+  .dashboard{flex-direction:column;align-items:center}
+  .chart-container{
+    width:94%;padding:3.2rem 1rem 1rem;margin-bottom:1.5rem;
+  }
+  .chart-box{height:260px}
+  .sensor-card{
+    font-size:1.1rem;padding:.6rem 1rem;top:12px;left:12px;
+  }
 
-/* ===== Threshold box (xếp dọc – căn giữa) ===== */
-.threshold-box{
-  width:max-content;          /* co theo nội dung */
-  margin:1.2rem auto 0;
-  padding:1rem 1.5rem;
-  font-size:.95rem;
-  display:grid;
-  grid-template-columns:1fr;  /* 🔸 chỉ 1 cột */
-  row-gap:.8rem;
-  text-align:center;
-}
+  /* ===== THRESHOLD (dọc – căn giữa) ===== */
+  .threshold-box{
+    width:max-content;margin:1.2rem auto 0;
+    padding:1rem 1.5rem;font-size:.95rem;
+    display:grid;grid-template-columns:1fr;
+    row-gap:.8rem;text-align:center;
+  }
+  .threshold-box label{font-weight:bold;justify-self:center}
+  .threshold-box input{width:90px}
+  .threshold-box button{
+    grid-column:1/-1;justify-self:center;
+    padding:.5rem 1rem;max-width:240px;
+  }
+  .threshold-box .status-message{
+    grid-column:1/-1;margin-top:1rem;
+  }
 
-/* nhãn “Ngưỡng trên / dưới” */
-.threshold-box label{
-  font-weight:bold;
-  justify-self:center;
-  min-width:auto;             /* bỏ min-width desktop */
-}
+  /* ===== TRA CỨU (🔸 mới) ===== */
+  .lookup-grid{                    /* chuyển sang dọc */
+    flex-direction:column;         /* 🔸 */
+    gap:.7rem;                     /* 🔸 khoảng cách giữa hàng */
+    align-items:stretch;           /* 🔸 full-width */
+  }
 
-.threshold-box input{
-  width:90px;
-  padding:.3rem;
-  border:1px solid #ccc;
-  border-radius:5px;
-  font-size:1rem;
-  justify-self:center;
-  text-align:center;
-}
+  .date-wrapper,                   /* khối ngày & giờ full width */
+  #lookupTime{
+    flex:1 1 100%;
+  }
 
-/* nút Áp dụng chiếm riêng 1 hàng */
-.threshold-box button{
-  grid-column:1 / -1;         /* span toàn bộ */
-  justify-self:center;
-  padding:.5rem 1rem;
-  max-width:240px;
-  margin-top:.2rem;
-  background:#4eb9b7;color:#fff;
-  border:none;border-radius:5px;
-  font-weight:bold;cursor:pointer;
-}
+  .date-wrapper input,
+  #lookupTime{
+    width:100%;                    /* 🔸 trải hết chiều ngang */
+    border-radius:20px;            /* 🔸 bo góc lớn cho đồng nhất */
+    font-size:1rem;
+  }
 
-/* dòng trạng thái cũng 1 hàng riêng */
-.threshold-box .status-message{
-  grid-column:1 / -1;
-  margin-top:1rem;
-  font-size:1rem;
-  font-weight:bold;
-  text-align:center;
-}
+  .lookup-btn{                     /* nút chiếm riêng 1 hàng */
+    align-self:center;             /* 🔸 căn giữa */
+    width:60%;                     /* tuỳ chỉnh rộng 60% màn hình */
+    max-width:280px;
+    padding:.65rem 1rem;
+    font-size:1.05rem;
+  }
 
-/* ===== Lookup grid giữ nguyên nhưng dồn dọc nếu muốn ===== */
-/* .lookup-grid{flex-direction:column;gap:.6rem} */
+  /* bảng kết quả: giữ nguyên, chỉ thêm margin-top cho thoáng */
+  .table-container{margin-top:.5rem;max-height:260px;overflow:auto}
+
 }
 
 
