@@ -131,86 +131,134 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 .link small{color:#333}
 
 /* ---------- MOBILE ≤ 768px ---------- */
-/* ---------- MOBILE ≤ 768px ---------- */
 @media (max-width: 768px) {
 
   /* ===== Header ===== */
-  .header{
-    font-size:1.3rem;
-    padding:1rem;
-    text-align:center;
+  .header {
+    font-size: 1.3rem;
+    padding: 1rem;
+    text-align: center;
   }
 
-  /* ===== Chart ===== */
-  .dashboard{
-    flex-direction:column;
-    align-items:center;
+  /* ===== Dashboard layout ===== */
+  .dashboard {
+    flex-direction: column;
+    align-items: center;
   }
-  .chart-container{
-    width:94%;
-    padding:3.2rem 1rem 1rem;
-    margin-bottom:1.5rem;
+
+  .chart-container {
+    width: 94%;
+    padding: 3.2rem 1rem 1rem;
+    margin-bottom: 1.5rem;
   }
-  .chart-box{height:260px}
-  .sensor-card{
-    font-size:1.1rem;
-    padding:.6rem 1rem;
-    top:12px;left:12px;
+
+  .chart-box {
+    height: 260px;
+  }
+
+  .sensor-card {
+    font-size: 1.1rem;
+    padding: 0.6rem 1rem;
+    top: 12px;
+    left: 12px;
   }
 
   /* ===== Threshold (xếp dọc) ===== */
-  .threshold-box{
-    width:max-content;
-    margin:1.2rem auto 0;
-    padding:1rem 1.5rem;
-    font-size:.95rem;
-    display:grid;
-    grid-template-columns:1fr;
-    row-gap:.8rem;
-    text-align:center;
-  }
-  .threshold-box label{font-weight:bold;justify-self:center}
-  .threshold-box input{width:90px}
-  .threshold-box button{
-    grid-column:1/-1;
-    justify-self:center;
-    padding:.5rem 1rem;
-    max-width:240px;
-    margin-top:.2rem;
-  }
-  .threshold-box .status-message{
-    grid-column:1/-1;
-    margin-top:1rem;
-    font-weight:bold;
-    text-align:center;
+  .threshold-box {
+    width: max-content;
+    margin: 1.2rem auto 0;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 0.8rem;
+    text-align: center;
   }
 
-  /* ===== Tra cứu dữ liệu (nút dưới input) ===== */
-  .lookup-grid{
-    flex-direction:column;      /* 🔸 xếp dọc */
-    gap:.8rem;
-    align-items:stretch;        /* ô full-width */
+  .threshold-box label {
+    font-weight: bold;
+    justify-self: center;
   }
-  .date-wrapper,
-  #lookupTime{flex:1 1 100%}
+
+  .threshold-box input {
+    width: 90px;
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .threshold-box button {
+    grid-column: 1 / -1;
+    justify-self: center;
+    padding: 0.5rem 1rem;
+    max-width: 240px;
+    margin-top: 0.2rem;
+    background-color: #4eb9b7;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .threshold-box .status-message {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* ===== Lookup section ===== */
+  .lookup-grid {
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: stretch;
+  }
+
+  .date-wrapper {
+    order: 1;
+    flex: 1 1 100%;
+  }
+
+  #lookupTime {
+    order: 2;
+    flex: 1 1 100%;
+  }
 
   .date-wrapper input,
-  #lookupTime{
-    width:100%;
-    border-radius:20px;
-    font-size:1rem;
+  #lookupTime {
+    width: 100%;
+    border-radius: 20px;
+    font-size: 1rem;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    text-align: center;
   }
 
-  .lookup-btn{
-    align-self:center;          /* 🔸 căn giữa */
-    width:80%;                  /* 🔸 rộng 80% (đổi tuỳ ý) */
-    max-width:300px;
-    padding:.65rem 1rem;
-    font-size:1.05rem;
+  .lookup-btn {
+    order: 3;
+    align-self: center;
+    width: 80%;
+    max-width: 300px;
+    padding: 0.65rem 1rem;
+    font-size: 1.05rem;
+    background-color: #4eb9b7;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
   }
 
-  /* bảng kết quả: thêm khoảng cách cho thoáng */
-  .table-container{margin-top:.6rem;max-height:260px;overflow:auto}
+  /* Table result spacing */
+  .table-container {
+    margin-top: 0.6rem;
+    max-height: 260px;
+    overflow: auto;
+  }
 }
 
 
