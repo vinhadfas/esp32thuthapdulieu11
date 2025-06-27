@@ -1,401 +1,344 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Giám sát cảm biến ESP32</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard ESP32 IoT</title>
+
+  <!-- Thư viện -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
-  <script>Highcharts.setOptions({ time: { useUTC: false } });</script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- CSS -->
   <style>
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow-x: hidden;
-      font-family: Arial, sans-serif;
-      background-color: #eef9f8;
-    }
-    .header {
-      background-color: #4eb9b7;
-      color: white;
-      text-align: center;
-      padding: 1.5rem 1rem;
-      font-size: 2rem;
-      font-weight: bold;
-    }
-    .threshold-box {
-      background-color: #ffffff;
-      border-radius: 10px;
-      padding: 1rem 2rem;
-      max-width: 800px;
-      margin: 1.5rem auto;
-      text-align: center;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
-      font-weight: bold;
-    }
-    .threshold-box label {
-      font-weight: bold;
-      margin: 0 0.5rem;
-    }
-    .threshold-box input {
-      width: 60px;
-      text-align: center;
-      font-size: 1rem;
-      padding: 0.3rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .threshold-box button {
-      padding: 0.5rem 1rem;
-      margin-left: 1rem;
-      background-color: #4eb9b7;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .status-message {
-      font-size: 1rem;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    .normal { color: #2e7d32; }
-    .warning { color: #c62828; }
-    .dashboard {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-evenly;
-      gap: 2rem;
-      padding: 2rem 1rem;
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-    .chart-container {
-      background: white;
-      border-radius: 1rem;
-      padding: 3.5rem 1rem 1rem 1rem;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-      width: 680px;
-      max-width: 95vw;
-      position: relative;
-    }
-    .chart-box {
-      height: 300px;
-      margin-bottom: 1rem;
-    }
-    .sensor-card {
-      display: inline-flex;
-      align-items: center;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.10);
-      padding: 0.75rem 1.25rem;
-      font-size: 1.3rem;
-      font-weight: bold;
-      z-index: 10;
-      position: absolute;
-      top: 20px;
-      left: 20px;
-    }
-    .link {
-      text-align: center;
-      margin: 2rem auto 3rem;
-      font-size: 1rem;
-    }
-    .link a {
-      text-decoration: none;
-      background-color: #4eb9b7;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .link small {
-      display: block;
-      margin-top: 0.4rem;
-      color: #555;
-    }
-@media (max-width: 768px) {
-
-  .chart-container {
-    width: 94%;
-    padding: 3.2rem 1rem 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .chart-box {
-    height: 260px;
-  }
-
-  .header {
-    font-size: 1.3rem;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  /* ---- BỐ CỤC NGƯỠNG ---- */
-  .threshold-box {
-    /* GIỮ NGUYÊN những dòng cũ */
-    width: max-content;
-    margin: 1.2rem auto 0;   /* 🔸 thêm 1.2rem khoảng trống phía trên */
-    /* hoặc tăng/giảm 1.2rem tùy bạn thấy đẹp */
-
-    padding: 1rem 1.5rem;
-    font-size: 0.95rem;
-
-    display: grid;
-    grid-template-columns: max-content 90px max-content;
-    column-gap: 0.5rem;
-    row-gap: 0.9rem;
-    align-items: center;
-  }
-
-  /* label, input & đơn vị °C */
-  .threshold-box label {
-    font-weight: bold;
-    text-align: right;
-    min-width: 110px;
-  }
-
-  .threshold-box input {
-    width: 80px;
-    text-align: center;
-    font-size: 1rem;
-    padding: 0.3rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-
-  .unit { font-weight: bold; }
-
-  /* Nút “Áp dụng” chiếm trọn 1 hàng và căn giữa */
-  .threshold-box button {
-    grid-column: 1 / -1;               /* span toàn bộ 3 cột */
-    justify-self: center;
-    padding: 0.5rem 1rem;
-    margin-top: 0.5rem;
-    max-width: 240px;
-    background-color: #4eb9b7;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  /* Dòng trạng thái cũng chiếm trọn 1 hàng */
-  .threshold-box .status-message {
-    grid-column: 1 / -1;
-    margin-top: 1rem;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-
-  .dashboard {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .sensor-card {
-    font-size: 1.1rem;
-    padding: 0.6rem 1rem;
-    top: 12px;
-    left: 12px;
-  }
+    /* ======== GLOBAL ======== */
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;height:100%;
+  overflow-x:hidden;
+  font-family:Arial,sans-serif;
+  background:#eef9f8;
 }
 
-/* ---------- Ngoài media query (desktop hoặc chung) ---------- */
-.status-message {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: bold;
+/* ======== HEADER ======== */
+.header{
+  background:#4eb9b7;
+  color:#fff;
+  text-align:center;
+  padding:1.2rem;
+  font-size:1.8rem;
+  font-weight:700;
+}
+
+/* ======== THRESHOLD BOX – DESKTOP ======== */
+.threshold-box{
+  background:#fff;
+  border-radius:10px;
+  margin:1.2rem auto;
+  padding:1rem 2rem;
+  max-width:800px;
+  box-shadow:0 6px 16px rgba(0,0,0,.1);
+  text-align:center;
+  font-weight:700;
+}
+.threshold-box label{font-weight:bold;margin:0 .5rem;}
+.threshold-box input{
+  width:70px;
+  text-align:center;
+  padding:.3rem;
+  border:1px solid #ccc;
+  border-radius:6px;
+  font-size:1rem;
+}
+.threshold-box button{
+  margin-left:.8rem;
+  background:#4eb9b7;color:#fff;
+  border:none;border-radius:6px;
+  padding:.5rem 1rem;
+  font-weight:700;cursor:pointer;
+}
+.status-message{margin-top:.6rem;font-weight:700}
+.normal{color:#2e7d32}.warning{color:#c62828}
+
+/* ======== DASHBOARD ======== */
+.dashboard{display:flex;flex-wrap:wrap;gap:1.8rem;justify-content:center;padding:1.5rem}
+.chart-container{
+  background:#fff;border-radius:1rem;
+  box-shadow:0 6px 16px rgba(0,0,0,.1);
+  width:650px;max-width:95vw;
+  position:relative;padding:3.2rem 1rem 1rem;
+}
+.chart-box{height:290px;margin-bottom:1rem}
+.sensor-card{
+  position:absolute;top:20px;left:20px;
+  background:#fff;border-radius:12px;
+  box-shadow:0 6px 16px rgba(0,0,0,.1);
+  padding:.6rem 1rem;font-size:1.25rem;
+  font-weight:700;display:flex;align-items:center;
+}
+
+/* ======== LOOKUP ======== */
+.lookup-grid{display:flex;gap:.8rem;margin-bottom:1rem}
+.lookup-grid input{
+  flex:1 1 200px;
+  padding:.55rem;
+  border:1px solid #ccc;border-radius:20px;
+  text-align:center;font-size:1rem;
+}
+.lookup-btn{
+  background:#4eb9b7;color:#fff;border:none;
+  border-radius:20px;padding:.6rem 1.6rem;
+  font-weight:700;cursor:pointer;
+}
+
+/* Ô ngày kèm icon */
+.date-wrapper{position:relative;flex:1 1 200px}
+.date-wrapper input{
+  width:100%;
+  padding:.55rem 2.5rem .55rem 1rem;  /* chừa chỗ icon */
+  border:1px solid #ccc;border-radius:20px;
+  text-align:center;font-size:1rem;
+}
+.calendar-icon{
+  position:absolute;right:14px;top:50%;
+  transform:translateY(-50%);
+  color:#555;font-size:1rem;
+  pointer-events:none;               /* không chặn click */
+}
+
+/* ======== TABLE ======== */
+.table-container{max-height:260px;overflow:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #ccc;padding:.35rem .55rem;font-size:.9rem;text-align:center}
+thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
+
+/* ======== LINK GOOGLE SHEET ======== */
+.link{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:.35rem;margin:2rem auto 3rem;
+}
+.link a{
+  background:#4eb9b7;color:#fff;
+  padding:.5rem 1.2rem;border-radius:5px;
+  text-decoration:none;font-weight:700;
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
+}
+.link small{color:#333}
+
+/* ======== MOBILE (≤768 px) ======== */
+@media(max-width:768px){
+  .header{font-size:1.3rem;padding:1rem}
+
+  .chart-container{
+    width:94%;
+    padding:3.2rem 1rem 1rem;
+    margin-bottom:1.5rem;
+  }
+  .chart-box{height:260px}
+
+  /* Hộp ngưỡng: lưới 3 cột */
+  .threshold-box{
+    width:max-content;
+    margin:1.2rem auto 0;
+    padding:1rem 1.5rem;
+    font-size:.95rem;
+    display:grid;
+    grid-template-columns:max-content 90px max-content;
+    column-gap:.5rem;row-gap:.9rem;
+    align-items:center;
+  }
+  .threshold-box label{
+    font-weight:bold;text-align:right;min-width:110px;
+  }
+  .threshold-box input{width:80px}
+
+  /* nút & trạng thái tách hàng */
+  .threshold-box button{
+    grid-column:1/-1;
+    justify-self:center;
+    margin-top:.5rem;max-width:240px;
+  }
+  .threshold-box .status-message{
+    grid-column:1/-1;
+    margin-top:1rem;text-align:center;font-size:1rem;
+  }
+
+  .dashboard{flex-direction:column;align-items:center}
+  .sensor-card{font-size:1.1rem;padding:.6rem 1rem;top:12px;left:12px}
 }
 
 
   </style>
 </head>
 <body>
-  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
+  <div class="header">MÔ HÌNH GIÁM SÁT XE TẢI ĐÔNG LẠNH – ESP32</div>
+
+  <!-- Threshold -->
   <div class="threshold-box">
-    <label for="upperThreshold">Ngưỡng trên:</label>
-    <input type="number" id="upperThreshold" value=""> °C
-    <label for="lowerThreshold">Ngưỡng dưới:</label>
-    <input type="number" id="lowerThreshold" value=""> °C
-    <button onclick="checkTempStatus()">Áp dụng</button>
-    <div class="status-message" id="tempStatus">Trạng thái nhiệt độ: --</div>
+    <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
+    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
+    <button onclick="updateThresholds()">Áp dụng</button>
+    <div id="tempStatus" class="status-message">Trạng thái nhiệt độ: --</div>
   </div>
 
+  <!-- Dashboard -->
   <div class="dashboard">
     <div class="chart-container">
-      <div class="sensor-card">
-        <i class="fas fa-thermometer-half" style="color: #07d3f2; margin-right: 8px;"></i>
-        <span class="label">Nhiệt độ:</span>
-        <span id="temp">--</span><sup>°C</sup>
-      </div>
+      <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ: <span id="temp">--</span>°C</div>
       <div id="tempChart" class="chart-box"></div>
     </div>
     <div class="chart-container">
-      <div class="sensor-card">
-        <i class="fas fa-charging-station" style="color: #41f947; margin-right: 8px;"></i>
-        <span class="label">Điện áp:</span>
-        <span id="voltage">--</span><sup>V</sup>
-      </div>
+      <div class="sensor-card"><i class="fas fa-charging-station" style="color:#41f947;margin-right:8px"></i>Điện áp: <span id="voltage">--</span>V</div>
       <div id="voltageChart" class="chart-box"></div>
     </div>
     <div class="chart-container">
-      <div class="sensor-card">
-        <i class="fas fa-bolt" style="color: #f3722c; margin-right: 8px;"></i>
-        <span class="label">Dòng điện:</span>
-        <span id="current">--</span><sup>A</sup>
-      </div>
+      <div class="sensor-card"><i class="fas fa-bolt" style="color:#f3722c;margin-right:8px"></i>Dòng điện: <span id="current">--</span>A</div>
       <div id="currentChart" class="chart-box"></div>
     </div>
     <div class="chart-container">
-      <div class="sensor-card">
-        <i class="fas fa-lightbulb" style="color: #f9c74f; margin-right: 8px;"></i>
-        <span class="label">Công suất:</span>
-        <span id="power">--</span><sup>W</sup>
-      </div>
+      <div class="sensor-card"><i class="fas fa-lightbulb" style="color:#f9c74f;margin-right:8px"></i>Công suất: <span id="power">--</span>W</div>
       <div id="powerChart" class="chart-box"></div>
     </div>
     <div class="chart-container">
-      <div class="sensor-card">
-        <i class="fas fa-broadcast-tower" style="color: #43aa8b; margin-right: 8px;"></i>
-        <span class="label">Tần số:</span>
-        <span id="frequency">--</span><sup>Hz</sup>
-      </div>
+      <div class="sensor-card"><i class="fas fa-battery-full" style="color:#9b51e0;margin-right:8px"></i>Năng lượng: <span id="energy">--</span>kWh</div>
+      <div id="energyChart" class="chart-box"></div>
+    </div>
+    <div class="chart-container">
+      <div class="sensor-card"><i class="fas fa-broadcast-tower" style="color:#00bcd4;margin-right:8px"></i>Tần số: <span id="frequency">--</span>Hz</div>
       <div id="frequencyChart" class="chart-box"></div>
     </div>
-  </div>
-  <div class="link">
-    <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing" target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
-    <small>(Click vào để xem lại các giá trị đã lưu)</small>
-  </div>
-     <script>
-    /* ============ CẤU HÌNH CHUNG ============ */
-    Highcharts.setOptions({ time: { useUTC: false } });
-    
-    const MAX_POINTS = 50;
-    const charts = {};
-    let   lastTimestamp = 0;
-    
-    const chartColors = {
-      Voltage:     '#41f947',
-      Current:     '#f3722c',
-      Power:       '#f9c74f',
-      Frequency:   '#43aa8b',
-      Temperature: '#07d3f2'
-    };
-    
-    /* ============ OPTION CHO MỖI BIỂU ĐỒ ============ */
-    const chartOptions = (title, unit) => ({
-      chart: { type: 'line', animation: Highcharts.svg, marginRight: 10 },
-      title: { text: title },
-    
-      /* Trục X: KHÔNG vẽ lưới dọc */
-      xAxis: {
-        type: 'datetime',
-        tickInterval: 30_000,
-        labels: { format: '{value:%H:%M:%S}' },
-        gridLineWidth: 0          // ← bỏ lưới dọc
-      },
-    
-      /* Trục Y: CHỈ lưới chính, nét liền */
-      yAxis: {
-        title: { text: null },    // ẩn chữ đơn vị
-        gridLineWidth: 1,         // đường ngang chính
-        gridLineColor: '#d0d0d0',
-        gridLineDashStyle: 'Solid',
-    
-        minorTickInterval: null,  // ← tắt hoàn toàn lưới phụ
-        minorGridLineWidth: 0,
-        labels: { rotation: 0 }
-      },
-    
-      tooltip: {
-        formatter() {
-          return `<b>${this.series.name}</b><br/>` +
-                 `${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>` +
-                 `Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
-        }
-      },
-    
-      legend: { enabled: false },
-      exporting: { enabled: false },
-      credits: { enabled: false },
-    
-      series: [{
-        name: title,
-        data: [],
-        color: chartColors[title]
-      }]
-    });
-    
-    /* ============ KHỞI TẠO 5 BIỂU ĐỒ ============ */
-    charts.temp      = Highcharts.chart('tempChart',      chartOptions('Temperature', '°C'));
-    charts.voltage   = Highcharts.chart('voltageChart',   chartOptions('Voltage',     'V'));
-    charts.current   = Highcharts.chart('currentChart',   chartOptions('Current',     'A'));
-    charts.power     = Highcharts.chart('powerChart',     chartOptions('Power',       'W'));
-    charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency',   'Hz'));
-    
-    /* ============ FETCH & CẬP NHẬT ============ */
-    async function fetchSensorData() {
-      try {
-        const res = await fetch('/api/sensor', { cache: 'no-store' });
-        const d   = await res.json();
-        (d.history || []).forEach(updateChartsFromData);
-      } catch (e) {
-        console.warn('Lỗi khi fetch API:', e);
-      }
-    }
-    
-    function updateChartsFromData(p) {
-      const { timestamp, voltage, current, power, frequency, temp } = p;
-      if (!timestamp || timestamp <= lastTimestamp) return;
-      lastTimestamp = timestamp;
-    
-      const push = (chart, val, span) => {
-        if (isNaN(val)) return;
-        chart.series[0].addPoint([timestamp, val], true,
-          chart.series[0].data.length >= MAX_POINTS);
-        document.getElementById(span).innerText = val.toFixed(2);
-      };
-      push(charts.temp,      temp,      'temp');
-      push(charts.voltage,   voltage,   'voltage');
-      push(charts.current,   current,   'current');
-      push(charts.power,     power,     'power');
-      push(charts.frequency, frequency, 'frequency');
-      checkTempStatus();
-    }
-    
-    /* ============ CẢNH BÁO NHIỆT ĐỘ ============ */
-    function checkTempStatus() {
-      const lower = parseFloat(document.getElementById('lowerThreshold').value);
-      const upper = parseFloat(document.getElementById('upperThreshold').value);
-      const t     = parseFloat(document.getElementById('temp').innerText);
-      const el    = document.getElementById('tempStatus');
-    
-      if (isNaN(t)) { el.innerText = 'Trạng thái nhiệt độ: --'; el.className = 'status-message'; return; }
-    
-      if ((!isNaN(lower) && t < lower) || (!isNaN(upper) && t > upper)) {
-        el.innerText = 'Trạng thái nhiệt độ: CẢNH BÁO';
-        el.className = 'status-message warning';
-      } else {
-        el.innerText = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
-        el.className = 'status-message normal';
-      }
-    }
-    
-    /* ============ KHỞI CHẠY ============ */
-    fetchSensorData();
-    setInterval(fetchSensorData, 30_000);
-    </script>
 
+    <!-- Tra cứu -->
+    <div class="chart-container">
+      <div class="sensor-card"><i class="fas fa-table" style="color:#4eb9b7;margin-right:8px"></i>Tra cứu dữ liệu</div>
+      <div style="padding-top:20px">
+        <div class="lookup-grid">
+          <div class="date-wrapper">
+            <input id="lookupDate" placeholder="yyyy/MM/dd">
+            <i class="fas fa-calendar-alt calendar-icon"></i>
+          </div>
+        
+          <input id="lookupTime" type="time" step="60">
+          <button id="lookup" class="lookup-btn">Tra cứu</button>
+        </div>
+        
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th><th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th><th>Nhiệt độ(°C)</th></tr></thead>
+            <tbody id="resultTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link Google Sheet -->
+   <!-- Link Google Sheet  (căn giữa) -->
+   <div class="link">
+    <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing"
+       target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
+    <small>(Click để xem lại các giá trị đã lưu)</small>
+  </div>
+
+  <!-- JS -->
+  <script>
+  /* Flatpickr */
+      flatpickr('#lookupDate',{
+      dateFormat:'Y/m/d',
+      altInput:true,
+      altFormat:'Y/m/d'
+    });
+
+  /* Highcharts */
+  Highcharts.setOptions({time:{useUTC:false}});
+  const COLORS={Temperature:'#07d3f2',Voltage:'#41f947',Current:'#f3722c',Power:'#f9c74f',Energy:'#9b51e0',Frequency:'#00bcd4'};
+  const charts={},MAX_POINTS=50;
+  const metrics=[['Temperature','°C','tempChart'],['Voltage','V','voltageChart'],
+                 ['Current','A','currentChart'],['Power','W','powerChart'],
+                 ['Energy','kWh','energyChart'],['Frequency','Hz','frequencyChart']];
+  metrics.forEach(([title,u,div])=>{
+    charts[title]=Highcharts.chart(div,{chart:{type:'line',marginRight:10},title:{text:title},
+      xAxis:{type:'datetime',tickInterval:30000,labels:{format:'{value:%H:%M:%S}'}},
+      yAxis:{title:{text:null}},legend:{enabled:false},credits:{enabled:false},
+      tooltip:{formatter(){return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S',this.x)}<br/>${Highcharts.numberFormat(this.y,2)} ${u}`}},
+      series:[{name:title,data:[],color:COLORS[title]}]});
+  });
+
+  /* Trạng thái cảnh báo */
+  function checkTempStatus(){
+    const low=parseFloat(lowerThreshold.value),high=parseFloat(upperThreshold.value),
+          t=parseFloat(temp.textContent)||NaN;
+    if(isNaN(t)){tempStatus.textContent='Trạng thái nhiệt độ: --';tempStatus.className='status-message';return;}
+    if((!isNaN(low)&&t<low)||(!isNaN(high)&&t>high)){
+      tempStatus.textContent='Trạng thái nhiệt độ: CẢNH BÁO';tempStatus.className='status-message warning';
+    }else{
+      tempStatus.textContent='Trạng thái nhiệt độ: BÌNH THƯỜNG';tempStatus.className='status-message normal';
+    }
+  }
+
+  /* Vẽ dữ liệu cảm biến */
+  let lastTs=0;
+  function updateCharts(p){
+    const {timestamp:ts,voltage,current,power,energy,temp:tc,frequency}=p;
+    if(!ts||ts<=lastTs)return;lastTs=ts;
+    const map=[['Temperature',tc,'temp'],['Voltage',voltage,'voltage'],['Current',current,'current'],
+               ['Power',power,'power'],['Energy',energy,'energy'],['Frequency',frequency,'frequency']];
+    map.forEach(([title,val,spanId])=>{
+      if(isNaN(val))return;
+      const s=charts[title].series[0];
+      s.addPoint([ts,val],true,s.data.length>=MAX_POINTS);
+      document.getElementById(spanId).textContent=val.toFixed(2);
+    });
+    checkTempStatus();
+  }
+
+  /* API */
+  async function fetchSensorData(){
+    try{
+      const r=await fetch('/api/sensor',{cache:'no-store'});
+      const {history,thresholds}=await r.json();
+      if(thresholds){
+        if(!upperThreshold.value) upperThreshold.value=thresholds.tempHigh;
+        if(!lowerThreshold.value) lowerThreshold.value=thresholds.tempLow;
+      }
+      (history||[]).forEach(updateCharts);
+    }catch(e){console.warn('Fetch error',e);}
+  }
+  async function updateThresholds(){
+    const low=parseFloat(lowerThreshold.value),high=parseFloat(upperThreshold.value);
+    if(isNaN(low)||isNaN(high)){alert('Nhập đủ hai ngưỡng!');return;}
+    if(low>high){alert('Ngưỡng thấp phải ≤ ngưỡng cao!');return;}
+    try{
+      const r=await fetch('/api/sensor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tempLow:low,tempHigh:high})});
+      if(!r.ok)throw new Error(await r.text());
+      alert('Đã lưu ngưỡng thành công!');
+      checkTempStatus();
+    }catch(e){alert('Lỗi: '+e.message);}
+  }
+
+  /* Tra cứu CSV */
+  const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vS5Kb0MA1_MZyuRZPgzwwH-95CvzwMoKDqmhAY4CHWwhm7sbuKYBG2bZ4V353oUSBfQaoti0xskMjJo/pub?gid=0&single=true&output=csv';
+  let cacheRows=null;
+  async function loadData(){if(cacheRows)return cacheRows;const t=await (await fetch(CSV_URL)).text();cacheRows=Papa.parse(t.trim(),{dynamicTyping:false}).data;return cacheRows;}
+  function appendRow(r){const tr=document.createElement('tr');r.forEach(c=>{const td=document.createElement('td');td.textContent=c||'';tr.appendChild(td);});resultTable.appendChild(tr);}
+  function clearTable(msg){resultTable.innerHTML='';if(msg){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=8;td.textContent=msg;tr.appendChild(td);resultTable.appendChild(tr);}}
+  lookup.addEventListener('click',async()=>{
+    const d=lookupDate.value,t=lookupTime.value;if(!d||!t){alert('Chọn ngày & giờ!');return;}
+    const [y,m,dd]=d.split('/');const targetDate=`${y}-${m}-${dd}`,targetTime=t.slice(0,5);
+    try{
+      const rows=await loadData(),match=rows.slice(1).filter(r=>r[0]===targetDate&&String(r[1]).startsWith(targetTime));
+      clearTable();if(!match.length){clearTable('Không tìm thấy dữ liệu.');return;}match.forEach(appendRow);
+    }catch(e){console.error(e);clearTable('Lỗi tải dữ liệu');}
+  });
+
+  /* Khởi chạy */
+  fetchSensorData();
+  setInterval(fetchSensorData,30000);
+  </script>
 </body>
 </html>
