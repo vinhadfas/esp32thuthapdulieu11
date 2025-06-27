@@ -139,14 +139,14 @@
 
   /* ---- BỐ CỤC NGƯỠNG ---- */
   .threshold-box {
-    /* thu gọn theo nội dung rồi căn giữa card */
-    width: max-content;                 /* khít 3 cột label-input-°C */
-    margin: 0 auto;                     /* căn giữa khối */
+    /* GIỮ NGUYÊN những dòng cũ */
+    width: max-content;
+    margin: 1.2rem auto 0;   /* 🔸 thêm 1.2rem khoảng trống phía trên */
+    /* hoặc tăng/giảm 1.2rem tùy bạn thấy đẹp */
 
     padding: 1rem 1.5rem;
     font-size: 0.95rem;
 
-    /* Grid 3 cột: label | input | đơn vị °C */
     display: grid;
     grid-template-columns: max-content 90px max-content;
     column-gap: 0.5rem;
