@@ -33,9 +33,6 @@
       width: 100%;
       height: 100%;
       overflow-x: hidden;
-    }
-
-    body {
       font-family: Arial, sans-serif;
       background-color: #eef9f8;
     }
@@ -51,7 +48,6 @@
 
     .threshold-box {
       background-color: #ffffff;
-      border: none;
       border-radius: 10px;
       padding: 1rem 2rem;
       max-width: 800px;
@@ -59,7 +55,6 @@
       text-align: center;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
       font-weight: bold;
-      transition: 0.3s ease;
     }
 
     .threshold-box label {
@@ -159,20 +154,38 @@
 
     @media (max-width: 768px) {
       .chart-container {
-        width: 95%;
+        width: 94%;
+        padding: 3.2rem 0.5rem 1rem;
       }
 
       .chart-box {
-        height: 250px;
+        height: 240px;
       }
 
       .threshold-box {
-        width: 90%;
+        width: 94%;
+        padding: 1rem;
+      }
+
+      .threshold-box input {
+        width: 52px;
+      }
+
+      .threshold-box label, .threshold-box button {
+        display: inline-block;
+        margin: 0.4rem 0.3rem;
       }
 
       .dashboard {
         flex-direction: column;
         align-items: center;
+      }
+
+      .sensor-card {
+        font-size: 1.1rem;
+        padding: 0.6rem 1rem;
+        top: 16px;
+        left: 16px;
       }
     }
   </style>
