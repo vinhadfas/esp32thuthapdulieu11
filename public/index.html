@@ -120,9 +120,26 @@
       color: #555;
     }
 @media (max-width: 768px) {
-  .threshold-box {
-    width: 100%;
+  .chart-container {
+    width: 94%;
+    padding: 3.2rem 1rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-box {
+    height: 260px;
+  }
+
+  .header {
+    font-size: 1.3rem;
     padding: 1rem;
+    text-align: center;
+  }
+
+  .threshold-box {
+    width: 94%;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -134,28 +151,29 @@
     justify-content: center;
     margin-bottom: 0.8rem;
     width: 100%;
-    max-width: 300px;
+    max-width: 280px;
   }
 
-  .threshold-item label {
+  .threshold-box label {
     font-weight: bold;
+    margin-right: 0.3rem;
     min-width: 110px;
-    text-align: left;
+    text-align: right;
+  }
+
+  .threshold-box input {
+    width: 80px;
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-left: 0.3rem;
     margin-right: 0.3rem;
   }
 
-  .threshold-item input {
-    width: 70px;
-    padding: 0.3rem;
-    text-align: center;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-
-  .threshold-item .unit {
+  .unit {
     font-weight: bold;
-    margin-left: 0.3rem;
   }
 
   .threshold-box button {
@@ -171,6 +189,25 @@
     font-weight: bold;
   }
 
+  .status-message {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .dashboard {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sensor-card {
+    font-size: 1.1rem;
+    padding: 0.6rem 1rem;
+    top: 12px;
+    left: 12px;
+  }
+}
   .status-message {
     margin-top: 1rem;
     text-align: center;
