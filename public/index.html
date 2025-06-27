@@ -133,6 +133,7 @@
   .header {
     font-size: 1.3rem;
     padding: 1rem;
+    text-align: center;
   }
 
   .threshold-box {
@@ -144,29 +145,24 @@
     align-items: center;
   }
 
-  .threshold-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
   .threshold-item {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 0.8rem;
+    width: 100%;
+    max-width: 280px;
   }
 
   .threshold-box label {
     font-weight: bold;
     margin-right: 0.3rem;
-    min-width: 100px;
-    text-align: left;
+    min-width: 110px;
+    text-align: right;
   }
 
   .threshold-box input {
-    width: 70px;
+    width: 80px;
     text-align: center;
     font-size: 1rem;
     padding: 0.3rem;
@@ -212,7 +208,6 @@
     left: 12px;
   }
 }
-
   </style>
 </head>
 <body>
