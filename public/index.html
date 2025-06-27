@@ -120,60 +120,42 @@
       color: #555;
     }
 @media (max-width: 768px) {
-  .chart-container {
-    width: 94%;
-    padding: 3.2rem 1rem 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .chart-box {
-    height: 260px;
-  }
-
-  .header {
-    font-size: 1.3rem;
-    padding: 1rem;
-    text-align: center;
-  }
-
   .threshold-box {
-    width: 94%;
-    padding: 1rem 1.5rem;
-    font-size: 0.95rem;
+    width: 100%;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  /* Cần thêm mỗi hàng là 1 dòng riêng: */
   .threshold-item {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    max-width: 280px;
     margin-bottom: 0.8rem;
+    width: 100%;
+    max-width: 300px;
   }
 
   .threshold-item label {
     font-weight: bold;
-    margin-right: 0.3rem;
     min-width: 110px;
-    text-align: right;
+    text-align: left;
+    margin-right: 0.3rem;
   }
 
   .threshold-item input {
-    width: 80px;
+    width: 70px;
+    padding: 0.3rem;
     text-align: center;
     font-size: 1rem;
-    padding: 0.3rem;
-    border-radius: 5px;
     border: 1px solid #ccc;
-    margin: 0 0.3rem;
+    border-radius: 5px;
   }
 
   .threshold-item .unit {
     font-weight: bold;
+    margin-left: 0.3rem;
   }
 
   .threshold-box button {
@@ -195,20 +177,7 @@
     font-size: 1rem;
     font-weight: bold;
   }
-
-  .dashboard {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .sensor-card {
-    font-size: 1.1rem;
-    padding: 0.6rem 1rem;
-    top: 12px;
-    left: 12px;
-  }
 }
-
 
   </style>
 </head>
