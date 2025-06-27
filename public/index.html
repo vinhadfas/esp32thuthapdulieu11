@@ -141,38 +141,32 @@
     font-size: 0.95rem;
   }
 
-  .threshold-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .threshold-item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 0.8rem;
-  }
-
   .threshold-box label {
+    display: inline-block;
+    width: 110px;
     font-weight: bold;
-    margin-right: 0.3rem;
-    min-width: 110px;
+    margin-bottom: 0.5rem;
   }
 
   .threshold-box input {
     width: 60px;
-    text-align: center;
-    font-size: 1rem;
     padding: 0.3rem;
+    font-size: 1rem;
     border-radius: 5px;
     border: 1px solid #ccc;
     margin-right: 0.2rem;
+    text-align: center;
+    vertical-align: middle;
   }
 
-  .unit {
-    font-weight: bold;
+  .threshold-box input + * {
+    vertical-align: middle;
+  }
+
+  .threshold-box label,
+  .threshold-box input,
+  .threshold-box input + * {
+    margin-bottom: 0.3rem;
   }
 
   .threshold-box button {
@@ -206,27 +200,18 @@
     left: 12px;
   }
 }
-
   </style>
 </head>
 <body>
   <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
   <div class="threshold-box">
-  <div class="threshold-item">
     <label for="upperThreshold">Ngưỡng trên:</label>
-    <input type="number" id="upperThreshold" value="">
-    <span class="unit">°C</span>
-  </div>
-
-  <div class="threshold-item">
+    <input type="number" id="upperThreshold" value=""> °C
     <label for="lowerThreshold">Ngưỡng dưới:</label>
-    <input type="number" id="lowerThreshold" value="">
-    <span class="unit">°C</span>
+    <input type="number" id="lowerThreshold" value=""> °C
+    <button onclick="checkTempStatus()">Áp dụng</button>
+    <div class="status-message" id="tempStatus">Trạng thái nhiệt độ: --</div>
   </div>
-
-  <button onclick="checkTempStatus()">Áp dụng</button>
-  <div class="status-message" id="tempStatus">Trạng thái nhiệt độ: --</div>
-</div>
 
   <div class="dashboard">
     <div class="chart-container">
