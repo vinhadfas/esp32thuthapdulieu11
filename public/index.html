@@ -277,13 +277,12 @@
     <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing" target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
     <small>(Click vào để xem lại các giá trị đã lưu)</small>
   </div>
- <script>
+    <script>
     /* ============ CẤU HÌNH CHUNG ============ */
     Highcharts.setOptions({ time: { useUTC: false } });
     
-    const MAX_POINTS = 50;
-    const charts = {};
-    let   lastTimestamp = 0;
+    const MAX_POINTS = 50, charts = {};
+    let lastTimestamp = 0;
     
     const chartColors = {
       Voltage:     '#41f947',
@@ -293,22 +292,35 @@
       Temperature: '#07d3f2'
     };
     
-    /* ============ TẠO OPTION CHO MỖI BIỂU ĐỒ ============ */
+    /* ============ HÀM TẠO OPTION CHO TỪNG ĐỒ THỊ ============ */
     const chartOptions = (title, unit) => ({
-      chart: { type: 'line', animation: Highcharts.svg, marginRight: 10 },
-      title: { text: title },
+      chart:  { type: 'line', animation: Highcharts.svg, marginRight: 10 },
+      title:  { text: title },
     
-      xAxis: {
+      /* --- TRỤC X (dọc) --- */
+      xAxis:  {
         type: 'datetime',
-        tickInterval: 30000,
-        labels: { format: '{value:%H:%M:%S}' }
+        tickInterval: 30_000,
+        labels: { format: '{value:%H:%M:%S}' },
+        /* bật nếu muốn lưới dọc gạch gạch */
+        // gridLineWidth: 1,
+        // gridLineDashStyle: 'Dash',
+        // gridLineColor: '#dcdcdc'
       },
     
-      /* ẨN CHỮ ĐƠN VỊ BÊN TRỤC Y */
-      yAxis: {
-        title: { text: null },        // << không hiển thị °C, V, A…
-        labels: { rotation: 0 },
-        plotLines: [{ value: 0, width: 1, color: '#808080' }]
+      /* --- TRỤC Y (ngang) --- */
+      yAxis:  {
+        title: { text: null },                /* ẩn chữ đơn vị */
+        gridLineWidth: 1,                     /* đường ngang chính */
+        gridLineColor: '#dcdcdc',
+        gridLineDashStyle: 'Dash',            /* ⬅️ nét đứt */
+    
+        minorTickInterval: 'auto',            /* đường ngang phụ */
+        minorGridLineWidth: 1,
+        minorGridLineColor: '#eeeeee',
+        minorGridLineDashStyle: 'Dot',        /* ⬅️ chấm chấm */
+    
+        labels: { rotation: 0 }
       },
     
       tooltip: {
@@ -319,9 +331,9 @@
         }
       },
     
-      legend: { enabled: true },      // đặt false nếu muốn ẩn luôn chữ “Temperature”
+      legend:    { enabled: false },          /* ẩn chữ “Temperature” nếu muốn */
       exporting: { enabled: false },
-      credits: { enabled: false },
+      credits:   { enabled: false },
     
       series: [{
         name: title,
@@ -359,14 +371,12 @@
           chart.series[0].data.length >= MAX_POINTS);
         document.getElementById(span).innerText = val.toFixed(2);
       };
-    
       push(charts.temp,      temp,      'temp');
       push(charts.voltage,   voltage,   'voltage');
       push(charts.current,   current,   'current');
       push(charts.power,     power,     'power');
       push(charts.frequency, frequency, 'frequency');
-    
-      checkTempStatus(); // tự kiểm sau mỗi lần cập nhật
+      checkTempStatus();
     }
     
     /* ============ CẢNH BÁO NHIỆT ĐỘ ============ */
@@ -389,7 +399,7 @@
     
     /* ============ KHỞI CHẠY ============ */
     fetchSensorData();
-    setInterval(fetchSensorData, 30000);
+    setInterval(fetchSensorData, 30_000);
     </script>
 
 
