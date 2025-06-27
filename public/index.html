@@ -134,71 +134,86 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 /* ---------- MOBILE ≤ 768px ---------- */
 @media (max-width: 768px) {
 
-  /* ===== HEADER ===== */
+  /* ===== Header ===== */
   .header{
     font-size:1.3rem;
     padding:1rem;
     text-align:center;
   }
 
-  /* ===== CHART ===== */
-  .dashboard{flex-direction:column;align-items:center}
+  /* ===== Chart ===== */
+  .dashboard{
+    flex-direction:column;
+    align-items:center;
+  }
   .chart-container{
-    width:94%;padding:3.2rem 1rem 1rem;margin-bottom:1.5rem;
+    width:94%;
+    padding:3.2rem 1rem 1rem;
+    margin-bottom:1.5rem;
   }
   .chart-box{height:260px}
   .sensor-card{
-    font-size:1.1rem;padding:.6rem 1rem;top:12px;left:12px;
+    font-size:1.1rem;
+    padding:.6rem 1rem;
+    top:12px;left:12px;
   }
 
-  /* ===== THRESHOLD (dọc – căn giữa) ===== */
+  /* ===== Threshold (xếp dọc) ===== */
   .threshold-box{
-    width:max-content;margin:1.2rem auto 0;
-    padding:1rem 1.5rem;font-size:.95rem;
-    display:grid;grid-template-columns:1fr;
-    row-gap:.8rem;text-align:center;
+    width:max-content;
+    margin:1.2rem auto 0;
+    padding:1rem 1.5rem;
+    font-size:.95rem;
+    display:grid;
+    grid-template-columns:1fr;
+    row-gap:.8rem;
+    text-align:center;
   }
   .threshold-box label{font-weight:bold;justify-self:center}
   .threshold-box input{width:90px}
   .threshold-box button{
-    grid-column:1/-1;justify-self:center;
-    padding:.5rem 1rem;max-width:240px;
+    grid-column:1/-1;
+    justify-self:center;
+    padding:.5rem 1rem;
+    max-width:240px;
+    margin-top:.2rem;
   }
   .threshold-box .status-message{
-    grid-column:1/-1;margin-top:1rem;
+    grid-column:1/-1;
+    margin-top:1rem;
+    font-weight:bold;
+    text-align:center;
   }
 
-  /* ===== TRA CỨU (🔸 mới) ===== */
-  .lookup-grid{                    /* chuyển sang dọc */
-    flex-direction:column;         /* 🔸 */
-    gap:.7rem;                     /* 🔸 khoảng cách giữa hàng */
-    align-items:stretch;           /* 🔸 full-width */
+  /* ===== Tra cứu dữ liệu (nút dưới input) ===== */
+  .lookup-grid{
+    flex-direction:column;      /* 🔸 xếp dọc */
+    gap:.8rem;
+    align-items:stretch;        /* ô full-width */
   }
-
-  .date-wrapper,                   /* khối ngày & giờ full width */
-  #lookupTime{
-    flex:1 1 100%;
-  }
+  .date-wrapper,
+  #lookupTime{flex:1 1 100%}
 
   .date-wrapper input,
   #lookupTime{
-    width:100%;                    /* 🔸 trải hết chiều ngang */
-    border-radius:20px;            /* 🔸 bo góc lớn cho đồng nhất */
+    width:100%;
+    border-radius:20px;
     font-size:1rem;
   }
 
-  .lookup-btn{                     /* nút chiếm riêng 1 hàng */
-    align-self:center;             /* 🔸 căn giữa */
-    width:60%;                     /* tuỳ chỉnh rộng 60% màn hình */
-    max-width:280px;
+  .lookup-btn{
+    align-self:center;          /* 🔸 căn giữa */
+    width:80%;                  /* 🔸 rộng 80% (đổi tuỳ ý) */
+    max-width:300px;
     padding:.65rem 1rem;
     font-size:1.05rem;
   }
 
-  /* bảng kết quả: giữ nguyên, chỉ thêm margin-top cho thoáng */
-  .table-container{margin-top:.5rem;max-height:260px;overflow:auto}
-
+  /* bảng kết quả: thêm khoảng cách cho thoáng */
+  .table-container{margin-top:.6rem;max-height:260px;overflow:auto}
 }
+
+
 
 
   </style>
