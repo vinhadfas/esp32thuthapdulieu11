@@ -8,10 +8,7 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
   <script>Highcharts.setOptions({ time: { useUTC: false } });</script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     html, body {
       margin: 0;
       padding: 0;
@@ -21,7 +18,6 @@
       font-family: Arial, sans-serif;
       background-color: #eef9f8;
     }
-
     .header {
       background-color: #4eb9b7;
       color: white;
@@ -30,7 +26,6 @@
       font-size: 2rem;
       font-weight: bold;
     }
-
     .threshold-box {
       background-color: #ffffff;
       border-radius: 10px;
@@ -41,12 +36,10 @@
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
       font-weight: bold;
     }
-
     .threshold-box label {
       font-weight: bold;
       margin: 0 0.5rem;
     }
-
     .threshold-box input {
       width: 60px;
       text-align: center;
@@ -55,7 +48,6 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
-
     .threshold-box button {
       padding: 0.5rem 1rem;
       margin-left: 1rem;
@@ -66,16 +58,13 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     .status-message {
       font-size: 1rem;
       margin-top: 1rem;
       font-weight: bold;
     }
-
     .normal { color: #2e7d32; }
     .warning { color: #c62828; }
-
     .dashboard {
       display: flex;
       flex-wrap: wrap;
@@ -85,7 +74,6 @@
       max-width: 1600px;
       margin: 0 auto;
     }
-
     .chart-container {
       background: white;
       border-radius: 1rem;
@@ -95,12 +83,10 @@
       max-width: 95vw;
       position: relative;
     }
-
     .chart-box {
       height: 300px;
       margin-bottom: 1rem;
     }
-
     .sensor-card {
       display: inline-flex;
       align-items: center;
@@ -115,13 +101,11 @@
       top: 20px;
       left: 20px;
     }
-
     .link {
       text-align: center;
       margin: 2rem auto 3rem;
       font-size: 1rem;
     }
-
     .link a {
       text-decoration: none;
       background-color: #4eb9b7;
@@ -130,50 +114,41 @@
       border-radius: 5px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
     .link small {
       display: block;
       margin-top: 0.4rem;
       color: #555;
     }
-
     @media (max-width: 768px) {
       .chart-container {
         width: 94%;
         padding: 3.2rem 1rem 1rem;
         margin-bottom: 1.5rem;
       }
-
       .chart-box {
         height: 260px;
       }
-
       .threshold-box {
         width: 94%;
         padding: 1rem 1.5rem;
         font-size: 0.95rem;
       }
-
       .threshold-box input {
         width: 54px;
         margin: 0.3rem 0.2rem;
       }
-
       .threshold-box label, .threshold-box button {
         display: block;
         width: 100%;
         margin: 0.4rem auto;
       }
-
       .threshold-box button {
         margin-top: 0.7rem;
       }
-
       .dashboard {
         flex-direction: column;
         align-items: center;
       }
-
       .sensor-card {
         font-size: 1.1rem;
         padding: 0.6rem 1rem;
@@ -183,3 +158,127 @@
     }
   </style>
 </head>
+<body>
+  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
+  <div class="threshold-box">
+    <label for="upperThreshold">Ngưỡng trên:</label>
+    <input type="number" id="upperThreshold" value=""> °C
+    <label for="lowerThreshold">Ngưỡng dưới:</label>
+    <input type="number" id="lowerThreshold" value=""> °C
+    <button onclick="checkTempStatus()">Áp dụng</button>
+    <div class="status-message" id="tempStatus">Trạng thái nhiệt độ: --</div>
+  </div>
+  <div class="dashboard">
+    <div class="chart-container">
+      <div class="sensor-card">
+        <i class="fas fa-thermometer-half" style="color: #07d3f2; margin-right: 8px;"></i>
+        <span class="label">Nhiệt độ:</span>
+        <span id="temp">--</span><sup>°C</sup>
+      </div>
+      <div id="tempChart" class="chart-box"></div>
+    </div>
+    <div class="chart-container">
+      <div class="sensor-card">
+        <i class="fas fa-charging-station" style="color: #41f947; margin-right: 8px;"></i>
+        <span class="label">Điện áp:</span>
+        <span id="voltage">--</span><sup>V</sup>
+      </div>
+      <div id="voltageChart" class="chart-box"></div>
+    </div>
+    <div class="chart-container">
+      <div class="sensor-card">
+        <i class="fas fa-bolt" style="color: #f3722c; margin-right: 8px;"></i>
+        <span class="label">Dòng điện:</span>
+        <span id="current">--</span><sup>A</sup>
+      </div>
+      <div id="currentChart" class="chart-box"></div>
+    </div>
+    <div class="chart-container">
+      <div class="sensor-card">
+        <i class="fas fa-lightbulb" style="color: #f9c74f; margin-right: 8px;"></i>
+        <span class="label">Công suất:</span>
+        <span id="power">--</span><sup>W</sup>
+      </div>
+      <div id="powerChart" class="chart-box"></div>
+    </div>
+    <div class="chart-container">
+      <div class="sensor-card">
+        <i class="fas fa-broadcast-tower" style="color: #43aa8b; margin-right: 8px;"></i>
+        <span class="label">Tần số:</span>
+        <span id="frequency">--</span><sup>Hz</sup>
+      </div>
+      <div id="frequencyChart" class="chart-box"></div>
+    </div>
+  </div>
+  <div class="link">
+    <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing" target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
+    <small>(Click vào để xem lại các giá trị đã lưu)</small>
+  </div>
+  <script>
+    const MAX_POINTS = 50;
+    const charts = {};
+    let lastTimestamp = 0;
+    const chartColors = {
+      'Voltage': '#41f947', 'Current': '#f3722c', 'Power': '#f9c74f', 'Frequency': '#43aa8b', 'Temperature': '#07d3f2'
+    };
+    const chartOptions = (title, unit) => ({
+      chart: { type: 'line', animation: Highcharts.svg, marginRight: 10 },
+      title: { text: title },
+      xAxis: { type: 'datetime', tickInterval: 30000, labels: { format: '{value:%H:%M:%S}' } },
+      yAxis: { title: { text: unit }, plotLines: [{ value: 0, width: 1, color: '#808080' }] },
+      tooltip: {
+        formatter: function () {
+          return '<b>' + this.series.name + '</b><br/>' + Highcharts.dateFormat('%H:%M:%S', this.x) + '<br/>Giá trị: ' + Highcharts.numberFormat(this.y, 2) + ' ' + unit;
+        }
+      },
+      legend: { enabled: true }, exporting: { enabled: false }, credits: { enabled: false },
+      series: [{ name: title, data: [], color: chartColors[title] || undefined }]
+    });
+    charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
+    charts.voltage = Highcharts.chart('voltageChart', chartOptions('Voltage', 'V'));
+    charts.current = Highcharts.chart('currentChart', chartOptions('Current', 'A'));
+    charts.power = Highcharts.chart('powerChart', chartOptions('Power', 'W'));
+    charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
+
+    async function fetchSensorData() {
+      try {
+        const res = await fetch('/api/sensor', { cache: 'no-store' });
+        const d = await res.json();
+        const list = d.history || [];
+        list.forEach(payload => updateChartsFromData(payload));
+      } catch (e) {
+        console.warn('Lỗi khi fetch API:', e);
+      }
+    }
+
+    function updateChartsFromData(payload) {
+      const { timestamp, voltage, current, power, frequency, temp } = payload;
+      if (!timestamp || timestamp <= lastTimestamp) return;
+      lastTimestamp = timestamp;
+      if (!isNaN(temp)) { charts.temp.series[0].addPoint([timestamp, temp], true, charts.temp.series[0].data.length >= MAX_POINTS); document.getElementById('temp').innerText = temp.toFixed(2); }
+      if (!isNaN(voltage)) { charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS); document.getElementById('voltage').innerText = voltage.toFixed(2); }
+      if (!isNaN(current)) { charts.current.series[0].addPoint([timestamp, current], true, charts.current.series[0].data.length >= MAX_POINTS); document.getElementById('current').innerText = current.toFixed(2); }
+      if (!isNaN(power)) { charts.power.series[0].addPoint([timestamp, power], true, charts.power.series[0].data.length >= MAX_POINTS); document.getElementById('power').innerText = power.toFixed(2); }
+      if (!isNaN(frequency)) { charts.frequency.series[0].addPoint([timestamp, frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS); document.getElementById('frequency').innerText = frequency.toFixed(2); }
+    }
+
+    function checkTempStatus() {
+      const lower = parseFloat(document.getElementById('lowerThreshold').value);
+      const upper = parseFloat(document.getElementById('upperThreshold').value);
+      const t = parseFloat(document.getElementById('temp').innerText);
+      const statusEl = document.getElementById('tempStatus');
+      if (isNaN(t)) { statusEl.innerText = "Trạng thái nhiệt độ: --"; return; }
+      if (t < lower || t > upper) {
+        statusEl.innerText = "Trạng thái nhiệt độ: CẢNH BÁO";
+        statusEl.className = "status-message warning";
+      } else {
+        statusEl.innerText = "Trạng thái nhiệt độ: BÌNH THƯỜNG";
+        statusEl.className = "status-message normal";
+      }
+    }
+
+    fetchSensorData();
+    setInterval(fetchSensorData, 30000);
+  </script>
+</body>
+</html>
