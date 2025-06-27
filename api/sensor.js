@@ -7,7 +7,7 @@ const MAX_POINTS  = 50;
 /* đọc / ghi store */
 async function readStore() {
   try { return JSON.parse(await fs.readFile(DATA_PATH, 'utf8')); }
-  catch { return { history: [], thresholds: { tempLow: 9, tempHigh: 10 } }; }
+  catch { return { history: [], thresholds: { tempLow: -30, tempHigh: 30} }; }
 }
 async function writeStore(store) {
   await fs.writeFile(DATA_PATH, JSON.stringify(store));
