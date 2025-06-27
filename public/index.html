@@ -130,53 +130,108 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 }
 .link small{color:#333}
 
-/* ======== MOBILE (≤768 px) ======== */
-@media(max-width:768px){
-  .header{font-size:1.3rem;padding:1rem}
+@media (max-width: 768px) {
 
-  .chart-container{
-    width:94%;
-    padding:3.2rem 1rem 1rem;
-    margin-bottom:1.5rem;
-  }
-  .chart-box{height:260px}
-
-  /* Hộp ngưỡng: lưới 3 cột */
-  .threshold-box{
-    width:max-content;
-    margin:1.2rem auto 0;
-    padding:1rem 1.5rem;
-    font-size:.95rem;
-    display:grid;
-    grid-template-columns:max-content 90px max-content;
-    column-gap:.5rem;row-gap:.9rem;
-    align-items:center;
-  }
-  .threshold-box label{
-    font-weight:bold;text-align:right;min-width:110px;
-  }
-  .threshold-box input{width:80px}
-
-  /* nút & trạng thái tách hàng */
-  .threshold-box button{
-    grid-column:1/-1;
-    justify-self:center;
-    margin-top:.5rem;max-width:240px;
-  }
-  .threshold-box .status-message{
-    grid-column:1/-1;
-    margin-top:1rem;text-align:center;font-size:1rem;
-  }
-
-  .dashboard{flex-direction:column;align-items:center}
-  .sensor-card{font-size:1.1rem;padding:.6rem 1rem;top:12px;left:12px}
+.chart-container {
+  width: 94%;
+  padding: 3.2rem 1rem 1rem;
+  margin-bottom: 1.5rem;
 }
 
+.chart-box {
+  height: 260px;
+}
+
+.header {
+  font-size: 1.3rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* ---- BỐ CỤC NGƯỠNG ---- */
+.threshold-box {
+  /* GIỮ NGUYÊN những dòng cũ */
+  width: max-content;
+  margin: 1.2rem auto 0;   /* 🔸 thêm 1.2rem khoảng trống phía trên */
+  /* hoặc tăng/giảm 1.2rem tùy bạn thấy đẹp */
+
+  padding: 1rem 1.5rem;
+  font-size: 0.95rem;
+
+  display: grid;
+  grid-template-columns: max-content 90px max-content;
+  column-gap: 0.5rem;
+  row-gap: 0.9rem;
+  align-items: center;
+}
+
+/* label, input & đơn vị °C */
+.threshold-box label {
+  font-weight: bold;
+  text-align: right;
+  min-width: 110px;
+}
+
+.threshold-box input {
+  width: 80px;
+  text-align: center;
+  font-size: 1rem;
+  padding: 0.3rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.unit { font-weight: bold; }
+
+/* Nút “Áp dụng” chiếm trọn 1 hàng và căn giữa */
+.threshold-box button {
+  grid-column: 1 / -1;               /* span toàn bộ 3 cột */
+  justify-self: center;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  max-width: 240px;
+  background-color: #4eb9b7;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Dòng trạng thái cũng chiếm trọn 1 hàng */
+.threshold-box .status-message {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.dashboard {
+  flex-direction: column;
+  align-items: center;
+}
+
+.sensor-card {
+  font-size: 1.1rem;
+  padding: 0.6rem 1rem;
+  top: 12px;
+  left: 12px;
+}
+}
+
+/* ---------- Ngoài media query (desktop hoặc chung) ---------- */
+.status-message {
+margin-top: 1rem;
+text-align: center;
+font-size: 1rem;
+font-weight: bold;
+}
 
   </style>
 </head>
 <body>
-  <div class="header">MÔ HÌNH GIÁM SÁT XE TẢI ĐÔNG LẠNH – ESP32</div>
+  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
 
   <!-- Threshold -->
   <div class="threshold-box">
