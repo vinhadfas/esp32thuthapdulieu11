@@ -184,6 +184,22 @@
   charts.energy    = Highcharts.chart('energyChart',    chartOptions('Energy','kWh'));
   charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency','Hz'));
 
+  /* ----- Fetch sensor data ----- */
+  async function fetchSensorData(){
+    try{
+      const res = await fetch('/api/sensor',{cache:'no-store'});
+      const {history,thresholds} = await res.json();
+      // điền ngưỡng 1 lần (nếu input trống)
+      if(thresholds){
+        if(!document.getElementById('upperThreshold').value)
+          document.getElementById('upperThreshold').value = thresholds.tempHigh;
+        if(!document.getElementById('lowerThreshold').value)
+          document.getElementById('lowerThreshold').value = thresholds.tempLow;
+      }
+      (history||[]).forEach(updateCharts);
+    }catch(e){console.warn('Fetch error:',e);}
+  }
+
   /* ---------- Realtime fetch ---------- */
   async function fetchSensorData(){
     try{
@@ -199,6 +215,38 @@
     const push=(c,v,id)=>{if(isNaN(v))return;const s=c.series[0];s.addPoint([ts,v],true,s.data.length>=MAX_POINTS);document.getElementById(id).textContent=v.toFixed(2);};
     push(charts.temp,temp,'temp');push(charts.voltage,voltage,'voltage');push(charts.current,current,'current');
     push(charts.power,power,'power');push(charts.energy,energy,'energy');push(charts.frequency,frequency,'frequency');
+  }
+  /* ----- Temp status ----- */
+  function checkTempStatus(){
+    const low=parseFloat(document.getElementById('lowerThreshold').value);
+    const high=parseFloat(document.getElementById('upperThreshold').value);
+    const t=parseFloat(document.getElementById('temp').innerText);
+    const el=document.getElementById('tempStatus');
+    if(isNaN(t)){el.innerText='Trạng thái nhiệt độ: --';el.className='status-message';return;}
+    if((!isNaN(low)&&t<low)||(!isNaN(high)&&t>high)){
+      el.innerText='Trạng thái nhiệt độ: CẢNH BÁO';el.className='status-message warning';
+    }else{
+      el.innerText='Trạng thái nhiệt độ: BÌNH THƯỜNG';el.className='status-message normal';
+    }
+  }
+
+  /* ----- Update thresholds ----- */
+  async function updateThresholds(){
+    const tempLow=parseFloat(document.getElementById('lowerThreshold').value);
+    const tempHigh=parseFloat(document.getElementById('upperThreshold').value);
+    if(isNaN(tempLow)||isNaN(tempHigh)) return alert('Nhập đủ hai ngưỡng!');
+    if(tempLow>tempHigh) return alert('Ngưỡng thấp phải ≤ ngưỡng cao!');
+
+    try{
+      const res=await fetch('/api/sensor',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({tempLow,tempHigh})
+      });
+      if(!res.ok) throw new Error(await res.text());
+      alert('Đã lưu ngưỡng thành công!');
+      checkTempStatus();
+    }catch(e){alert('Lưu thất bại: '+e.message);}
   }
 
   /* ---------- CSV lookup ---------- */
