@@ -277,13 +277,15 @@
     <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing" target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
     <small>(Click vào để xem lại các giá trị đã lưu)</small>
   </div>
-    <script>
+   <script>
     /* ============ CẤU HÌNH CHUNG ============ */
     Highcharts.setOptions({ time: { useUTC: false } });
     
-    const MAX_POINTS = 50, charts = {};
-    let lastTimestamp = 0;
+    const MAX_POINTS = 50;
+    const charts     = {};
+    let   lastTimestamp = 0;
     
+    /* Màu từng đường */
     const chartColors = {
       Voltage:     '#41f947',
       Current:     '#f3722c',
@@ -292,34 +294,33 @@
       Temperature: '#07d3f2'
     };
     
-    /* ============ HÀM TẠO OPTION CHO TỪNG ĐỒ THỊ ============ */
+    /* ============ OPTION CHO MỖI ĐỒ THỊ ============ */
     const chartOptions = (title, unit) => ({
-      chart:  { type: 'line', animation: Highcharts.svg, marginRight: 10 },
-      title:  { text: title },
+      chart: { type: 'line', animation: Highcharts.svg, marginRight: 10 },
+      title: { text: title },
     
-      /* --- TRỤC X (dọc) --- */
-      xAxis:  {
+      /* Trục X thời gian (giữ nguyên) */
+      xAxis: {
         type: 'datetime',
-        tickInterval: 30_000,
-        labels: { format: '{value:%H:%M:%S}' },
-        /* bật nếu muốn lưới dọc gạch gạch */
-        // gridLineWidth: 1,
-        // gridLineDashStyle: 'Dash',
-        // gridLineColor: '#dcdcdc'
+        tickInterval: 30000,
+        labels: { format: '{value:%H:%M:%S}' }
+        /* Nếu muốn lưới dọc nét liền: bật 2 dòng dưới
+        , gridLineWidth: 1
+        , gridLineColor: '#dcdcdc'
+        */
       },
     
-      /* --- TRỤC Y (ngang) --- */
-      yAxis:  {
-        title: { text: null },                /* ẩn chữ đơn vị */
-        gridLineWidth: 1,                     /* đường ngang chính */
+      /* Trục Y với lưới CHÍNH & PHỤ đều nét liền */
+      yAxis: {
+        title: { text: null },
+        gridLineWidth: 1,
         gridLineColor: '#dcdcdc',
-        gridLineDashStyle: 'Dash',            /* ⬅️ nét đứt */
+        gridLineDashStyle: 'Solid',   /* ← nét liền (có thể bỏ hẳn dòng này) */
     
-        minorTickInterval: 'auto',            /* đường ngang phụ */
+        minorTickInterval: 'auto',
         minorGridLineWidth: 1,
         minorGridLineColor: '#eeeeee',
-        minorGridLineDashStyle: 'Dot',        /* ⬅️ chấm chấm */
-    
+        minorGridLineDashStyle: 'Solid',  /* ← nét liền */
         labels: { rotation: 0 }
       },
     
@@ -331,13 +332,13 @@
         }
       },
     
-      legend:    { enabled: false },          /* ẩn chữ “Temperature” nếu muốn */
+      legend:    { enabled: false },
       exporting: { enabled: false },
       credits:   { enabled: false },
     
       series: [{
-        name: title,
-        data: [],
+        name:  title,
+        data:  [],
         color: chartColors[title]
       }]
     });
@@ -349,7 +350,7 @@
     charts.power     = Highcharts.chart('powerChart',     chartOptions('Power',       'W'));
     charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency',   'Hz'));
     
-    /* ============ FETCH & CẬP NHẬT ============ */
+    /* ============ FETCH & CẬP NHẬT DỮ LIỆU ============ */
     async function fetchSensorData() {
       try {
         const res = await fetch('/api/sensor', { cache: 'no-store' });
@@ -383,12 +384,12 @@
     function checkTempStatus() {
       const lower = parseFloat(document.getElementById('lowerThreshold').value);
       const upper = parseFloat(document.getElementById('upperThreshold').value);
-      const temp  = parseFloat(document.getElementById('temp').innerText);
+      const t     = parseFloat(document.getElementById('temp').innerText);
       const el    = document.getElementById('tempStatus');
     
-      if (isNaN(temp)) { el.innerText = 'Trạng thái nhiệt độ: --'; el.className = 'status-message'; return; }
+      if (isNaN(t)) { el.innerText = 'Trạng thái nhiệt độ: --'; el.className = 'status-message'; return; }
     
-      if ((!isNaN(lower) && temp < lower) || (!isNaN(upper) && temp > upper)) {
+      if ((!isNaN(lower) && t < lower) || (!isNaN(upper) && t > upper)) {
         el.innerText = 'Trạng thái nhiệt độ: CẢNH BÁO';
         el.className = 'status-message warning';
       } else {
@@ -399,7 +400,7 @@
     
     /* ============ KHỞI CHẠY ============ */
     fetchSensorData();
-    setInterval(fetchSensorData, 30_000);
+    setInterval(fetchSensorData, 30000);
     </script>
 
 
