@@ -139,24 +139,26 @@
 
   /* ---- BỐ CỤC NGƯỠNG ---- */
   .threshold-box {
-    /* 1️⃣ Thu gọn đúng theo bề rộng nội dung, rồi căn giữa card */
-    width: max-content;      /* vừa khít ba cột label-input-°C */
-    margin: 0 auto;          /* canh giữa toàn khối */
+    /* thu gọn theo nội dung rồi căn giữa card */
+    width: max-content;                 /* khít 3 cột label-input-°C */
+    margin: 0 auto;                     /* căn giữa khối */
 
-    /* 2️⃣ Đổi sang lưới 3 cột để luôn thẳng hàng */
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+
+    /* Grid 3 cột: label | input | đơn vị °C */
     display: grid;
-    grid-template-columns: max-content 90px max-content; /* label | input | °C */
+    grid-template-columns: max-content 90px max-content;
     column-gap: 0.5rem;
     row-gap: 0.9rem;
     align-items: center;
   }
 
-  /* label, input, đơn vị °C sẽ tự chồng cạnh nhau */
+  /* label, input & đơn vị °C */
   .threshold-box label {
     font-weight: bold;
-    margin-right: 0.3rem;
-    min-width: 110px;
     text-align: right;
+    min-width: 110px;
   }
 
   .threshold-box input {
@@ -166,30 +168,28 @@
     padding: 0.3rem;
     border-radius: 5px;
     border: 1px solid #ccc;
-    margin: 0 0.3rem;
   }
 
-  .unit {
-    font-weight: bold;
-  }
+  .unit { font-weight: bold; }
 
-  /* Nút áp dụng chiếm trọn 1 hàng riêng */
+  /* Nút “Áp dụng” chiếm trọn 1 hàng và căn giữa */
   .threshold-box button {
-    flex: 0 0 100%;                /* full width */
+    grid-column: 1 / -1;               /* span toàn bộ 3 cột */
+    justify-self: center;
     padding: 0.5rem 1rem;
     margin-top: 0.5rem;
     max-width: 240px;
     background-color: #4eb9b7;
-    color: white;
+    color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
   }
 
-  /* Trạng thái chiếm trọn 1 hàng riêng */
-  .status-message {
-    flex: 0 0 100%;                /* full width */
+  /* Dòng trạng thái cũng chiếm trọn 1 hàng */
+  .threshold-box .status-message {
+    grid-column: 1 / -1;
     margin-top: 1rem;
     text-align: center;
     font-size: 1rem;
@@ -216,6 +216,7 @@
   font-size: 1rem;
   font-weight: bold;
 }
+
 
   </style>
 </head>
