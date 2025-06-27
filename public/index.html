@@ -120,6 +120,7 @@
       color: #555;
     }
 @media (max-width: 768px) {
+
   .chart-container {
     width: 94%;
     padding: 3.2rem 1rem 1rem;
@@ -136,24 +137,22 @@
     text-align: center;
   }
 
+  /* ---- BỐ CỤC NGƯỠNG ---- */
   .threshold-box {
     width: 94%;
     padding: 1rem 1.5rem;
     font-size: 0.95rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
 
-  .threshold-item {
+    /* CHỈ thay đổi hai dòng dưới để chuyển sang layout ngang */
     display: flex;
+    flex-direction: row;   /* nằm ngang */
+    flex-wrap: wrap;       /* đủ 3 phần tử thì tự xuống hàng */
+
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.8rem;
-    width: 100%;
-    max-width: 280px;
   }
 
+  /* label, input, đơn vị °C sẽ tự chồng cạnh nhau */
   .threshold-box label {
     font-weight: bold;
     margin-right: 0.3rem;
@@ -168,18 +167,18 @@
     padding: 0.3rem;
     border-radius: 5px;
     border: 1px solid #ccc;
-    margin-left: 0.3rem;
-    margin-right: 0.3rem;
+    margin: 0 0.3rem;
   }
 
   .unit {
     font-weight: bold;
   }
 
+  /* Nút áp dụng chiếm trọn 1 hàng riêng */
   .threshold-box button {
+    flex: 0 0 100%;                /* full width */
     padding: 0.5rem 1rem;
     margin-top: 0.5rem;
-    width: 100%;
     max-width: 240px;
     background-color: #4eb9b7;
     color: white;
@@ -189,7 +188,9 @@
     font-weight: bold;
   }
 
+  /* Trạng thái chiếm trọn 1 hàng riêng */
   .status-message {
+    flex: 0 0 100%;                /* full width */
     margin-top: 1rem;
     text-align: center;
     font-size: 1rem;
@@ -208,14 +209,14 @@
     left: 12px;
   }
 }
-  .status-message {
-    margin-top: 1rem;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-}
 
+/* ---------- Ngoài media query (desktop hoặc chung) ---------- */
+.status-message {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+}
 
   </style>
 </head>
