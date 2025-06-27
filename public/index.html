@@ -277,15 +277,14 @@
     <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing" target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
     <small>(Click vào để xem lại các giá trị đã lưu)</small>
   </div>
-   <script>
+     <script>
     /* ============ CẤU HÌNH CHUNG ============ */
     Highcharts.setOptions({ time: { useUTC: false } });
     
     const MAX_POINTS = 50;
-    const charts     = {};
+    const charts = {};
     let   lastTimestamp = 0;
     
-    /* Màu từng đường */
     const chartColors = {
       Voltage:     '#41f947',
       Current:     '#f3722c',
@@ -294,33 +293,28 @@
       Temperature: '#07d3f2'
     };
     
-    /* ============ OPTION CHO MỖI ĐỒ THỊ ============ */
+    /* ============ OPTION CHO MỖI BIỂU ĐỒ ============ */
     const chartOptions = (title, unit) => ({
       chart: { type: 'line', animation: Highcharts.svg, marginRight: 10 },
       title: { text: title },
     
-      /* Trục X thời gian (giữ nguyên) */
+      /* Trục X: KHÔNG vẽ lưới dọc */
       xAxis: {
         type: 'datetime',
-        tickInterval: 30000,
-        labels: { format: '{value:%H:%M:%S}' }
-        /* Nếu muốn lưới dọc nét liền: bật 2 dòng dưới
-        , gridLineWidth: 1
-        , gridLineColor: '#dcdcdc'
-        */
+        tickInterval: 30_000,
+        labels: { format: '{value:%H:%M:%S}' },
+        gridLineWidth: 0          // ← bỏ lưới dọc
       },
     
-      /* Trục Y với lưới CHÍNH & PHỤ đều nét liền */
+      /* Trục Y: CHỈ lưới chính, nét liền */
       yAxis: {
-        title: { text: null },
-        gridLineWidth: 1,
-        gridLineColor: '#dcdcdc',
-        gridLineDashStyle: 'Solid',   /* ← nét liền (có thể bỏ hẳn dòng này) */
+        title: { text: null },    // ẩn chữ đơn vị
+        gridLineWidth: 1,         // đường ngang chính
+        gridLineColor: '#d0d0d0',
+        gridLineDashStyle: 'Solid',
     
-        minorTickInterval: 'auto',
-        minorGridLineWidth: 1,
-        minorGridLineColor: '#eeeeee',
-        minorGridLineDashStyle: 'Solid',  /* ← nét liền */
+        minorTickInterval: null,  // ← tắt hoàn toàn lưới phụ
+        minorGridLineWidth: 0,
         labels: { rotation: 0 }
       },
     
@@ -332,13 +326,13 @@
         }
       },
     
-      legend:    { enabled: false },
+      legend: { enabled: false },
       exporting: { enabled: false },
-      credits:   { enabled: false },
+      credits: { enabled: false },
     
       series: [{
-        name:  title,
-        data:  [],
+        name: title,
+        data: [],
         color: chartColors[title]
       }]
     });
@@ -350,7 +344,7 @@
     charts.power     = Highcharts.chart('powerChart',     chartOptions('Power',       'W'));
     charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency',   'Hz'));
     
-    /* ============ FETCH & CẬP NHẬT DỮ LIỆU ============ */
+    /* ============ FETCH & CẬP NHẬT ============ */
     async function fetchSensorData() {
       try {
         const res = await fetch('/api/sensor', { cache: 'no-store' });
@@ -400,9 +394,8 @@
     
     /* ============ KHỞI CHẠY ============ */
     fetchSensorData();
-    setInterval(fetchSensorData, 30000);
+    setInterval(fetchSensorData, 30_000);
     </script>
-
 
 </body>
 </html>
