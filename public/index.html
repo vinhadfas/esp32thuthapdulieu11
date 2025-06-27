@@ -138,16 +138,18 @@
   }
 
   /* ---- BỐ CỤC NGƯỠNG ---- */
-  .threshold-box {
-    /* các dòng đã có … */
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+ .threshold-box {
+    width: 94%;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
 
-    /* 🔻 thay đổi ở đây */
-     justify-content: center;     /* canh giữa */
-      padding-left: 1rem;      /* lệch trái “xíu” (tùy chỉnh 0.5 → 1rem) */
+    /* CHỈ thay đổi hai dòng dưới để chuyển sang layout ngang */
+    display: flex;
+    flex-direction: row;   /* nằm ngang */
+    flex-wrap: wrap;       /* đủ 3 phần tử thì tự xuống hàng */
+
+    align-items: center;
+    justify-content: center;
   }
 
   /* label, input, đơn vị °C sẽ tự chồng cạnh nhau */
