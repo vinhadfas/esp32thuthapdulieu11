@@ -139,19 +139,30 @@
     width: 94%;
     padding: 1rem 1.5rem;
     font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .threshold-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .threshold-item {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    justify-content: center;
+    margin-bottom: 0.8rem;
   }
 
   .threshold-box label {
     font-weight: bold;
+    margin-right: 0.3rem;
     min-width: 110px;
+    text-align: right;
   }
 
   .threshold-box input {
@@ -161,6 +172,7 @@
     padding: 0.3rem;
     border-radius: 5px;
     border: 1px solid #ccc;
+    margin-right: 0.2rem;
   }
 
   .unit {
@@ -171,6 +183,7 @@
     padding: 0.5rem 1rem;
     margin-top: 0.5rem;
     width: 100%;
+    max-width: 240px;
     background-color: #4eb9b7;
     color: white;
     border: none;
@@ -198,7 +211,6 @@
     left: 12px;
   }
 }
-
 
   </style>
 </head>
