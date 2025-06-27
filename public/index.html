@@ -76,7 +76,7 @@ html,body{
 .sensor-card{
   position:absolute;top:20px;left:20px;
   background:#fff;border-radius:12px;
-  box-shadow:0 6px 16px rgba(0,0,0,.1);
+ /*  box-shadow:0 6px 16px rgba(0,0,0,.1);*/
   padding:.6rem 1rem;font-size:1.25rem;
   font-weight:700;display:flex;align-items:center;
 }
@@ -131,138 +131,104 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 .link small{color:#333}
 
 /* ---------- MOBILE ≤ 768px ---------- */
+/* ---------- MOBILE ≤ 768px ---------- */
 @media (max-width: 768px) {
 
-  /* ===== Header ===== */
-  .header {
-    font-size: 1.3rem;
-    padding: 1rem;
-    text-align: center;
+  /* ===== HEADER ===== */
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
   }
 
-  /* ===== Dashboard layout ===== */
-  .dashboard {
-    flex-direction: column;
-    align-items: center;
+  /* ===== DASHBOARD ===== */
+  .dashboard{
+    flex-direction:column;
+    align-items:center;
+  }
+  .chart-container{
+    width:94%;
+    padding:3.2rem 1rem 1rem;
+    margin-bottom:1.5rem;
+  }
+  .chart-box{height:260px}
+  .sensor-card{
+    font-size:1.1rem;
+    padding:.6rem 1rem;
+    top:12px;left:12px;
   }
 
-  .chart-container {
-    width: 94%;
-    padding: 3.2rem 1rem 1rem;
-    margin-bottom: 1.5rem;
+  /* ===== THRESHOLD (xếp dọc) ===== */
+  .threshold-box{
+    width:max-content;
+    margin:1.2rem auto 0;
+    padding:1rem 1.5rem;
+    font-size:.95rem;
+    display:grid;
+    grid-template-columns:1fr;
+    row-gap:.8rem;
+    text-align:center;
+  }
+  .threshold-box label{font-weight:bold;justify-self:center}
+  .threshold-box input{width:90px}
+  .threshold-box button{
+    grid-column:1/-1;
+    justify-self:center;
+    padding:.5rem 1rem;
+    max-width:240px;
+    margin-top:.2rem;
+  }
+  .threshold-box .status-message{
+    grid-column:1/-1;
+    margin-top:1rem;
+    font-weight:bold;
   }
 
-  .chart-box {
-    height: 260px;
+  /* ===== LOOKUP ===== */
+  .lookup-grid{
+    flex-direction:column;       /* xếp dọc toàn bộ */
+    gap:.85rem;
+    align-items:stretch;
   }
 
-  .sensor-card {
-    font-size: 1.1rem;
-    padding: 0.6rem 1rem;
-    top: 12px;
-    left: 12px;
+  /* cụm ngày + icon */
+  .date-wrapper,
+  #lookupTime{
+    flex:1 1 100%;
   }
-
-  /* ===== Threshold (xếp dọc) ===== */
-  .threshold-box {
-    width: max-content;
-    margin: 1.2rem auto 0;
-    padding: 1rem 1.5rem;
-    font-size: 0.95rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    row-gap: 0.8rem;
-    text-align: center;
-  }
-
-  .threshold-box label {
-    font-weight: bold;
-    justify-self: center;
-  }
-
-  .threshold-box input {
-    width: 90px;
-    text-align: center;
-    font-size: 1rem;
-    padding: 0.3rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-
-  .threshold-box button {
-    grid-column: 1 / -1;
-    justify-self: center;
-    padding: 0.5rem 1rem;
-    max-width: 240px;
-    margin-top: 0.2rem;
-    background-color: #4eb9b7;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .threshold-box .status-message {
-    grid-column: 1 / -1;
-    margin-top: 1rem;
-    font-size: 1rem;
-    font-weight: bold;
-    text-align: center;
-  }
-
-  /* ===== Lookup section ===== */
-  .lookup-grid {
-    flex-direction: column;
-    gap: 0.8rem;
-    align-items: stretch;
-  }
-
-  .date-wrapper {
-    order: 1;
-    flex: 1 1 100%;
-  }
-
-  #lookupTime {
-    order: 2;
-    flex: 1 1 100%;
-  }
-
   .date-wrapper input,
-  #lookupTime {
-    width: 100%;
-    border-radius: 20px;
-    font-size: 1rem;
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    text-align: center;
+  #lookupTime{
+    width:100%;
+    border-radius:20px;
+    font-size:1rem;
+    padding:.6rem;
+    border:1px solid #ccc;
+    text-align:center;
   }
 
-  .lookup-btn {
-    order: 3;
-    align-self: center;
-    width: 80%;
-    max-width: 300px;
-    padding: 0.65rem 1rem;
-    font-size: 1.05rem;
-    background-color: #4eb9b7;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
+  /* ẩn “order” cũ, chuyển sang hàng mới */
+  .lookup-btn{
+    align-self:center;           /* căn giữa */
+    order:3;                     /* luôn ở cuối */
+    width:100%;                  /* full khối – giống ảnh */
+    max-width:320px;
+    padding:.7rem 1rem;
+    font-size:1.05rem;
+    background:#4eb9b7;
+    color:#fff;
+    border:none;
+    border-radius:30px;
+    font-weight:bold;
+    cursor:pointer;
   }
 
-  /* Table result spacing */
-  .table-container {
-    margin-top: 0.6rem;
-    max-height: 260px;
-    overflow: auto;
+  /* bảng kết quả */
+  .table-container{
+    margin-top:.75rem;
+    max-height:260px;
+    overflow:auto;
   }
 }
-
-
-
 
   </style>
 </head>
