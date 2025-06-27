@@ -1,114 +1,79 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Giám sát cảm biến ESP32 & Tra cứu dữ liệu</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard ESP32 IoT</title>
 
-  <!-- Highcharts & FontAwesome -->
+  <!-- libs -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"/>
-
-  <!-- Flatpickr -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-  <!-- PapaParse -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
+  <!-- style (rút gọn để tập trung JS) -->
   <style>
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;width:100%;height:100%;
-              font-family:Arial,sans-serif;background:#eef9f8;overflow-x:hidden}
-    .header{background:#4eb9b7;color:#fff;text-align:center;
-            padding:1.5rem 1rem;font-size:2rem;font-weight:700}
-
-    /* Threshold --------------------------------------------------- */
-    .threshold-box{background:#fff;border-radius:10px;padding:1rem 2rem;max-width:800px;
-                   margin:1.5rem auto;text-align:center;
-                   box-shadow:0 6px 16px rgba(0,0,0,.1);font-weight:700}
-    .threshold-box input{width:60px;text-align:center;padding:.3rem;border:1px solid #ccc;
-                         border-radius:5px;font-size:1rem}
-    .threshold-box button{padding:.5rem 1rem;margin-left:1rem;background:#4eb9b7;color:#fff;
-                          border:none;border-radius:5px;font-weight:700;cursor:pointer}
-    .status-message{font-size:1rem;margin-top:.8rem;font-weight:700}
+    *{box-sizing:border-box}html,body{margin:0;background:#eef9f8;font-family:Arial,sans-serif}
+    .header{background:#4eb9b7;color:#fff;text-align:center;padding:1.2rem;font-size:1.8rem;font-weight:700}
+    .threshold-box{background:#fff;border-radius:10px;margin:1.2rem auto;padding:1rem 2rem;max-width:800px;
+                   box-shadow:0 6px 16px rgba(0,0,0,.1);text-align:center;font-weight:700}
+    .threshold-box input{width:70px;text-align:center;border:1px solid #ccc;border-radius:6px;padding:.3rem}
+    .threshold-box button{margin-left:.8rem;background:#4eb9b7;color:#fff;border:none;border-radius:6px;padding:.5rem 1rem;font-weight:700;cursor:pointer}
+    .status-message{margin-top:.6rem;font-weight:700}
     .normal{color:#2e7d32}.warning{color:#c62828}
-
-    /* Dashboard --------------------------------------------------- */
-    .dashboard{display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-evenly;
-               padding:2rem 1rem;max-width:1600px;margin:0 auto}
-    .chart-container{position:relative;background:#fff;border-radius:1rem;
-                     box-shadow:0 6px 16px rgba(0,0,0,.1);padding:3.5rem 1rem 1rem;
-                     width:680px;max-width:95vw}
-    .chart-box{height:300px;margin-bottom:1rem}
+    .dashboard{display:flex;flex-wrap:wrap;gap:1.8rem;justify-content:center;padding:1.5rem}
+    .chart-container{background:#fff;border-radius:1rem;box-shadow:0 6px 16px rgba(0,0,0,.1);width:650px;max-width:95vw;position:relative;padding:3.2rem 1rem 1rem}
+    .chart-box{height:290px;margin-bottom:1rem}
     .sensor-card{position:absolute;top:20px;left:20px;background:#fff;border-radius:12px;
-                 box-shadow:0 6px 16px rgba(0,0,0,.1);padding:.75rem 1.25rem;
-                 font-size:1.3rem;font-weight:700;display:inline-flex;align-items:center;z-index:10}
-
-    /* Lookup ------------------------------------------------------ */
-    .lookup-grid{display:flex;gap:.8rem;margin-bottom:1rem;align-items:center}
-    .lookup-grid input{flex:1 1 200px;padding:.6rem 1rem;border:1px solid #ccc;
-                       border-radius:20px;font-size:1rem;text-align:center}
-    .lookup-btn{background:#4eb9b7;color:#fff;border:none;border-radius:20px;
-                padding:.6rem 1.7rem;font-weight:700;cursor:pointer}
-    .lookup-btn:hover{filter:brightness(1.08)}
-
+                 box-shadow:0 6px 16px rgba(0,0,0,.1);padding:.6rem 1rem;font-size:1.25rem;font-weight:700;display:flex;align-items:center}
+    .lookup-grid{display:flex;gap:.8rem;margin-bottom:1rem}
+    .lookup-grid input{flex:1 1 200px;padding:.55rem;border:1px solid #ccc;border-radius:20px;text-align:center}
+    .lookup-btn{background:#4eb9b7;color:#fff;border:none;border-radius:20px;padding:.6rem 1.6rem;font-weight:700;cursor:pointer}
     .table-container{max-height:260px;overflow:auto}
-    .data-table{border-collapse:collapse;width:100%}
-    .data-table th,.data-table td{border:1px solid #ccc;padding:.35rem .55rem;font-size:.9rem;text-align:center}
-    .data-table thead{background:#e0f2f1;font-weight:700;position:sticky;top:0}
-
-    /* Link -------------------------------------------------------- */
-    .link{text-align:center;margin:2rem auto 3rem;font-size:1rem}
-    .link a{background:#4eb9b7;color:#fff;padding:.5rem 1rem;border-radius:5px;
-            text-decoration:none;box-shadow:0 2px 4px rgba(0,0,0,.1)}
-    .link small{display:block;margin-top:.4rem;color:#555}
-
-    /* Mobile ------------------------------------------------------ */
-    @media(max-width:768px){
-      .header{font-size:1.3rem;padding:1rem}
-      .chart-container{width:94%;padding:3.2rem 1rem 1rem;margin-bottom:1.5rem}
-      .chart-box{height:260px}
-      .sensor-card{font-size:1.1rem;padding:.6rem 1rem;top:12px;left:12px}
-      .lookup-grid{flex-direction:column;gap:.6rem}
-    }
+    table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:.35rem .55rem;font-size:.9rem;text-align:center}
+    thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
   </style>
 </head>
 <body>
-  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
+  <div class="header">MÔ HÌNH GIÁM SÁT XE TẢI ĐÔNG LẠNH - ESP32</div>
 
   <!-- Threshold -->
   <div class="threshold-box">
-    <label for="upperThreshold">Ngưỡng trên:</label>
-    <input type="number" id="upperThreshold"> °C
-    <label for="lowerThreshold" style="margin-left:.8rem;">Ngưỡng dưới:</label>
-    <input type="number" id="lowerThreshold"> °C
+    <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
+    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
     <button onclick="updateThresholds()">Áp dụng</button>
     <div id="tempStatus" class="status-message">Trạng thái nhiệt độ: --</div>
   </div>
 
   <!-- Dashboard -->
   <div class="dashboard">
+    <!-- Nhiệt độ -->
     <div class="chart-container">
       <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ: <span id="temp">--</span>°C</div>
       <div id="tempChart" class="chart-box"></div>
     </div>
+    <!-- Điện áp -->
     <div class="chart-container">
       <div class="sensor-card"><i class="fas fa-charging-station" style="color:#41f947;margin-right:8px"></i>Điện áp: <span id="voltage">--</span>V</div>
       <div id="voltageChart" class="chart-box"></div>
     </div>
+    <!-- Dòng điện -->
     <div class="chart-container">
       <div class="sensor-card"><i class="fas fa-bolt" style="color:#f3722c;margin-right:8px"></i>Dòng điện: <span id="current">--</span>A</div>
       <div id="currentChart" class="chart-box"></div>
     </div>
+    <!-- Công suất -->
     <div class="chart-container">
       <div class="sensor-card"><i class="fas fa-lightbulb" style="color:#f9c74f;margin-right:8px"></i>Công suất: <span id="power">--</span>W</div>
       <div id="powerChart" class="chart-box"></div>
     </div>
+    <!-- Năng lượng -->
     <div class="chart-container">
       <div class="sensor-card"><i class="fas fa-battery-full" style="color:#9b51e0;margin-right:8px"></i>Năng lượng: <span id="energy">--</span>kWh</div>
       <div id="energyChart" class="chart-box"></div>
     </div>
+    <!-- Tần số -->
     <div class="chart-container">
       <div class="sensor-card"><i class="fas fa-broadcast-tower" style="color:#00bcd4;margin-right:8px"></i>Tần số: <span id="frequency">--</span>Hz</div>
       <div id="frequencyChart" class="chart-box"></div>
@@ -124,89 +89,62 @@
           <button id="lookup" class="lookup-btn">Tra cứu</button>
         </div>
         <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr><th>Ngày</th><th>Giờ</th><th>Điện áp (V)</th><th>Dòng (A)</th>
-                  <th>Công suất (kW)</th><th>Năng lượng (kWh)</th><th>Tần số (Hz)</th><th>Nhiệt độ (°C)</th>
-              </tr>
-            </thead>
-            <tbody id="resultTable"></tbody>
-          </table>
+          <table><thead><tr><th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th><th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th><th>Nhiệt độ(°C)</th></tr></thead><tbody id="resultTable"></tbody></table>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Link -->
-  <div class="link">
-    <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing" target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
-    <small>(Click để xem lại các giá trị đã lưu)</small>
-  </div>
-
-  <!-- ========== JS ========== -->
+  <!-- JS -->
   <script>
-  /* Flatpickr */
-  flatpickr('#lookupDate',{
-    dateFormat:'Y/m/d',
-    altInput:true,
-    altFormat:'Y/m/d',
-    defaultDate:'2025-06-27'
+  /*==== Flatpickr ====*/
+  flatpickr('#lookupDate',{dateFormat:'Y/m/d',altInput:true,altFormat:'Y/m/d',defaultDate:'2025-06-27'});
+
+  /*==== Chart setup ====*/
+  Highcharts.setOptions({time:{useUTC:false}});
+  const COLORS={Temperature:'#07d3f2',Voltage:'#41f947',Current:'#f3722c',Power:'#f9c74f',Energy:'#9b51e0',Frequency:'#00bcd4'};
+  const charts={}, MAX_POINTS=50;
+  const metrics=[['Temperature','°C','tempChart'],['Voltage','V','voltageChart'],
+                 ['Current','A','currentChart'],['Power','W','powerChart'],
+                 ['Energy','kWh','energyChart'],['Frequency','Hz','frequencyChart']];
+  metrics.forEach(([title,u,div])=>{
+    charts[title]=Highcharts.chart(div,{chart:{type:'line',marginRight:10},
+      title:{text:title},xAxis:{type:'datetime',tickInterval:30000,
+      labels:{format:'{value:%H:%M:%S}'}},yAxis:{title:{text:null}},
+      tooltip:{formatter(){return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S',this.x)}<br/>${Highcharts.numberFormat(this.y,2)} ${u}`}},
+      legend:{enabled:false},credits:{enabled:false},
+      series:[{name:title,data:[],color:COLORS[title]}]});
   });
 
-  /* Highcharts */
-  Highcharts.setOptions({ time:{ useUTC:false } });
-  const COLORS={Voltage:'#41f947',Current:'#f3722c',Power:'#f9c74f',
-                Energy:'#9b51e0',Temperature:'#07d3f2',Frequency:'#00bcd4'};
-  const charts={}, MAX_POINTS=50;
-  function chartOptions(t,u){
-    return{chart:{type:'line',marginRight:10},title:{text:t},
-      xAxis:{type:'datetime',tickInterval:30000,labels:{format:'{value:%H:%M:%S}'}},
-      yAxis:{title:{text:null}},tooltip:{formatter(){
-        return '<b>'+this.series.name+'</b><br/>'+Highcharts.dateFormat('%H:%M:%S',this.x)+
-               '<br/>'+Highcharts.numberFormat(this.y,2)+' '+u;}},
-      legend:{enabled:false},credits:{enabled:false},
-      series:[{name:t,data:[],color:COLORS[t]}]};
-  }
-  charts.temp      = Highcharts.chart('tempChart',      chartOptions('Temperature','°C'));
-  charts.voltage   = Highcharts.chart('voltageChart',   chartOptions('Voltage','V'));
-  charts.current   = Highcharts.chart('currentChart',   chartOptions('Current','A'));
-  charts.power     = Highcharts.chart('powerChart',     chartOptions('Power','W'));
-  charts.energy    = Highcharts.chart('energyChart',    chartOptions('Energy','kWh'));
-  charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency','Hz'));
-
-  let lastTs=0;
-
-  /* Cập nhật trạng thái cảnh báo */
+  /*==== Trạng thái cảnh báo ====*/
   function checkTempStatus(){
-    const low=parseFloat(lowerThreshold.value),
-          high=parseFloat(upperThreshold.value),
-          t=parseFloat(temp.innerText)||NaN,
-          el=tempStatus;
-    if(isNaN(t)){el.textContent='Trạng thái nhiệt độ: --';el.className='status-message';return;}
+    const low=parseFloat(lowerThreshold.value),high=parseFloat(upperThreshold.value),
+          t=parseFloat(temp.textContent)||NaN;
+    if(isNaN(t)){tempStatus.textContent='Trạng thái nhiệt độ: --';tempStatus.className='status-message';return;}
     if((!isNaN(low)&&t<low)||(!isNaN(high)&&t>high)){
-      el.textContent='Trạng thái nhiệt độ: CẢNH BÁO';el.className='status-message warning';
+      tempStatus.textContent='Trạng thái nhiệt độ: CẢNH BÁO';tempStatus.className='status-message warning';
     }else{
-      el.textContent='Trạng thái nhiệt độ: BÌNH THƯỜNG';el.className='status-message normal';
+      tempStatus.textContent='Trạng thái nhiệt độ: BÌNH THƯỜNG';tempStatus.className='status-message normal';
     }
   }
 
-  /* Nhận & vẽ dữ liệu cảm biến */
+  /*==== Nhận dữ liệu cảm biến ====*/
+  let lastTs=0;
   function updateCharts(p){
     const {timestamp:ts,voltage,current,power,energy,temp:tc,frequency}=p;
     if(!ts||ts<=lastTs)return;lastTs=ts;
-    const pairs=[['temp',tc,'Temperature'],['voltage',voltage,'Voltage'],
-                 ['current',current,'Current'],['power',power,'Power'],
-                 ['energy',energy,'Energy'],['frequency',frequency,'Frequency']];
-    pairs.forEach(([id,val,key])=>{
+    const map=[['Temperature',tc,'temp'],['Voltage',voltage,'voltage'],['Current',current,'current'],
+               ['Power',power,'power'],['Energy',energy,'energy'],['Frequency',frequency,'frequency']];
+    map.forEach(([title,val,spanId])=>{
       if(isNaN(val))return;
-      const s=charts[key].series[0];
+      const s=charts[title].series[0];
       s.addPoint([ts,val],true,s.data.length>=MAX_POINTS);
-      document.getElementById(id).textContent=val.toFixed(2);
+      document.getElementById(spanId).textContent=val.toFixed(2);
     });
     checkTempStatus();
   }
 
-  /* Lấy store */
+  /*==== Giao tiếp API ====*/
   async function fetchSensorData(){
     try{
       const r=await fetch('/api/sensor',{cache:'no-store'});
@@ -214,39 +152,30 @@
       if(thresholds){
         if(!upperThreshold.value) upperThreshold.value=thresholds.tempHigh;
         if(!lowerThreshold.value) lowerThreshold.value=thresholds.tempLow;
-        checkTempStatus();
       }
       (history||[]).forEach(updateCharts);
-    }catch(e){console.warn('Fetch error:',e);}
+    }catch(e){console.warn('Fetch error',e);}
   }
-
-  /* Gửi ngưỡng */
   async function updateThresholds(){
-    const tempLow=parseFloat(lowerThreshold.value),
-          tempHigh=parseFloat(upperThreshold.value);
-    if(isNaN(tempLow)||isNaN(tempHigh)){alert('Nhập đủ hai ngưỡng!');return;}
-    if(tempLow>tempHigh){alert('Ngưỡng thấp phải ≤ ngưỡng cao!');return;}
+    const low=parseFloat(lowerThreshold.value),high=parseFloat(upperThreshold.value);
+    if(isNaN(low)||isNaN(high)){alert('Nhập đủ hai ngưỡng!');return;}
+    if(low>high){alert('Ngưỡng thấp phải ≤ ngưỡng cao!');return;}
     try{
-      const res=await fetch('/api/sensor',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({tempLow,tempHigh})});
-      if(!res.ok)throw new Error(await res.text());
+      const r=await fetch('/api/sensor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tempLow:low,tempHigh:high})});
+      if(!r.ok)throw new Error(await r.text());
       alert('Đã lưu ngưỡng thành công!');
       checkTempStatus();
-    }catch(e){alert('Lưu thất bại: '+e.message);}
+    }catch(e){alert('Lỗi: '+e.message);}
   }
 
-  /* Tra cứu CSV */
+  /*==== CSV lookup ====*/
   const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vS5Kb0MA1_MZyuRZPgzwwH-95CvzwMoKDqmhAY4CHWwhm7sbuKYBG2bZ4V353oUSBfQaoti0xskMjJo/pub?gid=0&single=true&output=csv';
   let cacheRows=null;
   async function loadData(){if(cacheRows)return cacheRows;const t=await (await fetch(CSV_URL)).text();cacheRows=Papa.parse(t.trim(),{dynamicTyping:false}).data;return cacheRows;}
-  function appendRow(r){const tr=document.createElement('tr');r.forEach(c=>{const td=document.createElement('td');td.textContent=c||'';tr.appendChild(td);});resultTable.appendChild(tr);}
-  function clearTable(msg){
-    resultTable.innerHTML='';
-    if(msg){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=8;td.textContent=msg;tr.appendChild(td);resultTable.appendChild(tr);}
-  }
+  function appendRow(row){const tr=document.createElement('tr');row.forEach(c=>{const td=document.createElement('td');td.textContent=c??'';tr.appendChild(td);});resultTable.appendChild(tr);}
+  function clearTable(msg){resultTable.innerHTML='';if(msg){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=8;td.textContent=msg;tr.appendChild(td);resultTable.appendChild(tr);}}
   lookup.addEventListener('click',async()=>{
-    const d=lookupDate.value,t=lookupTime.value;
-    if(!d||!t){alert('Chọn ngày & giờ!');return;}
+    const d=lookupDate.value,t=lookupTime.value;if(!d||!t){alert('Chọn ngày & giờ!');return;}
     const [y,m,dd]=d.split('/');const targetDate=`${y}-${m}-${dd}`,targetTime=t.slice(0,5);
     try{
       const rows=await loadData(),match=rows.slice(1).filter(r=>r[0]===targetDate&&String(r[1]).startsWith(targetTime));
@@ -254,7 +183,7 @@
     }catch(e){console.error(e);clearTable('Lỗi tải dữ liệu');}
   });
 
-  /* Init */
+  /*==== Init ====*/
   fetchSensorData();
   setInterval(fetchSensorData,30000);
   </script>
