@@ -8,9 +8,7 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
   <script>Highcharts.setOptions({ time: { useUTC: false } });</script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
@@ -18,9 +16,6 @@
       width: 100%;
       height: 100%;
       overflow-x: hidden;
-    }
-
-    body {
       font-family: Arial, sans-serif;
       background-color: #eef9f8;
     }
@@ -36,7 +31,6 @@
 
     .threshold-box {
       background-color: #ffffff;
-      border: none;
       border-radius: 10px;
       padding: 1rem 2rem;
       max-width: 800px;
@@ -82,9 +76,8 @@
     .warning { color: #c62828; }
 
     .dashboard {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-evenly;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
       padding: 2rem 1rem;
       max-width: 1600px;
@@ -96,8 +89,6 @@
       border-radius: 1rem;
       padding: 3.5rem 1rem 1rem 1rem;
       box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-      width: 680px;
-      max-width: 95vw;
       position: relative;
     }
 
@@ -107,18 +98,19 @@
     }
 
     .sensor-card {
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      gap: 0.4rem;
       background: white;
       border-radius: 12px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.10);
       padding: 0.75rem 1.25rem;
       font-size: 1.3rem;
       font-weight: bold;
-      z-index: 10;
       position: absolute;
       top: 20px;
       left: 20px;
+      z-index: 10;
     }
 
     .link {
@@ -143,21 +135,35 @@
     }
 
     @media (max-width: 768px) {
-      .chart-container {
-        width: 95%;
+      .header {
+        font-size: 1.5rem;
+        padding: 1rem 0.5rem;
       }
 
-      .chart-box {
-        height: 250px;
+      .chart-container {
+        padding: 2.5rem 0.5rem 1rem;
+      }
+
+      .sensor-card {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        top: 12px;
+        left: 12px;
       }
 
       .threshold-box {
-        width: 90%;
+        width: 95%;
+        padding: 1rem;
+        font-size: 0.95rem;
       }
 
-      .dashboard {
-        flex-direction: column;
-        align-items: center;
+      .threshold-box input {
+        width: 50px;
+      }
+
+      .threshold-box button {
+        margin-top: 0.5rem;
+        width: 100%;
       }
     }
   </style>
@@ -167,9 +173,9 @@
 
   <div class="threshold-box">
     <label for="upperThreshold">Ngưỡng trên:</label>
-    <input type="number" id="upperThreshold" value=""> °C
+    <input type="number" id="upperThreshold"> °C
     <label for="lowerThreshold">Ngưỡng dưới:</label>
-    <input type="number" id="lowerThreshold" value=""> °C
+    <input type="number" id="lowerThreshold"> °C
     <button onclick="checkTempStatus()">Áp dụng</button>
     <div class="status-message" id="tempStatus">Trạng thái nhiệt độ: --</div>
   </div>
@@ -177,57 +183,52 @@
   <div class="dashboard">
     <div class="chart-container">
       <div class="sensor-card">
-        <i class="fas fa-thermometer-half" style="color: #07d3f2; margin-right: 8px;"></i>
+        <i class="fas fa-thermometer-half" style="color: #07d3f2;"></i>
         <span class="label">Nhiệt độ:</span>
-        <span id="temp">--</span>
-        <sup class="units">°C</sup>
+        <span id="temp">--</span><sup>°C</sup>
       </div>
       <div id="tempChart" class="chart-box"></div>
     </div>
 
     <div class="chart-container">
       <div class="sensor-card">
-        <i class="fas fa-charging-station" style="color: #41f947; margin-right: 8px;"></i>
+        <i class="fas fa-charging-station" style="color: #41f947;"></i>
         <span class="label">Điện áp:</span>
-        <span id="voltage">--</span>
-        <sup class="units">V</sup>
+        <span id="voltage">--</span><sup>V</sup>
       </div>
       <div id="voltageChart" class="chart-box"></div>
     </div>
 
     <div class="chart-container">
       <div class="sensor-card">
-        <i class="fas fa-bolt" style="color: #f3722c; margin-right: 8px;"></i>
+        <i class="fas fa-bolt" style="color: #f3722c;"></i>
         <span class="label">Dòng điện:</span>
-        <span id="current">--</span>
-        <sup class="units">A</sup>
+        <span id="current">--</span><sup>A</sup>
       </div>
       <div id="currentChart" class="chart-box"></div>
     </div>
 
     <div class="chart-container">
       <div class="sensor-card">
-        <i class="fas fa-lightbulb" style="color: #f9c74f; margin-right: 8px;"></i>
+        <i class="fas fa-lightbulb" style="color: #f9c74f;"></i>
         <span class="label">Công suất:</span>
-        <span id="power">--</span>
-        <sup class="units">W</sup>
+        <span id="power">--</span><sup>W</sup>
       </div>
       <div id="powerChart" class="chart-box"></div>
     </div>
 
     <div class="chart-container">
       <div class="sensor-card">
-        <i class="fas fa-broadcast-tower" style="color: #43aa8b; margin-right: 8px;"></i>
+        <i class="fas fa-broadcast-tower" style="color: #43aa8b;"></i>
         <span class="label">Tần số:</span>
-        <span id="frequency">--</span>
-        <sup class="units">Hz</sup>
+        <span id="frequency">--</span><sup>Hz</sup>
       </div>
       <div id="frequencyChart" class="chart-box"></div>
     </div>
   </div>
 
   <div class="link">
-    <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
+    <a href="https://docs.google.com/spreadsheets/d/1LOltQDM5NDcgrc2pjWiZKDCAeHVLvKdxlHJFBjUNWVE/edit?usp=sharing" target="_blank">XEM DỮ LIỆU TRÊN GOOGLE SHEET</a>
     <small>(Click vào để xem lại các giá trị đã lưu)</small>
   </div>
 
@@ -275,11 +276,11 @@
       }]
     });
 
+    charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
     charts.voltage = Highcharts.chart('voltageChart', chartOptions('Voltage', 'V'));
     charts.current = Highcharts.chart('currentChart', chartOptions('Current', 'A'));
     charts.power = Highcharts.chart('powerChart', chartOptions('Power', 'W'));
     charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
-    charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
 
     function updateChartsFromData(payload) {
       const { timestamp, voltage, current, power, frequency, temp } = payload;
