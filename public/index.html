@@ -119,7 +119,7 @@
       margin-top: 0.4rem;
       color: #555;
     }
-    @media (max-width: 768px) {
+   @media (max-width: 768px) {
   .chart-container {
     width: 94%;
     padding: 3.2rem 1rem 1rem;
@@ -139,25 +139,30 @@
     width: 94%;
     padding: 1rem 1.5rem;
     font-size: 0.95rem;
+  }
+
+  .threshold-row {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .threshold-box label {
-    display: inline-block;
     font-weight: bold;
-    margin-bottom: 0.3rem;
   }
 
   .threshold-box input {
     width: 60px;
-    margin-bottom: 0.8rem;
     text-align: center;
     font-size: 1rem;
     padding: 0.3rem;
     border-radius: 5px;
     border: 1px solid #ccc;
+  }
+
+  .unit {
+    font-weight: bold;
   }
 
   .threshold-box button {
