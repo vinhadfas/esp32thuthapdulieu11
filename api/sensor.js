@@ -1,34 +1,67 @@
-let latest = {
-  voltage: 0,
-  current: 0,
-  power:   0,
-  energy:  0,
-  frequency: 0,
-  temp:    0,
-  timestamp: Date.now()
-};
+import fs from 'fs/promises';
+import path from 'path';
 
-let history = []; // Lưu dữ liệu trôi
-const MAX_POINTS = 20;
+/* ---------- cấu hình ---------- */
+const DATA_PATH = path.join(process.cwd(), 'data.json');
+const MAX_POINTS = 50;
 
-export default function handler(req, res) {
+/* đọc / ghi store */
+async function readStore() {
+  try { return JSON.parse(await fs.readFile(DATA_PATH, 'utf8')); }
+  catch {                     // lần đầu chưa có file
+    return { history: [], thresholds: { tempLow: 9, tempHigh: 10 } };
+  }
+}
+async function writeStore(store) {
+  await fs.writeFile(DATA_PATH, JSON.stringify(store));
+}
+
+/* ---------- API handler ---------- */
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  const store = await readStore();      // đọc file JSON
+
+  /* ---------- POST ---------- */
   if (req.method === 'POST') {
-    const { voltage, current, power, energy, frequency, temp } = req.body;
-    const timestamp = Date.now();
+    const {
+      voltage, current, power, energy, frequency, temp, // sensor
+      tempLow, tempHigh                                 // threshold
+    } = req.body;
+    let changed = false;
 
-    latest = { voltage, current, power, energy, frequency, temp, timestamp };
-    history.push({ timestamp, voltage, current, power, frequency, temp });
-    if (history.length > MAX_POINTS) history.shift();
+    /* ghi điểm sensor nếu có ít nhất 1 trường số */
+    if ([voltage,current,power,energy,frequency,temp].some(v=>typeof v==='number')) {
+      const timestamp = Date.now();
+      store.history.push({ timestamp, voltage, current, power, energy, frequency, temp });
+      if (store.history.length > MAX_POINTS) store.history.shift();
+      changed = true;
+    }
 
-    return res.status(200).json({ message: 'Updated' });
+    /* ghi threshold nếu đủ 2 trường */
+    if (typeof tempLow === 'number' && typeof tempHigh === 'number') {
+      if (tempLow > tempHigh) {
+        return res.status(400).json({ message: 'tempLow phải ≤ tempHigh' });
+      }
+      store.thresholds = { tempLow, tempHigh };
+      changed = true;
+    } else if ((tempLow !== undefined) || (tempHigh !== undefined)) {
+      return res.status(400).json({ message: 'Thiếu tempLow / tempHigh' });
+    }
+
+    if (!changed) {
+      return res.status(400).json({ message: 'Không có dữ liệu hợp lệ' });
+    }
+    await writeStore(store);
+    return res.status(200).json({ message: 'Saved' });
   }
 
-  // Không còn dùng alive nữa
-  return res.status(200).json({ history });
+  /* ---------- GET ---------- */
+  return res.status(200).json({
+    thresholds: store.thresholds,
+    history: store.history
+  });
 }
