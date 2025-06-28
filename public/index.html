@@ -335,8 +335,9 @@
             <option value="">-- Chọn giờ --</option>
             <script>
               for(let h=0; h<24; h++){
-                const hr = h.toString().padStart(2,'0');
-                document.write(`<option value="${hr}">${hr}:00</option>`);
+                const start = h.toString().padStart(2, '0');
+                const end = ((h + 1) % 24).toString().padStart(2, '0');
+                document.write(`<option value="${start}">${start}:00 - ${end}:00</option>`);
               }
             </script>
           </select>
@@ -369,9 +370,25 @@
 
     function checkTempStatus(){
       const low=parseFloat(lowerThreshold.value),high=parseFloat(upperThreshold.value),t=parseFloat(temp.textContent)||NaN;
-      if(isNaN(t)){tempStatus.textContent='Trạng thái nhiệt độ: --';tempStatus.className='status-message';return;}
-      if((!isNaN(low)&&t<low)||(!isNaN(high)&&t>high)){tempStatus.textContent='Trạng thái nhiệt độ: CẢNH BÁO';tempStatus.className='status-message warning';}
-      else{tempStatus.textContent='Trạng thái nhiệt độ: BÌNH THƯỜNG';tempStatus.className='status-message normal';}
+      if(isNaN(t)){
+        tempStatus.textContent='Trạng thái nhiệt độ: --';
+        tempStatus.className='status-message';
+        return;
+      }
+      if((!isNaN(low)&&t<low)||(!isNaN(high)&&t>high)){
+        let diff='';
+        if(!isNaN(high)&&t>high){
+          diff=` (vượt ${(t-high).toFixed(2)}°C)`;
+        }else if(!isNaN(low)&&t<low){
+          diff=` (thấp hơn ${(low-t).toFixed(2)}°C)`;
+        }
+        tempStatus.textContent='Trạng thái nhiệt độ: CẢNH BÁO'+diff;
+        tempStatus.className='status-message warning';
+      }
+      else{
+        tempStatus.textContent='Trạng thái nhiệt độ: BÌNH THƯỜNG';
+        tempStatus.className='status-message normal';
+      }
     }
 
     let lastTs=0;
@@ -430,7 +447,6 @@
         clearTable();if(!match.length){clearTable('Không tìm thấy dữ liệu.');return;}match.forEach(appendRow);
       }catch(e){console.error(e);clearTable('Lỗi tải dữ liệu');}
     });
-
     fetchSensorData();
     setInterval(fetchSensorData,30000);
   </script>
