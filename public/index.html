@@ -217,88 +217,111 @@
     }
   
     /* ---------- MOBILE ≤ 768px ---------- */
-    @media (max-width: 768px) {
-  /* Container tra cứu */
-  .lookup-grid {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.9rem;
-    width: 100%;
-    padding: 0 1rem;
+   /* ---------- MOBILE ≤ 768px ---------- */
+@media (max-width: 768px) {
+
+  /* ===== HEADER ===== */
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
   }
 
-  /* Khung ngày, giờ, nút đều bằng nhau */
+  /* ===== DASHBOARD ===== */
+  .dashboard{
+    flex-direction:column;
+    align-items:center;
+  }
+  .chart-container{
+    width:94%;
+    padding:3.2rem 1rem 1rem;
+    margin-bottom:1.5rem;
+  }
+  .chart-box{height:260px}
+  .sensor-card{
+    font-size:1.1rem;
+    padding:.6rem 1rem;
+    top:12px;left:12px;
+  }
+
+  /* ===== THRESHOLD (xếp dọc) ===== */
+  .threshold-box{
+    width:max-content;
+    margin:1.2rem auto 0;
+    padding:1rem 1.5rem;
+    font-size:.95rem;
+    display:grid;
+    grid-template-columns:1fr;
+    row-gap:.8rem;
+    text-align:center;
+  }
+  .threshold-box label{font-weight:bold;justify-self:center}
+  .threshold-box input{width:90px}
+  .threshold-box button{
+    grid-column:1/-1;
+    justify-self:center;
+    padding:.5rem 1rem;
+    max-width:240px;
+    margin-top:.2rem;
+  }
+  .threshold-box .status-message{
+    grid-column:1/-1;
+    margin-top:1rem;
+    font-weight:bold;
+  }
+
+  /* ===== LOOKUP ===== */
+  .lookup-grid{
+    flex-direction:column;       /* xếp dọc toàn bộ */
+    gap:.85rem;
+    align-items:stretch;
+  }
+
+  /* cụm ngày + icon */
   .date-wrapper,
-  #lookupTime,
-  .lookup-btn {
-    width: 100%;
-    max-width: 320px;
+  #lookupTime{
+    flex:1 1 100%;
   }
-
-  /* Ô chọn ngày */
-  .date-wrapper {
-    position: relative;
-  }
-
-  .date-wrapper input {
-    width: 100%;
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    background: #fff;
-    text-align: left;
-    appearance: none;
-  }
-
-  /* Icon lịch */
-  .calendar-icon {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-    font-size: 1.2rem;
-    pointer-events: none;
-  }
-
-  /* Ô chọn giờ */
+  .date-wrapper input,
   #lookupTime {
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    background: #fff;
-    text-align: left;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-
-  /* Nút tra cứu */
-  .lookup-btn {
-    padding: .7rem 1rem;
-    font-size: 1.05rem;
-    background: #4eb9b7;
-    color: #fff;
-    border: none;
-    border-radius: 30px;
-    font-weight: bold;
-    cursor: pointer;
     width: 100%;
-    max-width: 320px;
-    transition: background-color 0.3s ease;
-    text-align: center;
+    border-radius: 20px;
+    font-size: 1rem;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    /* GỠ dòng này nếu ảnh hưởng đến dropdown */
+     text-align: left; 
+    box-sizing: border-box;
   }
 
-  .lookup-btn:hover {
-    background-color: #3baaa8;
+
+  /* ẩn “order” cũ, chuyển sang hàng mới */
+  .lookup-btn{
+    align-self:center;           /* căn giữa */
+    order:3;                     /* luôn ở cuối */
+    width:100%;                  /* full khối – giống ảnh */
+    max-width:320px;
+    padding:.7rem 1rem;
+    font-size:1.05rem;
+    background:#4eb9b7;
+    color:#fff;
+    border:none;
+    border-radius:30px;
+    font-weight:bold;
+    cursor:pointer;
   }
+
+  /* bảng kết quả */
+  .table-container{
+    margin-top:.75rem;
+    max-height:260px;
+    overflow:auto;
+  }
+  input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+ }
 }
-
   </style>
   
 
