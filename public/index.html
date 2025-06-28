@@ -130,132 +130,103 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 }
 .link small{color:#333}
 
+/* ---------- MOBILE ≤ 768px ---------- */
+/* ---------- MOBILE ≤ 768px ---------- */
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
-  .header {
-    font-size: 1.3rem;
-    padding: 1rem;
-    text-align: center;
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
   }
 
   /* ===== DASHBOARD ===== */
-  .dashboard {
-    flex-direction: column;
-    align-items: center;
+  .dashboard{
+    flex-direction:column;
+    align-items:center;
+  }
+  .chart-container{
+    width:94%;
+    padding:3.2rem 1rem 1rem;
+    margin-bottom:1.5rem;
+  }
+  .chart-box{height:260px}
+  .sensor-card{
+    font-size:1.1rem;
+    padding:.6rem 1rem;
+    top:12px;left:12px;
   }
 
-  .chart-container {
-    width: 94%;
-    padding: 3.2rem 1rem 1rem;
-    margin-bottom: 1.5rem;
+  /* ===== THRESHOLD (xếp dọc) ===== */
+  .threshold-box{
+    width:max-content;
+    margin:1.2rem auto 0;
+    padding:1rem 1.5rem;
+    font-size:.95rem;
+    display:grid;
+    grid-template-columns:1fr;
+    row-gap:.8rem;
+    text-align:center;
   }
-
-  .chart-box {
-    height: 260px;
+  .threshold-box label{font-weight:bold;justify-self:center}
+  .threshold-box input{width:90px}
+  .threshold-box button{
+    grid-column:1/-1;
+    justify-self:center;
+    padding:.5rem 1rem;
+    max-width:240px;
+    margin-top:.2rem;
   }
-
-  .sensor-card {
-    font-size: 1.1rem;
-    padding: .6rem 1rem;
-    top: 12px;
-    left: 12px;
-  }
-
-  /* ===== THRESHOLD BOX ===== */
-  .threshold-box {
-    width: max-content;
-    margin: 1.2rem auto 0;
-    padding: 1rem 1.5rem;
-    font-size: .95rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    row-gap: .8rem;
-    text-align: center;
-  }
-
-  .threshold-box label {
-    font-weight: bold;
-    justify-self: center;
-  }
-
-  .threshold-box input {
-    width: 90px;
-  }
-
-  .threshold-box button {
-    grid-column: 1 / -1;
-    justify-self: center;
-    padding: .5rem 1rem;
-    max-width: 240px;
-    margin-top: .2rem;
-  }
-
-  .threshold-box .status-message {
-    grid-column: 1 / -1;
-    margin-top: 1rem;
-    font-weight: bold;
+  .threshold-box .status-message{
+    grid-column:1/-1;
+    margin-top:1rem;
+    font-weight:bold;
   }
 
   /* ===== LOOKUP ===== */
-  .lookup-grid {
-    flex-direction: column;
-    gap: .85rem;
-    align-items: stretch;
-    display: flex;
+  .lookup-grid{
+    flex-direction:column;       /* xếp dọc toàn bộ */
+    gap:.85rem;
+    align-items:stretch;
   }
 
-  /* Input wrappers (ngày & giờ) */
+  /* cụm ngày + icon */
   .date-wrapper,
-  .time-wrapper {
-    position: relative;
-    flex: 1 1 100%;
-    width: 100%;
+  #lookupTime{
+    flex:1 1 100%;
   }
-
   .date-wrapper input,
-  .time-wrapper input {
-    width: 100%;
-    padding: .6rem .6rem .6rem 2.2rem; /* chừa chỗ bên trái cho icon */
-    border-radius: 20px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    text-align: center;
+  #lookupTime{
+    width:100%;
+    border-radius:20px;
+    font-size:1rem;
+    padding:.6rem;
+    border:1px solid #ccc;
+    text-align:center;
   }
 
-  /* Icon lịch & đồng hồ */
-  .calendar-icon,
-  .time-icon {
-    position: absolute;
-    top: 50%;
-    left: 14px;
-    transform: translateY(-50%);
-    color: #999;
-    pointer-events: none;
-    font-size: 1.1rem;
+  /* ẩn “order” cũ, chuyển sang hàng mới */
+  .lookup-btn{
+    align-self:center;           /* căn giữa */
+    order:3;                     /* luôn ở cuối */
+    width:100%;                  /* full khối – giống ảnh */
+    max-width:320px;
+    padding:.7rem 1rem;
+    font-size:1.05rem;
+    background:#4eb9b7;
+    color:#fff;
+    border:none;
+    border-radius:30px;
+    font-weight:bold;
+    cursor:pointer;
   }
 
-  /* Nút tra cứu */
-  .lookup-btn {
-    align-self: center;
-    order: 3;
-    width: 100%;
-    max-width: 320px;
-    padding: .7rem 1rem;
-    font-size: 1.05rem;
-    background: #4eb9b7;
-    color: #fff;
-    border: none;
-    border-radius: 30px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  /* Bảng kết quả */
-  .table-container {
-    margin-top: .75rem;
-    max-height: 260px;
-    overflow: auto;
+  /* bảng kết quả */
+  .table-container{
+    margin-top:.75rem;
+    max-height:260px;
+    overflow:auto;
   }
 }
 
@@ -299,43 +270,29 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
       <div id="frequencyChart" class="chart-box"></div>
     </div>
 
+    <!-- Tra cứu -->
     <div class="chart-container">
-  <div class="sensor-card">
-    <i class="fas fa-table" style="color:#4eb9b7;margin-right:8px"></i>Tra cứu dữ liệu
-  </div>
-
-  <div style="padding-top:20px">
-    <div class="lookup-grid">
-      
-      <!-- Input ngày -->
-      <div class="date-wrapper">
-        <input id="lookupDate" placeholder="yyyy/MM/dd">
-        <i class="fas fa-calendar-alt calendar-icon"></i>
+      <div class="sensor-card"><i class="fas fa-table" style="color:#4eb9b7;margin-right:8px"></i>Tra cứu dữ liệu</div>
+      <div style="padding-top:20px">
+        <div class="lookup-grid">
+          <div class="date-wrapper">
+            <input id="lookupDate" placeholder="yyyy/MM/dd">
+            <i class="fas fa-calendar-alt calendar-icon"></i>
+          </div>
+        
+          <input id="lookupTime" type="time" step="60">
+          <button id="lookup" class="lookup-btn">Tra cứu</button>
+        </div>
+        
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th><th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th><th>Nhiệt độ(°C)</th></tr></thead>
+            <tbody id="resultTable"></tbody>
+          </table>
+        </div>
       </div>
-
-      <!-- Input giờ + icon đồng hồ -->
-      <div class="time-wrapper">
-        <input id="lookupTime" type="time" step="60">
-        <i class="fas fa-clock time-icon"></i>
-      </div>
-
-      <button id="lookup" class="lookup-btn">Tra cứu</button>
-    </div>
-
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
-            <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th><th>Nhiệt độ(°C)</th>
-          </tr>
-        </thead>
-        <tbody id="resultTable"></tbody>
-      </table>
     </div>
   </div>
-</div>
-
 
   <!-- Link Google Sheet -->
    <!-- Link Google Sheet  (căn giữa) -->
