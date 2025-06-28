@@ -131,102 +131,169 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 .link small{color:#333}
 
 /* ---------- MOBILE ≤ 768px ---------- */
-/* ---------- MOBILE ≤ 768px ---------- */
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
-  .header{
-    font-size:1.3rem;
-    padding:1rem;
-    text-align:center;
+  .header {
+    font-size: 1.3rem;
+    padding: 1rem;
+    text-align: center;
   }
 
   /* ===== DASHBOARD ===== */
-  .dashboard{
-    flex-direction:column;
-    align-items:center;
-  }
-  .chart-container{
-    width:94%;
-    padding:3.2rem 1rem 1rem;
-    margin-bottom:1.5rem;
-  }
-  .chart-box{height:260px}
-  .sensor-card{
-    font-size:1.1rem;
-    padding:.6rem 1rem;
-    top:12px;left:12px;
+  .dashboard {
+    flex-direction: column;
+    align-items: center;
   }
 
-  /* ===== THRESHOLD (xếp dọc) ===== */
-  .threshold-box{
-    width:max-content;
-    margin:1.2rem auto 0;
-    padding:1rem 1.5rem;
-    font-size:.95rem;
-    display:grid;
-    grid-template-columns:1fr;
-    row-gap:.8rem;
-    text-align:center;
+  .chart-container {
+    width: 94%;
+    padding: 3.2rem 1rem 1rem;
+    margin-bottom: 1.5rem;
   }
-  .threshold-box label{font-weight:bold;justify-self:center}
-  .threshold-box input{width:90px}
-  .threshold-box button{
-    grid-column:1/-1;
-    justify-self:center;
-    padding:.5rem 1rem;
-    max-width:240px;
-    margin-top:.2rem;
+
+  .chart-box {
+    height: 260px;
   }
-  .threshold-box .status-message{
-    grid-column:1/-1;
-    margin-top:1rem;
-    font-weight:bold;
+
+  .sensor-card {
+    font-size: 1.1rem;
+    padding: .6rem 1rem;
+    top: 12px;
+    left: 12px;
+  }
+
+  /* ===== THRESHOLD ===== */
+  .threshold-box {
+    width: max-content;
+    margin: 1.2rem auto 0;
+    padding: 1rem 1.5rem;
+    font-size: .95rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: .8rem;
+    text-align: center;
+  }
+
+  .threshold-box label {
+    font-weight: bold;
+    justify-self: center;
+  }
+
+  .threshold-box input {
+    width: 90px;
+  }
+
+  .threshold-box button {
+    grid-column: 1 / -1;
+    justify-self: center;
+    padding: .5rem 1rem;
+    max-width: 240px;
+    margin-top: .2rem;
+  }
+
+  .threshold-box .status-message {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+    font-weight: bold;
   }
 
   /* ===== LOOKUP ===== */
-  .lookup-grid{
-    flex-direction:column;       /* xếp dọc toàn bộ */
-    gap:.85rem;
-    align-items:stretch;
+  .lookup-grid {
+    flex-direction: column;
+    gap: .85rem;
+    align-items: stretch;
   }
 
-  /* cụm ngày + icon */
-  .date-wrapper,
-  #lookupTime{
-    flex:1 1 100%;
-  }
-  .date-wrapper input,
-  #lookupTime{
-    width:100%;
-    border-radius:20px;
-    font-size:1rem;
-    padding:.6rem;
-    border:1px solid #ccc;
-    text-align:center;
+  .date-wrapper {
+    flex: 1 1 100%;
   }
 
-  /* ẩn “order” cũ, chuyển sang hàng mới */
-  .lookup-btn{
-    align-self:center;           /* căn giữa */
-    order:3;                     /* luôn ở cuối */
-    width:100%;                  /* full khối – giống ảnh */
-    max-width:320px;
-    padding:.7rem 1rem;
-    font-size:1.05rem;
-    background:#4eb9b7;
-    color:#fff;
-    border:none;
-    border-radius:30px;
-    font-weight:bold;
-    cursor:pointer;
+  .date-wrapper input {
+    width: 100%;
+    border-radius: 20px;
+    font-size: 1rem;
+    padding: .6rem;
+    border: 1px solid #ccc;
+    text-align: center;
   }
 
-  /* bảng kết quả */
-  .table-container{
-    margin-top:.75rem;
-    max-height:260px;
-    overflow:auto;
+  .calendar-icon {
+    position: absolute;
+    margin-left: -30px;
+    margin-top: 12px;
+    color: #aaa;
+  }
+
+  /* === THAY THẾ PHẦN lookupTime === */
+  #lookupTime {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.3rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    padding: .3rem;
+    width: max-content;
+    margin: auto;
+    background: white;
+  }
+
+  .time-column {
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .time-column::-webkit-scrollbar {
+    display: none;
+  }
+
+  .time-column ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .time-column li {
+    padding: .4rem .8rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .time-column li:hover {
+    background: #f0f0f0;
+  }
+
+  .time-column li.selected {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+
+  /* NÚT TRA CỨU */
+  .lookup-btn {
+    align-self: center;
+    order: 3;
+    width: 100%;
+    max-width: 320px;
+    padding: .7rem 1rem;
+    font-size: 1.05rem;
+    background: #4eb9b7;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  /* BẢNG KẾT QUẢ */
+  .table-container {
+    margin-top: .75rem;
+    max-height: 260px;
+    overflow: auto;
   }
 }
 
