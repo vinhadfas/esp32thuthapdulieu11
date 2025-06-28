@@ -452,7 +452,7 @@
       }catch(e){alert('Lỗi: '+e.message);}
     }
 
-    const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vS5Kb0MA1_MZyuRZPgzwwH-95CvzwMoKDqmhAY4CHWwhm7sbuKYBG2bZ4V353oUSBfQaoti0xskMjJo/pub?gid=0&single=true&output=csv';
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSm0VAJ9cLUq6NIXvtkbUYoGkx-NJsih5pUqcMb9SjXx_7lfBT14vVv0dSV-nREnmKuixmXchXy0b6w/pub?gid=0&single=true&output=csv';
     let cacheRows=null;
     async function loadData(){if(cacheRows)return cacheRows;const t=await (await fetch(CSV_URL)).text();cacheRows=Papa.parse(t.trim(),{dynamicTyping:false}).data;return cacheRows;}
     function appendRow(r){const tr=document.createElement('tr');r.forEach(c=>{const td=document.createElement('td');td.textContent=c||'';tr.appendChild(td);});resultTable.appendChild(tr);}
