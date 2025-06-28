@@ -130,7 +130,6 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
 }
 .link small{color:#333}
 
-/* ---------- MOBILE ≤ 768px ---------- */
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
@@ -163,7 +162,7 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
     left: 12px;
   }
 
-  /* ===== THRESHOLD ===== */
+  /* ===== THRESHOLD BOX ===== */
   .threshold-box {
     width: max-content;
     margin: 1.2rem auto 0;
@@ -203,77 +202,40 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
     flex-direction: column;
     gap: .85rem;
     align-items: stretch;
+    display: flex;
   }
 
-  .date-wrapper {
+  /* Input wrappers (ngày & giờ) */
+  .date-wrapper,
+  .time-wrapper {
+    position: relative;
     flex: 1 1 100%;
+    width: 100%;
   }
 
-  .date-wrapper input {
+  .date-wrapper input,
+  .time-wrapper input {
     width: 100%;
+    padding: .6rem .6rem .6rem 2.2rem; /* chừa chỗ bên trái cho icon */
     border-radius: 20px;
     font-size: 1rem;
-    padding: .6rem;
     border: 1px solid #ccc;
     text-align: center;
   }
 
-  .calendar-icon {
+  /* Icon lịch & đồng hồ */
+  .calendar-icon,
+  .time-icon {
     position: absolute;
-    margin-left: -30px;
-    margin-top: 12px;
-    color: #aaa;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none;
+    font-size: 1.1rem;
   }
 
-  /* === THAY THẾ PHẦN lookupTime === */
-  #lookupTime {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 0.3rem;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    padding: .3rem;
-    width: max-content;
-    margin: auto;
-    background: white;
-  }
-
-  .time-column {
-    max-height: 200px;
-    overflow-y: auto;
-    scrollbar-width: none;
-  }
-
-  .time-column::-webkit-scrollbar {
-    display: none;
-  }
-
-  .time-column ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-  }
-
-  .time-column li {
-    padding: .4rem .8rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s, color 0.3s;
-  }
-
-  .time-column li:hover {
-    background: #f0f0f0;
-  }
-
-  .time-column li.selected {
-    background: #007bff;
-    color: white;
-    font-weight: bold;
-  }
-
-  /* NÚT TRA CỨU */
+  /* Nút tra cứu */
   .lookup-btn {
     align-self: center;
     order: 3;
@@ -289,7 +251,7 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
     cursor: pointer;
   }
 
-  /* BẢNG KẾT QUẢ */
+  /* Bảng kết quả */
   .table-container {
     margin-top: .75rem;
     max-height: 260px;
@@ -337,29 +299,43 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
       <div id="frequencyChart" class="chart-box"></div>
     </div>
 
-    <!-- Tra cứu -->
     <div class="chart-container">
-      <div class="sensor-card"><i class="fas fa-table" style="color:#4eb9b7;margin-right:8px"></i>Tra cứu dữ liệu</div>
-      <div style="padding-top:20px">
-        <div class="lookup-grid">
-          <div class="date-wrapper">
-            <input id="lookupDate" placeholder="yyyy/MM/dd">
-            <i class="fas fa-calendar-alt calendar-icon"></i>
-          </div>
-        
-          <input id="lookupTime" type="time" step="60">
-          <button id="lookup" class="lookup-btn">Tra cứu</button>
-        </div>
-        
-        <div class="table-container">
-          <table>
-            <thead><tr><th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th><th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th><th>Nhiệt độ(°C)</th></tr></thead>
-            <tbody id="resultTable"></tbody>
-          </table>
-        </div>
+  <div class="sensor-card">
+    <i class="fas fa-table" style="color:#4eb9b7;margin-right:8px"></i>Tra cứu dữ liệu
+  </div>
+
+  <div style="padding-top:20px">
+    <div class="lookup-grid">
+      
+      <!-- Input ngày -->
+      <div class="date-wrapper">
+        <input id="lookupDate" placeholder="yyyy/MM/dd">
+        <i class="fas fa-calendar-alt calendar-icon"></i>
       </div>
+
+      <!-- Input giờ + icon đồng hồ -->
+      <div class="time-wrapper">
+        <input id="lookupTime" type="time" step="60">
+        <i class="fas fa-clock time-icon"></i>
+      </div>
+
+      <button id="lookup" class="lookup-btn">Tra cứu</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
+            <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th><th>Nhiệt độ(°C)</th>
+          </tr>
+        </thead>
+        <tbody id="resultTable"></tbody>
+      </table>
     </div>
   </div>
+</div>
+
 
   <!-- Link Google Sheet -->
    <!-- Link Google Sheet  (căn giữa) -->
