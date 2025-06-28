@@ -96,19 +96,34 @@ html,body{
 }
 
 /* Ô ngày kèm icon */
-.date-wrapper{position:relative;flex:1 1 200px}
-.date-wrapper input{
-  width:100%;
-  padding:.55rem 2.5rem .55rem 1rem;  /* chừa chỗ icon */
-  border:1px solid #ccc;border-radius:20px;
-  text-align:center;font-size:1rem;
+.date-wrapper {
+  position: relative;
+  width: 100%;
 }
-.calendar-icon{
-  position:absolute;right:14px;top:50%;
-  transform:translateY(-50%);
-  color:#555;font-size:1rem;
-  pointer-events:none;               /* không chặn click */
+
+.date-wrapper input {
+  width: 100%;
+  padding: 0.6rem 2.5rem 0.6rem 0.8rem; /* chừa chỗ bên phải cho icon */
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
+.calendar-icon {
+  position: absolute;
+  right: 1rem;
+  top: 47%;
+  transform: translateY(-70%);
+  color: #999;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  pointer-events: none;
+}
+
 
 /* ======== TABLE ======== */
 .table-container{max-height:260px;overflow:auto}
@@ -231,12 +246,21 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
     max-height:260px;
     overflow:auto;
   }
+  input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+ }
+ .calendar-icon {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+ 
 }
 
   </style>
 </head>
 <body>
-  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT-ESP32</div>
+  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
 
   <!-- Threshold -->
   <div class="threshold-box">
@@ -282,10 +306,13 @@ thead{background:#e0f2f1;position:sticky;top:0;font-weight:700}
             <input id="lookupDate" placeholder="yyyy/MM/dd">
             <i class="fas fa-calendar-alt calendar-icon"></i>
           </div>
-        
-          <input id="lookupTime" type="time" step="60">
+          <div class="date-wrapper">
+            <input id="lookupTime" type="time" step="60">
+            <i class="fas fa-clock calendar-icon"></i>
+          </div>
           <button id="lookup" class="lookup-btn">Tra cứu</button>
         </div>
+        
         
         <div class="table-container">
           <table>
