@@ -497,7 +497,6 @@
  async function fetchSensorData() {
   try {
     const r = await fetch('/api/sensor', { cache: 'no-store' });
-    const { history, thresholds } = await r.json();
 
     if (thresholds) {
       if (!upperThreshold.value) upperThreshold.value = thresholds.tempHigh;
