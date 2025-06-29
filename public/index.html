@@ -503,10 +503,15 @@ async function fetchSensorData() {
       if (!lowerThreshold.value) lowerThreshold.value = thresholds.tempLow;
     }
 
+    // ⚠️ Xóa dữ liệu cũ trong biểu đồ
+    Object.values(charts).forEach(chart => chart.series[0].setData([]));
+
+    // ✅ Vẽ lại toàn bộ dữ liệu
     if (Array.isArray(history) && history.length > 0) {
+      history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
+
       const latest = history[history.length - 1];
       if (latest) {
-        updateCharts(latest); // ✅ chỉ thêm điểm mới nhất vào biểu đồ
         document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
         document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
         document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
@@ -523,6 +528,7 @@ async function fetchSensorData() {
     console.warn('Fetch error', e);
   }
 }
+
 
 
   async function updateThresholds() {
