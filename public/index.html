@@ -494,38 +494,37 @@
     checkTempStatus();
   }
 
-  async function fetchSensorData() {
-    try {
-      const r = await fetch('/api/sensor', { cache: 'no-store' });
-      const { history, thresholds } = await r.json();
+ async function fetchSensorData() {
+  try {
+    const r = await fetch('/api/sensor', { cache: 'no-store' });
+    const { history, thresholds } = await r.json();
 
-      if (thresholds) {
-        if (!upperThreshold.value) upperThreshold.value = thresholds.tempHigh;
-        if (!lowerThreshold.value) lowerThreshold.value = thresholds.tempLow;
-      }
-
-      if (Array.isArray(history) && history.length > 0) {
-        Object.values(charts).forEach(chart => chart.series[0].setData([]));
-        history.forEach(updateCharts);
-
-        const latest = history[history.length - 1];
-        if (latest) {
-          document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
-          document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
-          document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
-          document.getElementById('current').textContent   = !isNaN(latest.current) ? latest.current.toFixed(2) : '--';
-          document.getElementById('power').textContent     = !isNaN(latest.power) ? latest.power.toFixed(2) : '--';
-          document.getElementById('energy').textContent    = !isNaN(latest.energy) ? latest.energy.toFixed(3) : '--';
-          document.getElementById('frequency').textContent = !isNaN(latest.frequency) ? latest.frequency.toFixed(2) : '--';
-        }
-
-        checkTempStatus();
-      }
-
-    } catch (e) {
-      console.warn('Fetch error', e);
+    if (thresholds) {
+      if (!upperThreshold.value) upperThreshold.value = thresholds.tempHigh;
+      if (!lowerThreshold.value) lowerThreshold.value = thresholds.tempLow;
     }
+
+    if (Array.isArray(history) && history.length > 0) {
+      const latest = history[history.length - 1];
+      if (latest) {
+        updateCharts(latest); // ✅ chỉ thêm điểm mới nhất vào biểu đồ
+        document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
+        document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
+        document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
+        document.getElementById('current').textContent   = !isNaN(latest.current) ? latest.current.toFixed(2) : '--';
+        document.getElementById('power').textContent     = !isNaN(latest.power) ? latest.power.toFixed(2) : '--';
+        document.getElementById('energy').textContent    = !isNaN(latest.energy) ? latest.energy.toFixed(3) : '--';
+        document.getElementById('frequency').textContent = !isNaN(latest.frequency) ? latest.frequency.toFixed(2) : '--';
+      }
+
+      checkTempStatus();
+    }
+
+  } catch (e) {
+    console.warn('Fetch error', e);
   }
+}
+
 
   async function updateThresholds() {
     const low = parseFloat(lowerThreshold.value), high = parseFloat(upperThreshold.value);
