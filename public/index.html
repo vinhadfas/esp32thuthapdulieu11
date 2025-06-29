@@ -391,7 +391,7 @@
   </div>
 
   <div class="link">
-    <a href="https://docs.google.com/spreadsheets/d/1NLCgAlLXS6J-eH7V6OyM9uFFbyT4AjIgkRzPXgzPujg/edit?gid=0#gid=0" target="_blank">
+    <a href="https://docs.google.com/spreadsheets/d/1Ykm-1BM1CLbGPo0fSaqCAMS0vFZ6tS3gDCXYmSM1pzI/edit?gid=0#gid=0" target="_blank">
       XEM DỮ LIỆU TRÊN GOOGLE SHEET
     </a>
     <small>(Click để xem lại các giá trị đã lưu)</small>
@@ -476,7 +476,8 @@
       }catch(e){alert('Lỗi: '+e.message);}
     }
 
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSm0VAJ9cLUq6NIXvtkbUYoGkx-NJsih5pUqcMb9SjXx_7lfBT14vVv0dSV-nREnmKuixmXchXy0b6w/pub?gid=0&single=true&output=csv';
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShIPqq_63GhPwJPFtUPOzkj5QkI_Q1Xt4Eusy_W4yFIHbNBbXXAKmiX4zV6lirsyJiRUJ76KUT4pMk/pub?gid=0&single=true&output=csv';
+
     let cacheRows=null;
     async function loadData(){if(cacheRows)return cacheRows;const t=await (await fetch(CSV_URL)).text();cacheRows=Papa.parse(t.trim(),{dynamicTyping:false}).data;return cacheRows;}
     function appendRow(r){const tr=document.createElement('tr');r.forEach(c=>{const td=document.createElement('td');td.textContent=c||'';tr.appendChild(td);});resultTable.appendChild(tr);}
