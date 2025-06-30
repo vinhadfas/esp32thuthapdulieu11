@@ -23,13 +23,49 @@
       background: #eef9f8;
     }
     .header {
-      background: #4eb9b7;
-      color: #fff;
-      text-align: center;
-      padding: 1.2rem;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
+  background: #4eb9b7;
+  color: #fff;
+  padding: 1.0rem;
+  font-size: 1.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+}
+
+/* Nút mũi tên nổi bật nằm sát rìa trái */
+.back-btn {
+  position: absolute;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.15); /* nền nhạt nổi bật */
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Tiêu đề giữ căn giữa */
+.title-text {
+  flex: none;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
   
     .threshold-box {
       background: #fff;
@@ -221,11 +257,24 @@
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
-  .header{
-    font-size:1.3rem;
-    padding:1rem;
-    text-align:center;
-  }
+  .header {
+  font-size: 1.3rem;
+  padding: 1rem;
+  text-align:center;
+}
+
+.back-btn {
+  width: 38px;
+  height: 38px;
+  font-size: 1.4rem;
+  left: 10px;
+}
+
+.title-text {
+  font-size: 1.1rem;
+  max-width: 70%;
+}
+
 
   /* ===== DASHBOARD ===== */
   .dashboard{
@@ -329,8 +378,13 @@
 </head>
 <body>
 
-  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
-
+  <div class="header">
+    <button class="back-btn" href="https://esp32thuthapdulieu.vercel.app/">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <span class="title-text">MÔ HÌNH 1 HỆ THỐNG GIÁM SÁT XE <br>TẢI ĐÔNG LẠNH DÙNG IoT ESP32</span>
+  </div>  
+  
   <div class="threshold-box">
     <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
     <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
