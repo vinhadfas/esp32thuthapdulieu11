@@ -23,13 +23,50 @@
       background: #eef9f8;
     }
     .header {
-      background: #4eb9b7;
-      color: #fff;
-      text-align: center;
-      padding: 1.2rem;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
+  background: #4eb9b7;
+  color: #fff;
+  padding: 1.0rem;
+  font-size: 1.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+}
+
+/* Nút mũi tên nổi bật nằm sát rìa trái */
+.back-btn {
+  position: absolute;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.15); /* nền nhạt nổi bật */
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Tiêu đề giữ căn giữa */
+.title-text {
+  flex: none;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
   
     .threshold-box {
       background: #fff;
@@ -160,34 +197,60 @@
     .lookup-btn:hover {
       background-color: #3baaa8;
     }
-  
     .table-container {
-      max-height: 260px;
-      overflow: auto;
-      margin-top: .75rem;
-    }
+  max-height: 260px;
+  overflow-y: auto;
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+/* Đồng bộ kích thước bảng */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  min-width: 950px; /* ⚠️ đảm bảo cả 2 bảng rộng như nhau */
+}
+
+/* Ô bảng */
+th, td {
+  border: 1px solid #ccc;
+  padding: .5rem .6rem;
+  font-size: 0.9rem;
+  text-align: center;
+  background: #fff;
+  word-break: break-word;
+}
+
+/* Tiêu đề cố định */
+thead th {
+  position: sticky;
+  top: 0;
+  background: #b2dfdb;
+  z-index: 10;
+  font-weight: 700;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.03);
+}
+
+/* Dòng chẵn đổi màu */
+tbody tr:nth-child(even) {
+  background: #f5f5f5;
+}
+
+/* bo góc đẹp */
+thead th:first-child {
+  border-top-left-radius: 8px;
+}
+thead th:last-child {
+  border-top-right-radius: 8px;
+}
   
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-  
-    th, td {
-      border: 1px solid #ccc;
-      padding: .35rem .55rem;
-      font-size: .9rem;
-      text-align: center;
-    }
-  
-    thead {
-      background: #b2dfdb;
-      position: sticky;
-      top: 0;
-      font-weight: 700;
-    }
+ 
+
     tbody tr:nth-child(even) {
       background: #f5f5f5;
     }
@@ -221,11 +284,25 @@
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
-  .header{
-    font-size:1.3rem;
-    padding:1rem;
-    text-align:center;
+  .header {
+    font-size: 1.25rem;
+    padding: 1rem 1rem 1rem 3.2rem;
   }
+
+  .title-text {
+    font-size: 1rem;
+    padding: 0 0.5rem;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .back-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    left: 8px;
+  }
+
 
   /* ===== DASHBOARD ===== */
   .dashboard{
@@ -323,11 +400,19 @@
  }
 }
   </style>
+  
+
 </head>
 <body>
 
-  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
-
+  <div class="header">
+    <a class="back-btn" href="https://esp32thuthapdulieu.vercel.app/">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    </button>
+    <span class="title-text">MÔ HÌNH 1 HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH <br>DÙNG IoT ESP32</span>
+  </div>  
+  
   <div class="threshold-box">
     <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
     <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
@@ -387,7 +472,38 @@
     </div>
   </div>
 
-  <div class="link">
+  
+  <div class="chart-container" style="margin: 0 auto;">
+    <div class="sensor-card">
+      <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
+      Tra cứu theo nhiệt độ
+    </div>
+    <div style="padding-top:20px">
+      <div class="lookup-grid">
+        <div class="date-wrapper">
+          <input id="tempLookupDate" placeholder="yyyy/MM/dd">
+          <i class="fas fa-calendar-alt calendar-icon"></i>
+        </div>
+        <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
+        <input type="number" id="tempMax" placeholder="Đến (°C)" style="min-width:120px;">
+        <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
+      </div>    
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
+              <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
+              <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
+            </tr>
+          </thead>
+          <tbody id="tempFilterTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<div class="link">
     <a href="https://docs.google.com/spreadsheets/d/1Ykm-1BM1CLbGPo0fSaqCAMS0vFZ6tS3gDCXYmSM1pzI/edit?gid=0#gid=0" target="_blank">
       XEM DỮ LIỆU TRÊN GOOGLE SHEET
     </a>
@@ -606,7 +722,50 @@ async function fetchSensorData() {
     }
   });
 
-  fetchSensorData();
+  
+function filterByTemperature() {
+  const min = parseFloat(document.getElementById('tempMin').value);
+  const max = parseFloat(document.getElementById('tempMax').value);
+  const tbody = document.getElementById('tempFilterTable');
+  tbody.innerHTML = '';
+
+  if (isNaN(min) || isNaN(max)) {
+    tbody.innerHTML = `<tr><td colspan="9">Vui lòng nhập khoảng nhiệt độ hợp lệ.</td></tr>`;
+    return;
+  }
+
+  if (min > max) {
+    tbody.innerHTML = `<tr><td colspan="9">Giá trị "Từ" phải nhỏ hơn hoặc bằng "Đến".</td></tr>`;
+    return;
+  }
+
+  loadData().then(rows => {
+    const matches = rows.slice(1).filter(r => {
+      const t1 = parseFloat(r[7]);
+      const t2 = parseFloat(r[8]);
+      return (!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max);
+    });
+
+    if (!matches.length) {
+      tbody.innerHTML = `<tr><td colspan="9">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+      return;
+    }
+
+    matches.forEach(row => {
+      const tr = document.createElement('tr');
+      row.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = c || '';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }).catch(err => {
+    tbody.innerHTML = `<tr><td colspan="9">Lỗi khi tải dữ liệu.</td></tr>`;
+  });
+}
+
+fetchSensorData();
   setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
 </script>
 
