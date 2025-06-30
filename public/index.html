@@ -23,50 +23,13 @@
       background: #eef9f8;
     }
     .header {
-  background: #4eb9b7;
-  color: #fff;
-  padding: 1.0rem;
-  font-size: 1.7rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  text-align: center;
-}
-
-/* Nút mũi tên nổi bật nằm sát rìa trái */
-.back-btn {
-  position: absolute;
-  left: 20px;
-  background: rgba(255, 255, 255, 0.15); /* nền nhạt nổi bật */
-  border: none;
-  color: #fff;
-  font-size: 1.5rem;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Tiêu đề giữ căn giữa */
-.title-text {
-  flex: none;
-  max-width: 80%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
+      background: #4eb9b7;
+      color: #fff;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
   
     .threshold-box {
       background: #fff;
@@ -150,14 +113,14 @@
     }
   
     .lookup-grid input, .lookup-grid select {
-      padding: .55rem;
-      border: 1px solid #ccc;
-      border-radius: 20px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.95rem;
+      width: auto;
+      min-width: 90px;
+      max-width: 150px;
       text-align: center;
-      font-size: 1rem;
-      background: #fff;
     }
-  
+
     .lookup-grid select {
       width: 150px;
     }
@@ -167,12 +130,11 @@
     }
   
     .date-wrapper input {
-      width: 180px;
-      padding: .6rem 2.5rem .6rem .8rem;
-      font-size: 1rem;
-      border-radius: 20px;
+      width: 140px;
+      padding: 0.45rem 2rem 0.45rem 0.6rem;
+      font-size: 0.95rem;
     }
-  
+
     .calendar-icon {
       position: absolute;
       right: 1.2rem;
@@ -188,8 +150,9 @@
       color: #fff;
       border: none;
       border-radius: 20px;
-      padding: .6rem 1.6rem;
-      font-weight: 700;
+      padding: 0.45rem 1rem;       /* Giảm padding */
+      font-weight: 600;
+      font-size: 0.95rem;          /* Nhỏ lại một chút */padding: .6rem 1.6rem;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
@@ -197,60 +160,34 @@
     .lookup-btn:hover {
       background-color: #3baaa8;
     }
-    .table-container {
-  max-height: 260px;
-  overflow-y: auto;
-  overflow-x: auto;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-top: 0.75rem;
-  width: 100%;
-}
-
-/* Đồng bộ kích thước bảng */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  table-layout: fixed;
-  min-width: 950px; /* ⚠️ đảm bảo cả 2 bảng rộng như nhau */
-}
-
-/* Ô bảng */
-th, td {
-  border: 1px solid #ccc;
-  padding: .5rem .6rem;
-  font-size: 0.9rem;
-  text-align: center;
-  background: #fff;
-  word-break: break-word;
-}
-
-/* Tiêu đề cố định */
-thead th {
-  position: sticky;
-  top: 0;
-  background: #b2dfdb;
-  z-index: 10;
-  font-weight: 700;
-  box-shadow: 0 2px 2px rgba(0,0,0,0.03);
-}
-
-/* Dòng chẵn đổi màu */
-tbody tr:nth-child(even) {
-  background: #f5f5f5;
-}
-
-/* bo góc đẹp */
-thead th:first-child {
-  border-top-left-radius: 8px;
-}
-thead th:last-child {
-  border-top-right-radius: 8px;
-}
   
- 
-
+    .table-container {
+      max-height: 260px;
+      overflow: auto;
+      margin-top: .75rem;
+    }
+  
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  
+    th, td {
+      border: 1px solid #ccc;
+      padding: .35rem .55rem;
+      font-size: .9rem;
+      text-align: center;
+    }
+  
+    thead {
+      background: #b2dfdb;
+      position: sticky;
+      top: 0;
+      font-weight: 700;
+    }
     tbody tr:nth-child(even) {
       background: #f5f5f5;
     }
@@ -284,25 +221,11 @@ thead th:last-child {
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
-  .header {
-    font-size: 1.25rem;
-    padding: 1rem 1rem 1rem 3.2rem;
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
   }
-
-  .title-text {
-    font-size: 1rem;
-    padding: 0 0.5rem;
-    max-width: 100%;
-    text-align: center;
-  }
-
-  .back-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1.2rem;
-    left: 8px;
-  }
-
 
   /* ===== DASHBOARD ===== */
   .dashboard{
@@ -402,17 +325,12 @@ thead th:last-child {
   </style>
   
 
+  </style>
 </head>
 <body>
 
-  <div class="header">
-    <a class="back-btn" href="https://esp32thuthapdulieu.vercel.app/">
-      <i class="fas fa-arrow-left"></i>
-    </a>
-    </button>
-    <span class="title-text">MÔ HÌNH 1 HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH <br>DÙNG IoT ESP32</span>
-  </div>  
-  
+  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
+
   <div class="threshold-box">
     <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
     <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
@@ -481,7 +399,7 @@ thead th:last-child {
   <div style="padding-top:20px">
     <div class="lookup-grid">
       <div class="date-wrapper">
-        <input id="LookupDate" placeholder="yyyy/MM/dd">
+        <input id="tempLookupDate" placeholder="yyyy/MM/dd">
         <i class="fas fa-calendar-alt calendar-icon"></i>
       </div>
       <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
@@ -512,6 +430,7 @@ thead th:last-child {
 
 <script>
   flatpickr('#lookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
+  flatpickr('#tempLookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
   Highcharts.setOptions({ time: { useUTC: false } });
 
   const COLORS = {
@@ -723,9 +642,10 @@ async function fetchSensorData() {
   });
 
   
-function filterByTemperature() {
+  function filterByTemperature() {
   const min = parseFloat(document.getElementById('tempMin').value);
   const max = parseFloat(document.getElementById('tempMax').value);
+  const dateInput = document.getElementById('tempLookupDate').value;
   const tbody = document.getElementById('tempFilterTable');
   tbody.innerHTML = '';
 
@@ -740,10 +660,15 @@ function filterByTemperature() {
   }
 
   loadData().then(rows => {
+    const [y, m, d] = dateInput ? dateInput.split('/') : [null, null, null];
+    const targetDate = y && m && d ? `${y}-${m}-${d}` : null;
+
     const matches = rows.slice(1).filter(r => {
       const t1 = parseFloat(r[7]);
       const t2 = parseFloat(r[8]);
-      return (!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max);
+      const matchTemp = ((!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max));
+      const matchDate = !targetDate || r[0] === targetDate;
+      return matchTemp && matchDate;
     });
 
     if (!matches.length) {
