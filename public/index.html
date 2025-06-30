@@ -390,7 +390,34 @@
     </div>
   </div>
 
-  <div class="link">
+  
+<div class="chart-container" style="margin: 0 auto;">
+  <div class="sensor-card">
+    <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
+    Tra cứu theo nhiệt độ
+  </div>
+  <div style="padding-top:20px">
+    <div class="lookup-grid">
+      <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
+      <input type="number" id="tempMax" placeholder="Đến (°C)" style="min-width:120px;">
+      <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
+            <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
+            <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
+          </tr>
+        </thead>
+        <tbody id="tempFilterTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="link">
     <a href="https://docs.google.com/spreadsheets/d/1Ykm-1BM1CLbGPo0fSaqCAMS0vFZ6tS3gDCXYmSM1pzI/edit?gid=0#gid=0" target="_blank">
       XEM DỮ LIỆU TRÊN GOOGLE SHEET
     </a>
@@ -609,7 +636,50 @@ async function fetchSensorData() {
     }
   });
 
-  fetchSensorData();
+  
+function filterByTemperature() {
+  const min = parseFloat(document.getElementById('tempMin').value);
+  const max = parseFloat(document.getElementById('tempMax').value);
+  const tbody = document.getElementById('tempFilterTable');
+  tbody.innerHTML = '';
+
+  if (isNaN(min) || isNaN(max)) {
+    tbody.innerHTML = `<tr><td colspan="9">Vui lòng nhập khoảng nhiệt độ hợp lệ.</td></tr>`;
+    return;
+  }
+
+  if (min > max) {
+    tbody.innerHTML = `<tr><td colspan="9">Giá trị "Từ" phải nhỏ hơn hoặc bằng "Đến".</td></tr>`;
+    return;
+  }
+
+  loadData().then(rows => {
+    const matches = rows.slice(1).filter(r => {
+      const t1 = parseFloat(r[7]);
+      const t2 = parseFloat(r[8]);
+      return (!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max);
+    });
+
+    if (!matches.length) {
+      tbody.innerHTML = `<tr><td colspan="9">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+      return;
+    }
+
+    matches.forEach(row => {
+      const tr = document.createElement('tr');
+      row.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = c || '';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }).catch(err => {
+    tbody.innerHTML = `<tr><td colspan="9">Lỗi khi tải dữ liệu.</td></tr>`;
+  });
+}
+
+fetchSensorData();
   setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
 </script>
 
