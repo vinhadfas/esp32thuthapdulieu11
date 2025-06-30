@@ -204,30 +204,41 @@
   background: white;
   border-radius: 8px;
   border: 1px solid #ccc;
+  margin-top: 0.75rem;
+  width: 100%;
 }
 
-/* bảng */
+/* Đồng bộ kích thước bảng */
 table {
   border-collapse: collapse;
   width: 100%;
   table-layout: fixed;
-  min-width: 900px;
+  min-width: 950px; /* ⚠️ đảm bảo cả 2 bảng rộng như nhau */
 }
 
-/* tiêu đề cột */
+/* Ô bảng */
 th, td {
-  padding: 0.5rem;
-  text-align: center;
-  font-size: 0.9rem;
   border: 1px solid #ccc;
+  padding: .5rem .6rem;
+  font-size: 0.9rem;
+  text-align: center;
+  background: #fff;
+  word-break: break-word;
 }
 
-/* cố định th */
+/* Tiêu đề cố định */
 thead th {
   position: sticky;
   top: 0;
   background: #b2dfdb;
-  z-index: 5;
+  z-index: 10;
+  font-weight: 700;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.03);
+}
+
+/* Dòng chẵn đổi màu */
+tbody tr:nth-child(even) {
+  background: #f5f5f5;
 }
 
 /* bo góc đẹp */
@@ -463,35 +474,35 @@ thead th:last-child {
   </div>
 
   
-<div class="chart-container">
-  <div class="sensor-card">
-    <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
-    Tra cứu theo nhiệt độ
-  </div>
-  <div style="padding-top:20px">
-    <div class="lookup-grid">
-      <div class="date-wrapper">
-        <input id="lookupDate" placeholder="yyyy/MM/dd">
-        <i class="fas fa-calendar-alt calendar-icon"></i>
+  <div class="chart-container" style="margin: 0 auto;">
+    <div class="sensor-card">
+      <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
+      Tra cứu theo nhiệt độ
+    </div>
+    <div style="padding-top:20px">
+      <div class="lookup-grid">
+        <div class="date-wrapper">
+          <input id="tempLookupDate" placeholder="yyyy/MM/dd">
+          <i class="fas fa-calendar-alt calendar-icon"></i>
+        </div>
+        <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
+        <input type="number" id="tempMax" placeholder="Đến (°C)" style="min-width:120px;">
+        <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
+      </div>    
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
+              <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
+              <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
+            </tr>
+          </thead>
+          <tbody id="tempFilterTable"></tbody>
+        </table>
       </div>
-      <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
-      <input type="number" id="tempMax" placeholder="Đến (°C)" style="min-width:120px;">
-      <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
-    </div>
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
-            <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
-            <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
-          </tr>
-        </thead>
-        <tbody id="tempFilterTable"></tbody>
-      </table>
     </div>
   </div>
-</div>
 
 <div class="link">
     <a href="https://docs.google.com/spreadsheets/d/1Ykm-1BM1CLbGPo0fSaqCAMS0vFZ6tS3gDCXYmSM1pzI/edit?gid=0#gid=0" target="_blank">
