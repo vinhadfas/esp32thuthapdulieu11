@@ -473,35 +473,35 @@ thead th:last-child {
   </div>
 
   
-  <div class="chart-container" style="margin: 0 auto;">
-    <div class="sensor-card">
-      <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
-      Tra cứu theo nhiệt độ
-    </div>
-    <div style="padding-top:20px">
-      <div class="lookup-grid">
-        <div class="date-wrapper">
-          <input id="tempLookupDate" placeholder="yyyy/MM/dd">
-          <i class="fas fa-calendar-alt calendar-icon"></i>
-        </div>
-        <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
-        <input type="number" id="tempMax" placeholder="Đến (°C)" style="min-width:120px;">
-        <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
-      </div>    
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
-              <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
-              <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
-            </tr>
-          </thead>
-          <tbody id="tempFilterTable"></tbody>
-        </table>
+<div class="chart-container" style="margin: 0 auto;">
+  <div class="sensor-card">
+    <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
+    Tra cứu theo nhiệt độ
+  </div>
+  <div style="padding-top:20px">
+    <div class="lookup-grid">
+      <div class="date-wrapper">
+        <input id="tempLookupDate" placeholder="yyyy/MM/dd">
+        <i class="fas fa-calendar-alt calendar-icon"></i>
       </div>
+      <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
+      <input type="number" id="tempMax" placeholder="Đến (°C)" style="min-width:120px;">
+      <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
+    </div>    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
+            <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
+            <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
+          </tr>
+        </thead>
+        <tbody id="tempFilterTable"></tbody>
+      </table>
     </div>
   </div>
+</div>
 
 <div class="link">
     <a href="https://docs.google.com/spreadsheets/d/1Ykm-1BM1CLbGPo0fSaqCAMS0vFZ6tS3gDCXYmSM1pzI/edit?gid=0#gid=0" target="_blank">
