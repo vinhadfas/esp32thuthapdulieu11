@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const DATA_PATH  = path.join('/tmp', 'data.json');
+const DATA_PATH  = path.join(process.cwd(), 'data.json');
 
 /* đọc / ghi store */
 async function readStore() {
