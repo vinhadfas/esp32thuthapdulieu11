@@ -410,11 +410,21 @@ thead th:last-child {
   </div>  
   
   <div class="threshold-box">
-    <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
-    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
-    <button onclick="updateThresholds()">Áp dụng</button>
+    <div style="margin-bottom: 10px;">Ngưỡng cảm biến 1:</div>
+    <label>Ngưỡng trên:<input id="upperThreshold1" type="number">°C</label>
+    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold1" type="number">°C</label>
+    <button onclick="applyThreshold1()">Áp dụng</button>
+    <div id="tempStatus1" class="status-message">Trạng thái nhiệt độ: --</div>
+  </div>    
+  
+  <div class="threshold-box">
+    <div style="margin-bottom: 10px;">Ngưỡng cảm biến 2:</div>
+    <label>Ngưỡng trên:<input id="upperThreshold2" type="number">°C</label>
+    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold2" type="number">°C</label>
+    <button onclick="applyThreshold2()">Áp dụng</button>
     <div id="tempStatus" class="status-message">Trạng thái nhiệt độ: --</div>
-  </div>
+  </div>  
+
 
   <div class="dashboard">
     <div class="chart-container"><div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ 1: <span id="temp">--</span>°C</div><div id="tempChart" class="chart-box"></div></div>
@@ -506,266 +516,303 @@ thead th:last-child {
     <small>(Click để xem lại các giá trị đã lưu)</small>
   </div>
 
-<script>
-  flatpickr('#lookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
-  flatpickr('#tempLookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
-  Highcharts.setOptions({ time: { useUTC: false } });
-
-  const COLORS = {
-    Temperature1: '#07d3f2',
-    Temperature2: '#2b09a7',
-    Voltage: '#41f947',
-    Current: '#f3722c',
-    Power: '#f9c74f',
-    Energy: '#9b51e0',
-    Frequency: '#00bcd4'
-  };
-
-  const charts = {}, MAX_POINTS = 50;
-
-  const metrics = [
-    ['Temperature1', '°C', 'tempChart'],
-    ['Temperature2', '°C', 'temp2Chart'],
-    ['Voltage', 'V', 'voltageChart'],
-    ['Current', 'A', 'currentChart'],
-    ['Power', 'W', 'powerChart'],
-    ['Energy', 'kWh', 'energyChart'],
-    ['Frequency', 'Hz', 'frequencyChart']
-  ];
-
-  metrics.forEach(([title, u, div]) => {
-    charts[title] = Highcharts.chart(div, {
-      chart: { type: 'line', marginRight: 10 },
-      title: { text: title },
-      xAxis: {
-        type: 'datetime',
-        tickInterval: 30000,
-        labels: { format: '{value:%H:%M:%S}' }
-      },
-      yAxis: { title: { text: null } },
-      legend: { enabled: false },
-      credits: { enabled: false },
-      tooltip: {
-        formatter() {
-          return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>${Highcharts.numberFormat(this.y, 2)} ${u}`;
-        }
-      },
-      series: [{ name: title, data: [], color: COLORS[title] }]
-    });
-  });
-
-  function checkTempStatus() {
-    const low = parseFloat(lowerThreshold.value),
-          high = parseFloat(upperThreshold.value),
-          t = parseFloat(temp.textContent) || NaN;
-
-    if (isNaN(t)) {
-      tempStatus.textContent = 'Trạng thái nhiệt độ: --';
-      tempStatus.className = 'status-message';
-      return;
-    }
-
-    if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
-      let diff = '';
-      if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
-      else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
-      tempStatus.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
-      tempStatus.className = 'status-message warning';
-    } else {
-      tempStatus.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
-      tempStatus.className = 'status-message normal';
-    }
-  }
-
-  let lastTs = 0;
-  function updateCharts(p) {
-    const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
-    if (!ts || ts <= lastTs) return;
-    lastTs = ts;
-
-    const map = [
-      ['Temperature1', temp1, 'temp'],
-      ['Temperature2', temp2, 'temp2'],
-      ['Voltage', voltage, 'voltage'],
-      ['Current', current, 'current'],
-      ['Power', power, 'power'],
-      ['Energy', energy, 'energy'],
-      ['Frequency', frequency, 'frequency']
+  <script>
+    flatpickr('#lookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
+    flatpickr('#tempLookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
+    Highcharts.setOptions({ time: { useUTC: false } });
+    
+    const COLORS = {
+      Temperature1: '#07d3f2',
+      Temperature2: '#2b09a7',
+      Voltage: '#41f947',
+      Current: '#f3722c',
+      Power: '#f9c74f',
+      Energy: '#9b51e0',
+      Frequency: '#00bcd4'
+    };
+    
+    const charts = {}, MAX_POINTS = 50;
+    
+    const metrics = [
+      ['Temperature1', '°C', 'tempChart'],
+      ['Temperature2', '°C', 'temp2Chart'],
+      ['Voltage', 'V', 'voltageChart'],
+      ['Current', 'A', 'currentChart'],
+      ['Power', 'W', 'powerChart'],
+      ['Energy', 'kWh', 'energyChart'],
+      ['Frequency', 'Hz', 'frequencyChart']
     ];
-
-    map.forEach(([title, val, spanId]) => {
-      if (isNaN(val)) return;
-      const s = charts[title].series[0];
-      s.addPoint([ts, val], true, s.data.length >= MAX_POINTS);
-      const el = document.getElementById(spanId);
-      if (el) el.textContent = val.toFixed(2);
-    });
-
-    checkTempStatus();
-  }
-async function fetchSensorData() {
-  try {
-    const r = await fetch('/api/sensor', { cache: 'no-store' });
-    const { history, thresholds } = await r.json();
-
-    if (thresholds) {
-      if (!upperThreshold.value) upperThreshold.value = thresholds.tempHigh;
-      if (!lowerThreshold.value) lowerThreshold.value = thresholds.tempLow;
-    }
-    // ✅ Vẽ lại toàn bộ dữ liệu
-    if (Array.isArray(history) && history.length > 0) {
-      history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
-
-      const latest = history[history.length - 1];
-      if (latest) {
-        document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
-        document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
-        document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
-        document.getElementById('current').textContent   = !isNaN(latest.current) ? latest.current.toFixed(2) : '--';
-        document.getElementById('power').textContent     = !isNaN(latest.power) ? latest.power.toFixed(2) : '--';
-        document.getElementById('energy').textContent    = !isNaN(latest.energy) ? latest.energy.toFixed(3) : '--';
-        document.getElementById('frequency').textContent = !isNaN(latest.frequency) ? latest.frequency.toFixed(2) : '--';
-      }
-
-      checkTempStatus();
-    }
-
-  } catch (e) {
-    console.warn('Fetch error', e);
-  }
-}
-
-
-
-  async function updateThresholds() {
-    const low = parseFloat(lowerThreshold.value), high = parseFloat(upperThreshold.value);
-    if (isNaN(low) || isNaN(high)) {
-      alert('Nhập đủ hai ngưỡng!');
-      return;
-    }
-    if (low > high) {
-      alert('Ngưỡng thấp phải ≤ ngưỡng cao!');
-      return;
-    }
-    try {
-      const r = await fetch('/api/sensor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tempLow: low, tempHigh: high })
+    
+    metrics.forEach(([title, u, div]) => {
+      charts[title] = Highcharts.chart(div, {
+        chart: { type: 'line', marginRight: 10 },
+        title: { text: title },
+        xAxis: {
+          type: 'datetime',
+          tickInterval: 30000,
+          labels: { format: '{value:%H:%M:%S}' }
+        },
+        yAxis: { title: { text: null } },
+        legend: { enabled: false },
+        credits: { enabled: false },
+        tooltip: {
+          formatter() {
+            return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>${Highcharts.numberFormat(this.y, 2)} ${u}`;
+          }
+        },
+        series: [{ name: title, data: [], color: COLORS[title] }]
       });
-      if (!r.ok) throw new Error(await r.text());
-      alert('Đã lưu ngưỡng thành công!');
-      checkTempStatus();
-    } catch (e) {
-      alert('Lỗi: ' + e.message);
-    }
-  }
-
-  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShIPqq_63GhPwJPFtUPOzkj5QkI_Q1Xt4Eusy_W4yFIHbNBbXXAKmiX4zV6lirsyJiRUJ76KUT4pMk/pub?gid=0&single=true&output=csv';
-  let cacheRows = null;
-  async function loadData() {
-    if (cacheRows) return cacheRows;
-    const t = await (await fetch(CSV_URL)).text();
-    cacheRows = Papa.parse(t.trim(), { dynamicTyping: false }).data;
-    return cacheRows;
-  }
-
-  function appendRow(r) {
-    const tr = document.createElement('tr');
-    r.forEach(c => {
-      const td = document.createElement('td');
-      td.textContent = c || '';
-      tr.appendChild(td);
     });
-    resultTable.appendChild(tr);
-  }
-
-  function clearTable(msg) {
-    resultTable.innerHTML = '';
-    if (msg) {
-      const tr = document.createElement('tr'),
-            td = document.createElement('td');
-      td.colSpan = 9;
-      td.textContent = msg;
-      tr.appendChild(td);
-      resultTable.appendChild(tr);
+    
+    let lastTs = 0;
+    function updateCharts(p) {
+      const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
+      if (!ts || ts <= lastTs) return;
+      lastTs = ts;
+    
+      const map = [
+        ['Temperature1', temp1, 'temp'],
+        ['Temperature2', temp2, 'temp2'],
+        ['Voltage', voltage, 'voltage'],
+        ['Current', current, 'current'],
+        ['Power', power, 'power'],
+        ['Energy', energy, 'energy'],
+        ['Frequency', frequency, 'frequency']
+      ];
+    
+      map.forEach(([title, val, spanId]) => {
+        if (isNaN(val)) return;
+        const s = charts[title].series[0];
+        s.addPoint([ts, val], true, s.data.length >= MAX_POINTS);
+        const el = document.getElementById(spanId);
+        if (el) el.textContent = val.toFixed(2);
+      });
+    
+      checkTempStatus();
     }
-  }
-
-  document.getElementById('lookup').addEventListener('click', async () => {
-    const d = document.getElementById('lookupDate').value;
-    const h = document.getElementById('lookupHour').value;
-    if (!d || !h) {
-      alert('Chọn ngày & giờ!');
-      return;
+    
+    async function fetchSensorData() {
+      try {
+        const r = await fetch('/api/sensor', { cache: 'no-store' });
+        const { history, thresholds } = await r.json();
+    
+        if (thresholds) {
+          if (!upperThreshold.value) upperThreshold.value = thresholds.tempHigh;
+          if (!lowerThreshold.value) lowerThreshold.value = thresholds.tempLow;
+        }
+    
+        if (Array.isArray(history) && history.length > 0) {
+          history.forEach(updateCharts);
+          const latest = history[history.length - 1];
+          if (latest) {
+            document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
+            document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
+            document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
+            document.getElementById('current').textContent   = !isNaN(latest.current) ? latest.current.toFixed(2) : '--';
+            document.getElementById('power').textContent     = !isNaN(latest.power) ? latest.power.toFixed(2) : '--';
+            document.getElementById('energy').textContent    = !isNaN(latest.energy) ? latest.energy.toFixed(3) : '--';
+            document.getElementById('frequency').textContent = !isNaN(latest.frequency) ? latest.frequency.toFixed(2) : '--';
+          }
+          checkTempStatus();
+        }
+      } catch (e) {
+        console.warn('Fetch error', e);
+      }
     }
-
-    const [y, m, dd] = d.split('/');
-    const targetDate = `${y}-${m}-${dd}`;
-    const targetTime = h + ':';
-
-    try {
-      const rows = await loadData();
-      const match = rows.slice(1).filter(r => r[0] === targetDate && String(r[1]).startsWith(targetTime));
-      clearTable();
-      if (!match.length) {
-        clearTable('Không tìm thấy dữ liệu.');
+    
+    async function updateThresholds() {
+      const low = parseFloat(lowerThreshold.value), high = parseFloat(upperThreshold.value);
+      if (isNaN(low) || isNaN(high)) {
+        alert('Nhập đủ hai ngưỡng!');
         return;
       }
-      match.forEach(appendRow);
-    } catch (e) {
-      console.error(e);
-      clearTable('Lỗi tải dữ liệu');
+      if (low > high) {
+        alert('Ngưỡng thấp phải ≤ ngưỡng cao!');
+        return;
+      }
+      try {
+        const r = await fetch('/api/sensor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tempLow: low, tempHigh: high })
+        });
+        if (!r.ok) throw new Error(await r.text());
+        alert('Đã lưu ngưỡng thành công!');
+        checkTempStatus();
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
     }
-  });
-
-  
-function filterByTemperature() {
-  const min = parseFloat(document.getElementById('tempMin').value);
-  const max = parseFloat(document.getElementById('tempMax').value);
-  const dateInput = document.getElementById('tempLookupDate').value;
-  const tbody = document.getElementById('tempFilterTable');
-  tbody.innerHTML = '';
-
-  if (isNaN(min) || isNaN(max)) {
-    tbody.innerHTML = `<tr><td colspan="9">Vui lòng nhập khoảng nhiệt độ hợp lệ.</td></tr>`;
-    return;
-  }
-
-  if (min > max) {
-    tbody.innerHTML = `<tr><td colspan="9">Giá trị "Từ" phải nhỏ hơn hoặc bằng "Đến".</td></tr>`;
-    return;
-  }
-
-  loadData().then(rows => {
-    const matches = rows.slice(1).filter(r => {
-      const t1 = parseFloat(r[7]);
-      const t2 = parseFloat(r[8]);
-      return (!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max);
-    });
-
-    if (!matches.length) {
-      tbody.innerHTML = `<tr><td colspan="9">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
-      return;
+    
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShIPqq_63GhPwJPFtUPOzkj5QkI_Q1Xt4Eusy_W4yFIHbNBbXXAKmiX4zV6lirsyJiRUJ76KUT4pMk/pub?gid=0&single=true&output=csv';
+    let cacheRows = null;
+    
+    async function loadData() {
+      if (cacheRows) return cacheRows;
+      const t = await (await fetch(CSV_URL)).text();
+      cacheRows = Papa.parse(t.trim(), { dynamicTyping: false }).data;
+      return cacheRows;
     }
-
-    matches.forEach(row => {
+    
+    function appendRow(r) {
       const tr = document.createElement('tr');
-      row.forEach(c => {
+      r.forEach(c => {
         const td = document.createElement('td');
         td.textContent = c || '';
         tr.appendChild(td);
       });
-      tbody.appendChild(tr);
+      resultTable.appendChild(tr);
+    }
+    
+    function clearTable(msg) {
+      resultTable.innerHTML = '';
+      if (msg) {
+        const tr = document.createElement('tr'),
+              td = document.createElement('td');
+        td.colSpan = 9;
+        td.textContent = msg;
+        tr.appendChild(td);
+        resultTable.appendChild(tr);
+      }
+    }
+    
+    document.getElementById('lookup').addEventListener('click', async () => {
+      const d = document.getElementById('lookupDate').value;
+      const h = document.getElementById('lookupHour').value;
+      if (!d || !h) {
+        alert('Chọn ngày & giờ!');
+        return;
+      }
+    
+      const [y, m, dd] = d.split('/');
+      const targetDate = `${y}-${m}-${dd}`;
+      const targetTime = h + ':';
+    
+      try {
+        const rows = await loadData();
+        const match = rows.slice(1).filter(r => r[0] === targetDate && String(r[1]).startsWith(targetTime));
+        clearTable();
+        if (!match.length) {
+          clearTable('Không tìm thấy dữ liệu.');
+          return;
+        }
+        match.forEach(appendRow);
+      } catch (e) {
+        console.error(e);
+        clearTable('Lỗi tải dữ liệu');
+      }
     });
-  }).catch(err => {
-    tbody.innerHTML = `<tr><td colspan="9">Lỗi khi tải dữ liệu.</td></tr>`;
-  });
-}
-
-fetchSensorData();
-  setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
-</script>
-
+    
+    function filterByTemperature() {
+      const min = parseFloat(document.getElementById('tempMin').value);
+      const max = parseFloat(document.getElementById('tempMax').value);
+      const dateInput = document.getElementById('tempLookupDate').value;
+      const tbody = document.getElementById('tempFilterTable');
+      tbody.innerHTML = '';
+    
+      if (isNaN(min) || isNaN(max)) {
+        tbody.innerHTML = `<tr><td colspan="9">Vui lòng nhập khoảng nhiệt độ hợp lệ.</td></tr>`;
+        return;
+      }
+    
+      if (min > max) {
+        tbody.innerHTML = `<tr><td colspan="9">Giá trị "Từ" phải nhỏ hơn hoặc bằng "Đến".</td></tr>`;
+        return;
+      }
+    
+      loadData().then(rows => {
+        const matches = rows.slice(1).filter(r => {
+          const t1 = parseFloat(r[7]);
+          const t2 = parseFloat(r[8]);
+          return (!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max);
+        });
+    
+        if (!matches.length) {
+          tbody.innerHTML = `<tr><td colspan="9">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+          return;
+        }
+    
+        matches.forEach(row => {
+          const tr = document.createElement('tr');
+          row.forEach(c => {
+            const td = document.createElement('td');
+            td.textContent = c || '';
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }).catch(err => {
+        tbody.innerHTML = `<tr><td colspan="9">Lỗi khi tải dữ liệu.</td></tr>`;
+      });
+    }
+    
+    // 🟩 BỔ SUNG: Kiểm tra và áp dụng ngưỡng cho cảm biến 1 & 2
+    function applyThreshold1() {
+      checkTempStatus1();
+    }
+    
+    function applyThreshold2() {
+      checkTempStatus2();
+    }
+    
+    function checkTempStatus1() {
+      const low = parseFloat(document.getElementById('lowerThreshold1').value),
+            high = parseFloat(document.getElementById('upperThreshold1').value),
+            t = parseFloat(document.getElementById('temp').textContent) || NaN;
+    
+      const status = document.getElementById('tempStatus1');
+    
+      if (isNaN(t)) {
+        status.textContent = 'Trạng thái nhiệt độ: --';
+        status.className = 'status-message';
+        return;
+      }
+    
+      if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
+        let diff = '';
+        if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
+        else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
+        status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
+        status.className = 'status-message warning';
+      } else {
+        status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
+        status.className = 'status-message normal';
+      }
+    }
+    
+    function checkTempStatus2() {
+      const low = parseFloat(document.getElementById('lowerThreshold2').value),
+            high = parseFloat(document.getElementById('upperThreshold2').value),
+            t = parseFloat(document.getElementById('temp2').textContent) || NaN;
+    
+      const status = document.getElementById('tempStatus');
+    
+      if (isNaN(t)) {
+        status.textContent = 'Trạng thái nhiệt độ: --';
+        status.className = 'status-message';
+        return;
+      }
+    
+      if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
+        let diff = '';
+        if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
+        else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
+        status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
+        status.className = 'status-message warning';
+      } else {
+        status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
+        status.className = 'status-message normal';
+      }
+    }
+    
+    function checkTempStatus() {
+      checkTempStatus1();
+      checkTempStatus2();
+    }
+    
+    fetchSensorData();
+    setInterval(fetchSensorData, 30000);
+    </script>
+    
 </body>
 </html>
