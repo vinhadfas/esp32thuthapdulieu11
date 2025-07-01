@@ -23,50 +23,13 @@
       background: #eef9f8;
     }
     .header {
-  background: #4eb9b7;
-  color: #fff;
-  padding: 1.0rem;
-  font-size: 1.7rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  text-align: center;
-}
-
-/* Nút mũi tên nổi bật nằm sát rìa trái */
-.back-btn {
-  position: absolute;
-  left: 20px;
-  background: rgba(255, 255, 255, 0.15); /* nền nhạt nổi bật */
-  border: none;
-  color: #fff;
-  font-size: 1.5rem;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Tiêu đề giữ căn giữa */
-.title-text {
-  flex: none;
-  max-width: 80%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
+      background: #4eb9b7;
+      color: #fff;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
   
     .threshold-box {
       background: #fff;
@@ -144,20 +107,20 @@
       justify-content: center;
       align-items: center;
       gap: 1rem;
-      flex-wrap: wrap;
-      max-width: 600px;
+      flex-wrap: nowrap; /* ép nằm 1 hàng ngang */
+      max-width: 100%;
       margin: 0 auto 1rem;
     }
-  
+
     .lookup-grid input, .lookup-grid select {
-      padding: .55rem;
-      border: 1px solid #ccc;
-      border-radius: 20px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.95rem;
+      width: auto;
+      min-width: 90px;
+      max-width: 150px;
       text-align: center;
-      font-size: 1rem;
-      background: #fff;
     }
-  
+
     .lookup-grid select {
       width: 150px;
     }
@@ -167,12 +130,11 @@
     }
   
     .date-wrapper input {
-      width: 180px;
-      padding: .6rem 2.5rem .6rem .8rem;
-      font-size: 1rem;
-      border-radius: 20px;
+      width: 140px;
+      padding: 0.45rem 2rem 0.45rem 0.6rem;
+      font-size: 0.95rem;
     }
-  
+
     .calendar-icon {
       position: absolute;
       right: 1.2rem;
@@ -188,8 +150,9 @@
       color: #fff;
       border: none;
       border-radius: 20px;
-      padding: .6rem 1.6rem;
-      font-weight: 700;
+      padding: 0.45rem 1rem;       /* Giảm padding */
+      font-weight: 600;
+      font-size: 0.95rem;          /* Nhỏ lại một chút */padding: .6rem 1.6rem;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
@@ -197,60 +160,34 @@
     .lookup-btn:hover {
       background-color: #3baaa8;
     }
-    .table-container {
-  max-height: 260px;
-  overflow-y: auto;
-  overflow-x: auto;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-top: 0.75rem;
-  width: 100%;
-}
-
-/* Đồng bộ kích thước bảng */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  table-layout: fixed;
-  min-width: 950px; /* ⚠️ đảm bảo cả 2 bảng rộng như nhau */
-}
-
-/* Ô bảng */
-th, td {
-  border: 1px solid #ccc;
-  padding: .5rem .6rem;
-  font-size: 0.9rem;
-  text-align: center;
-  background: #fff;
-  word-break: break-word;
-}
-
-/* Tiêu đề cố định */
-thead th {
-  position: sticky;
-  top: 0;
-  background: #b2dfdb;
-  z-index: 10;
-  font-weight: 700;
-  box-shadow: 0 2px 2px rgba(0,0,0,0.03);
-}
-
-/* Dòng chẵn đổi màu */
-tbody tr:nth-child(even) {
-  background: #f5f5f5;
-}
-
-/* bo góc đẹp */
-thead th:first-child {
-  border-top-left-radius: 8px;
-}
-thead th:last-child {
-  border-top-right-radius: 8px;
-}
   
- 
-
+    .table-container {
+      max-height: 260px;
+      overflow: auto;
+      margin-top: .75rem;
+    }
+  
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  
+    th, td {
+      border: 1px solid #ccc;
+      padding: .35rem .55rem;
+      font-size: .9rem;
+      text-align: center;
+    }
+  
+    thead {
+      background: #b2dfdb;
+      position: sticky;
+      top: 0;
+      font-weight: 700;
+    }
     tbody tr:nth-child(even) {
       background: #f5f5f5;
     }
@@ -284,25 +221,11 @@ thead th:last-child {
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
-  .header {
-    font-size: 1.25rem;
-    padding: 1rem 1rem 1rem 3.2rem;
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
   }
-
-  .title-text {
-    font-size: 1rem;
-    padding: 0 0.5rem;
-    max-width: 100%;
-    text-align: center;
-  }
-
-  .back-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1.2rem;
-    left: 8px;
-  }
-
 
   /* ===== DASHBOARD ===== */
   .dashboard{
@@ -399,26 +322,61 @@ thead th:last-child {
   -webkit-appearance: none;
  }
 }
+
+  /* Bo tròn input/select trong lookup và filter */
+  .lookup-grid input,
+  .lookup-grid select {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+
+  .lookup-grid input[type="number"] {
+    min-width: 100px;
+  }
+
+  /* định dạng icon chỗ nhập dữ liệu */
+  .date-input-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .date-input-wrapper input {
+    padding-right: 30px; /* để chừa chỗ icon */
+  }
+
+  .calendar-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
+  }
   </style>
   
-
+  </style>
 </head>
 <body>
 
-  <div class="header">
-    <a class="back-btn" href="https://esp32thuthapdulieu.vercel.app/">
-      <i class="fas fa-arrow-left"></i>
-    </a>
-    </button>
-    <span class="title-text">MÔ HÌNH 1 HỆ THỐNG GIÁM SÁT XE TẢI <br>ĐÔNG LẠNH DÙNG IoT ESP32</span>
-  </div>  
-  
+  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
+
   <div class="threshold-box">
-    <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
-    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
-    <button onclick="updateThresholds()">Áp dụng</button>
+    <div style="margin-bottom: 10px;">Ngưỡng cảm biến 1:</div>
+    <label>Ngưỡng trên:<input id="upperThreshold1" type="number">°C</label>
+    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold1" type="number">°C</label>
+    <button onclick="applyThreshold1()">Áp dụng</button>
+    <div id="tempStatus1" class="status-message">Trạng thái nhiệt độ: --</div>
+  </div>    
+  <div class="threshold-box">
+    <div style="margin-bottom: 10px;">Ngưỡng cảm biến 2:</div>
+    <label>Ngưỡng trên:<input id="upperThreshold2" type="number">°C</label>
+    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold2" type="number">°C</label>
+    <button onclick="applyThreshold2()">Áp dụng</button>
     <div id="tempStatus" class="status-message">Trạng thái nhiệt độ: --</div>
-  </div>
+  </div>  
 
   <div class="dashboard">
     <div class="chart-container"><div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ 1: <span id="temp">--</span>°C</div><div id="tempChart" class="chart-box"></div></div>
@@ -473,35 +431,36 @@ thead th:last-child {
   </div>
 
   
-  <div class="chart-container" style="margin: 0 auto;">
-    <div class="sensor-card">
-      <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
-      Tra cứu theo nhiệt độ
-    </div>
-    <div style="padding-top:20px">
-      <div class="lookup-grid">
-        <div class="date-wrapper">
-          <input id="tempLookupDate" placeholder="yyyy/MM/dd">
-          <i class="fas fa-calendar-alt calendar-icon"></i>
-        </div>
-        <input type="number" id="tempMin" placeholder="Từ (°C)" style="min-width:120px;">
-        <input type="number" id="tempMax" placeholder="Đến (°C)" style="min-width:120px;">
-        <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
-      </div>    
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
-              <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
-              <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
-            </tr>
-          </thead>
-          <tbody id="tempFilterTable"></tbody>
-        </table>
+<div class="chart-container" style="margin: 0 auto;">
+  <div class="sensor-card">
+    <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
+    Tra cứu theo nhiệt độ
+  </div>
+  <div style="padding-top:20px">
+    <div class="lookup-grid">
+      <div class="date-wrapper">
+        <input id="tempLookupDate" placeholder="yyyy/MM/dd">
+        <i class="fas fa-calendar-alt calendar-icon"></i>
       </div>
+      <input type="number" id="tempMin" placeholder="Từ (°C)">
+      <input type="number" id="tempMax" placeholder="Đến (°C)">
+      <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
+    </div>
+        
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
+            <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
+            <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
+          </tr>
+        </thead>
+        <tbody id="tempFilterTable"></tbody>
+      </table>
     </div>
   </div>
+</div>
 
 <div class="link">
     <a href="https://docs.google.com/spreadsheets/d/1Ykm-1BM1CLbGPo0fSaqCAMS0vFZ6tS3gDCXYmSM1pzI/edit?gid=0#gid=0" target="_blank">
@@ -581,6 +540,31 @@ thead th:last-child {
     }
   }
 
+  function checkTempStatus1() {
+  const low = parseFloat(lowerThreshold1.value),
+        high = parseFloat(upperThreshold1.value),
+        t = parseFloat(temp.textContent) || NaN;
+
+  const status = document.getElementById('tempStatus1');
+
+  if (isNaN(t)) {
+    status.textContent = 'Trạng thái nhiệt độ: --';
+    status.className = 'status-message';
+    return;
+  }
+
+  if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
+    let diff = '';
+    if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
+    else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
+    status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
+    status.className = 'status-message warning';
+  } else {
+    status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
+    status.className = 'status-message normal';
+  }
+}
+
   let lastTs = 0;
   function updateCharts(p) {
     const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
@@ -604,8 +588,8 @@ thead th:last-child {
       const el = document.getElementById(spanId);
       if (el) el.textContent = val.toFixed(2);
     });
-
     checkTempStatus();
+    checkTempStatus1();
   }
 async function fetchSensorData() {
   try {
@@ -613,9 +597,12 @@ async function fetchSensorData() {
     const { history, thresholds } = await r.json();
 
     if (thresholds) {
-      if (!upperThreshold.value) upperThreshold.value = thresholds.tempHigh;
-      if (!lowerThreshold.value) lowerThreshold.value = thresholds.tempLow;
+      if (!upperThreshold1.value) upperThreshold1.value = thresholds.tempHigh1;
+      if (!lowerThreshold1.value) lowerThreshold1.value = thresholds.tempLow1;
+      if (!upperThreshold2.value) upperThreshold2.value = thresholds.tempHigh2;
+      if (!lowerThreshold2.value) lowerThreshold2.value = thresholds.tempLow2;
     }
+
     // ✅ Vẽ lại toàn bộ dữ liệu
     if (Array.isArray(history) && history.length > 0) {
       history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
@@ -639,10 +626,12 @@ async function fetchSensorData() {
   }
 }
 
-
-
   async function updateThresholds() {
-    const low = parseFloat(lowerThreshold.value), high = parseFloat(upperThreshold.value);
+    const low1 = parseFloat(lowerThreshold1.value),
+          high1 = parseFloat(upperThreshold1.value),
+          low2 = parseFloat(lowerThreshold2.value),
+          high2 = parseFloat(upperThreshold2.value);
+
     if (isNaN(low) || isNaN(high)) {
       alert('Nhập đủ hai ngưỡng!');
       return;
@@ -653,13 +642,18 @@ async function fetchSensorData() {
     }
     try {
       const r = await fetch('/api/sensor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tempLow: low, tempHigh: high })
-      });
-      if (!r.ok) throw new Error(await r.text());
-      alert('Đã lưu ngưỡng thành công!');
-      checkTempStatus();
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tempLow1: low1,
+        tempHigh1: high1,
+        tempLow2: low2,
+        tempHigh2: high2
+      })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    alert('Đã lưu ngưỡng thành công!');
+
     } catch (e) {
       alert('Lỗi: ' + e.message);
     }
@@ -723,8 +717,7 @@ async function fetchSensorData() {
     }
   });
 
-  
-function filterByTemperature() {
+  function filterByTemperature() {
   const min = parseFloat(document.getElementById('tempMin').value);
   const max = parseFloat(document.getElementById('tempMax').value);
   const dateInput = document.getElementById('tempLookupDate').value;
@@ -742,10 +735,15 @@ function filterByTemperature() {
   }
 
   loadData().then(rows => {
+    const [y, m, d] = dateInput ? dateInput.split('/') : [null, null, null];
+    const targetDate = y && m && d ? `${y}-${m}-${d}` : null;
+
     const matches = rows.slice(1).filter(r => {
       const t1 = parseFloat(r[7]);
       const t2 = parseFloat(r[8]);
-      return (!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max);
+      const matchTemp = ((!isNaN(t1) && t1 >= min && t1 <= max) || (!isNaN(t2) && t2 >= min && t2 <= max));
+      const matchDate = !targetDate || r[0] === targetDate;
+      return matchTemp && matchDate;
     });
 
     if (!matches.length) {
@@ -768,7 +766,7 @@ function filterByTemperature() {
 }
 
 fetchSensorData();
-  setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
+setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
 </script>
 
 </body>
