@@ -23,50 +23,13 @@
       background: #eef9f8;
     }
     .header {
-  background: #4eb9b7;
-  color: #fff;
-  padding: 1.0rem;
-  font-size: 1.7rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  text-align: center;
-}
-
-/* Nút mũi tên nổi bật nằm sát rìa trái */
-.back-btn {
-  position: absolute;
-  left: 20px;
-  background: rgba(255, 255, 255, 0.15); /* nền nhạt nổi bật */
-  border: none;
-  color: #fff;
-  font-size: 1.5rem;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Tiêu đề giữ căn giữa */
-.title-text {
-  flex: none;
-  max-width: 80%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
+      background: #4eb9b7;
+      color: #fff;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
   
     .threshold-box {
       background: #fff;
@@ -284,11 +247,11 @@ thead th:last-child {
 @media (max-width: 768px) {
 
   /* ===== HEADER ===== */
-  .header {
-    font-size: 1.25rem;
-    padding: 1rem 1rem 1rem 3.2rem;
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
   }
-
   .title-text {
     font-size: 1rem;
     padding: 0 0.5rem;
@@ -406,16 +369,16 @@ thead th:last-child {
 <body>
 
   <div class="header">
-    <span class="title-text">MÔ HÌNH 1 HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH <br>DÙNG IoT ESP32</span>
+    <span class="title-text">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</span>
   </div>  
-  
+
   <div class="threshold-box">
     <div style="margin-bottom: 10px;">Ngưỡng cảm biến 1:</div>
     <label>Ngưỡng trên:<input id="upperThreshold1" type="number">°C</label>
     <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold1" type="number">°C</label>
     <button onclick="applyThreshold1()">Áp dụng</button>
     <div id="tempStatus1" class="status-message">Trạng thái nhiệt độ: --</div>
-  </div>    
+  </div>
   
   <div class="threshold-box">
     <div style="margin-bottom: 10px;">Ngưỡng cảm biến 2:</div>
@@ -423,7 +386,8 @@ thead th:last-child {
     <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold2" type="number">°C</label>
     <button onclick="applyThreshold2()">Áp dụng</button>
     <div id="tempStatus" class="status-message">Trạng thái nhiệt độ: --</div>
-  </div>  
+  </div>
+  
 
 
   <div class="dashboard">
@@ -633,29 +597,42 @@ thead th:last-child {
   }
 }
 
-    async function updateThresholds() {
-      const low = parseFloat(lowerThreshold.value), high = parseFloat(upperThreshold.value);
-      if (isNaN(low) || isNaN(high)) {
-        alert('Nhập đủ hai ngưỡng!');
-        return;
-      }
-      if (low > high) {
-        alert('Ngưỡng thấp phải ≤ ngưỡng cao!');
-        return;
-      }
-      try {
-        const r = await fetch('/api/sensor', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tempLow: low, tempHigh: high })
-        });
-        if (!r.ok) throw new Error(await r.text());
-        alert('Đã lưu ngưỡng thành công!');
-        checkTempStatus();
-      } catch (e) {
-        alert('Lỗi: ' + e.message);
-      }
-    }
+async function updateThresholds() {
+  const low1 = parseFloat(lowerThreshold1.value),
+        high1 = parseFloat(upperThreshold1.value),
+        low2 = parseFloat(lowerThreshold2.value),
+        high2 = parseFloat(upperThreshold2.value);
+
+  if (isNaN(low1) || isNaN(high1) || isNaN(low2) || isNaN(high2)) {
+    alert('Vui lòng nhập đủ 4 ngưỡng!');
+    return;
+  }
+
+  if (low1 > high1 || low2 > high2) {
+    alert('Ngưỡng thấp phải ≤ ngưỡng cao!');
+    return;
+  }
+
+  try {
+    const r = await fetch('/api/sensor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tempLow1: low1,
+        tempHigh1: high1,
+        tempLow2: low2,
+        tempHigh2: high2
+      })
+    });
+
+    if (!r.ok) throw new Error(await r.text());
+    alert('Đã lưu ngưỡng thành công!');
+    checkTempStatus();
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
+  }
+}
+
     
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShIPqq_63GhPwJPFtUPOzkj5QkI_Q1Xt4Eusy_W4yFIHbNBbXXAKmiX4zV6lirsyJiRUJ76KUT4pMk/pub?gid=0&single=true&output=csv';
     let cacheRows = null;
@@ -761,67 +738,63 @@ thead th:last-child {
     
     // 🟩 BỔ SUNG: Kiểm tra và áp dụng ngưỡng cho cảm biến 1 & 2
     function applyThreshold1() {
-      checkTempStatus1();
-    }
-    
-    function applyThreshold2() {
-      checkTempStatus2();
-    }
-    
-    function checkTempStatus1() {
-      const low = parseFloat(document.getElementById('lowerThreshold1').value),
-            high = parseFloat(document.getElementById('upperThreshold1').value),
-            t = parseFloat(document.getElementById('temp').textContent) || NaN;
-    
-      const status = document.getElementById('tempStatus1');
-    
-      if (isNaN(t)) {
-        status.textContent = 'Trạng thái nhiệt độ: --';
-        status.className = 'status-message';
-        return;
-      }
-    
-      if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
-        let diff = '';
-        if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
-        else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
-        status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
-        status.className = 'status-message warning';
-      } else {
-        status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
-        status.className = 'status-message normal';
-      }
-    }
-    
-    function checkTempStatus2() {
-      const low = parseFloat(document.getElementById('lowerThreshold2').value),
-            high = parseFloat(document.getElementById('upperThreshold2').value),
-            t = parseFloat(document.getElementById('temp2').textContent) || NaN;
-    
-      const status = document.getElementById('tempStatus');
-    
-      if (isNaN(t)) {
-        status.textContent = 'Trạng thái nhiệt độ: --';
-        status.className = 'status-message';
-        return;
-      }
-    
-      if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
-        let diff = '';
-        if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
-        else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
-        status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
-        status.className = 'status-message warning';
-      } else {
-        status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
-        status.className = 'status-message normal';
-      }
-    }
-    
-    function checkTempStatus() {
-      checkTempStatus1();
-      checkTempStatus2();
-    }
+  checkTempStatus1();
+}
+function applyThreshold2() {
+  checkTempStatus2();
+}
+function checkTempStatus() {
+  checkTempStatus1();
+  checkTempStatus2();
+}
+function checkTempStatus1() {
+  const low = parseFloat(document.getElementById('lowerThreshold1').value),
+        high = parseFloat(document.getElementById('upperThreshold1').value),
+        t = parseFloat(document.getElementById('temp').textContent) || NaN;
+
+  const status = document.getElementById('tempStatus1');
+  if (isNaN(t)) {
+    status.textContent = 'Trạng thái nhiệt độ: --';
+    status.className = 'status-message';
+    return;
+  }
+
+  if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
+    let diff = '';
+    if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
+    else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
+    status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
+    status.className = 'status-message warning';
+  } else {
+    status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
+    status.className = 'status-message normal';
+  }
+}
+
+function checkTempStatus2() {
+  const low = parseFloat(document.getElementById('lowerThreshold2').value),
+        high = parseFloat(document.getElementById('upperThreshold2').value),
+        t = parseFloat(document.getElementById('temp2').textContent) || NaN;
+
+  const status = document.getElementById('tempStatus');
+  if (isNaN(t)) {
+    status.textContent = 'Trạng thái nhiệt độ: --';
+    status.className = 'status-message';
+    return;
+  }
+
+  if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
+    let diff = '';
+    if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
+    else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
+    status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
+    status.className = 'status-message warning';
+  } else {
+    status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
+    status.className = 'status-message normal';
+  }
+}
+
     
     fetchSensorData();
     setInterval(fetchSensorData, 30000);
