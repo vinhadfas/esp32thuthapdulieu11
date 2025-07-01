@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         temp1,
         temp2
       });
-      //if (store.history.length > MAX_POINTS) store.history.shift();
+  
       changed = true;
     }
 
