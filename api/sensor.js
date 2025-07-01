@@ -2,7 +2,6 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const DATA_PATH  = path.join('/tmp', 'data.json');
-const MAX_POINTS = 50;
 
 /* đọc / ghi store */
 async function readStore() {
