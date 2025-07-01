@@ -22,6 +22,7 @@
       font-family: Arial, sans-serif;
       background: #eef9f8;
     }
+  
     .header {
       background: #4eb9b7;
       color: #fff;
@@ -41,10 +42,12 @@
       text-align: center;
       font-weight: 700;
     }
+  
     .threshold-box label {
       font-weight: bold;
       margin: 0 .5rem;
     }
+  
     .threshold-box input {
       width: 70px;
       text-align: center;
@@ -53,6 +56,7 @@
       border-radius: 6px;
       font-size: 1rem;
     }
+  
     .threshold-box button {
       margin-left: .8rem;
       background: #4eb9b7;
@@ -77,14 +81,14 @@
     }
   
     .chart-container {
-      background: #fff;
-      border-radius: 1rem;
-      box-shadow: 0 6px 16px rgba(0,0,0,.1);
-      width: 650px;
-      max-width: 95vw;
-      position: relative;
-      padding: 3.2rem 1rem 1rem;
-    }
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 6px 16px rgba(0,0,0,.1);
+    width: 650px;
+    max-width: 95vw;
+    position: relative;
+    padding: 3.2rem 1rem 1rem;
+  }
   
     .chart-box { height: 290px; margin-bottom: 1rem; }
   
@@ -101,43 +105,36 @@
       align-items: center;
     }
   
-    /* LOOKUP: tra cứu ngày giờ */
     .lookup-grid {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: nowrap; /* ép nằm 1 hàng ngang */
-      max-width: 100%;
-      margin: 0 auto 1rem;
-    }
-
-    .lookup-grid input, .lookup-grid select {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.95rem;
-      width: auto;
-      min-width: 90px;
-      max-width: 150px;
-      text-align: center;
-    }
-
-    .lookup-grid select {
-      width: 150px;
+      flex-direction: column;
+      gap: 0.85rem;
+      align-items: stretch;
     }
   
     .date-wrapper {
       position: relative;
+      width: 100%;
     }
   
-    .date-wrapper input {
-      width: 140px;
-      padding: 0.45rem 2rem 0.45rem 0.6rem;
-      font-size: 0.95rem;
+    .date-wrapper input,
+    .date-wrapper select,
+    #lookupHour,
+    #tempMin,
+    #tempMax {
+      width: 100%;
+      font-size: 1rem;
+      border-radius: 30px;
+      border: 1px solid #ccc;
+      padding: 0.6rem 1.2rem;
+      box-sizing: border-box;
+      text-align: left;
+      background: #fff;
     }
-
+  
     .calendar-icon {
       position: absolute;
-      right: 1.2rem;
+      right: 14px;
       top: 50%;
       transform: translateY(-50%);
       color: #888;
@@ -146,16 +143,18 @@
     }
   
     .lookup-btn {
+      align-self: center;
+      width: 100%;
+      max-width: 320px;
+      padding: 0.7rem 1rem;
+      font-size: 1.05rem;
       background: #4eb9b7;
       color: #fff;
       border: none;
-      border-radius: 20px;
-      padding: 0.45rem 1rem;       /* Giảm padding */
-      font-weight: 600;
-      font-size: 0.95rem;          /* Nhỏ lại một chút */
-      padding: .6rem 1.6rem;
+      border-radius: 30px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s;
     }
   
     .lookup-btn:hover {
@@ -163,35 +162,43 @@
     }
   
     .table-container {
-      max-height: 260px;
-      overflow: auto;
       margin-top: .75rem;
+      max-height: 260px;
+      overflow-x: auto;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 100%;
     }
   
     table {
       border-collapse: collapse;
       width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
+      table-layout: fixed;
+      min-width: 950px;
     }
   
     th, td {
       border: 1px solid #ccc;
-      padding: .35rem .55rem;
-      font-size: .9rem;
+      padding: .5rem .6rem;
+      font-size: 0.9rem;
       text-align: center;
+      background: #fff;
+      word-break: break-word;
     }
   
-    thead {
-      background: #b2dfdb;
+    thead th {
       position: sticky;
       top: 0;
+      background: #b2dfdb;
+      z-index: 10;
       font-weight: 700;
+      box-shadow: 0 2px 2px rgba(0,0,0,0.03);
     }
-    tbody tr:nth-child(even) {
-      background: #f5f5f5;
-    }
+  
+    thead th:first-child { border-top-left-radius: 8px; }
+    thead th:last-child { border-top-right-radius: 8px; }
+    tbody tr:nth-child(even) { background: #f5f5f5; }
   
     .link {
       display: flex;
@@ -212,153 +219,115 @@
       box-shadow: 0 2px 4px rgba(0,0,0,.1);
     }
   
-    .link small {
-      color: #333;
-      }
-
-  
-    /* ---------- MOBILE ≤ 768px ---------- */
-   /* ---------- MOBILE ≤ 768px ---------- */
-@media (max-width: 768px) {
-
-  /* ===== HEADER ===== */
-  .header{
-    font-size:1.3rem;
-    padding:1rem;
-    text-align:center;
-  }
-
-  /* ===== DASHBOARD ===== */
-  .dashboard{
-    flex-direction:column;
-    align-items:center;
-  }
-  .chart-container{
-    width:94%;
-    padding:3.2rem 1rem 1rem;
-    margin-bottom:1.5rem;
-  }
-  .chart-box{height:260px}
-  .sensor-card{
-    font-size:1.1rem;
-    padding:.6rem 1rem;
-    top:12px;left:12px;
-  }
-
-  /* ===== THRESHOLD (xếp dọc) ===== */
-  .threshold-box{
-    width:max-content;
-    margin:1.2rem auto 0;
-    padding:1rem 1.5rem;
-    font-size:.95rem;
-    display:grid;
-    grid-template-columns:1fr;
-    row-gap:.8rem;
-    text-align:center;
-  }
-  .threshold-box label{font-weight:bold;justify-self:center}
-  .threshold-box input{width:90px}
-  .threshold-box button{
-    grid-column:1/-1;
-    justify-self:center;
-    padding:.5rem 1rem;
-    max-width:240px;
-    margin-top:.2rem;
-  }
-  .threshold-box .status-message{
-    grid-column:1/-1;
-    margin-top:1rem;
-    font-weight:bold;
-  }
-
-  /* ===== LOOKUP ===== */
-  .lookup-grid{
-    flex-direction:column;       /* xếp dọc toàn bộ */
-    gap:.85rem;
-    align-items:stretch;
-  }
-
-  /* cụm ngày + icon */
-  .date-wrapper,
-  #lookupTime{
-    flex:1 1 100%;
-  }
-  .date-wrapper input,
-  #lookupTime {
-    width: 100%;
-    border-radius: 20px;
-    font-size: 1rem;
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    /* GỠ dòng này nếu ảnh hưởng đến dropdown */
-     text-align: left; 
-    box-sizing: border-box;
-  }
+    .link small { color: #333; }
+    @media (max-width: 768px) {
 
 
-  /* ẩn “order” cũ, chuyển sang hàng mới */
-  .lookup-btn{
-    align-self:center;           /* căn giữa */
-    order:3;                     /* luôn ở cuối */
-    width:100%;                  /* full khối – giống ảnh */
-    max-width:320px;
-    padding:.7rem 1rem;
-    font-size:1.05rem;
-    background:#4eb9b7;
-    color:#fff;
-    border:none;
-    border-radius:30px;
-    font-weight:bold;
-    cursor:pointer;
-  }
-
-  /* bảng kết quả */
-  .table-container{
-    margin-top:.75rem;
-    max-height:260px;
-    overflow:auto;
-  }
-  input[type="time"]::-webkit-calendar-picker-indicator {
-  display: none;
-  -webkit-appearance: none;
- }
+/* ===== HEADER ===== */
+.header{
+  font-size:1.3rem;
+  padding:1rem;
+  text-align:center;
 }
 
-  /* Bo tròn input/select trong lookup và filter */
-  .lookup-grid input,
-  .lookup-grid select {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.95rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    text-align: center;
-  }
+/* ===== DASHBOARD ===== */
+.dashboard{
+  flex-direction:column;
+  align-items:center;
+}
+.chart-container{
+  width:94%;
+  padding:3.2rem 1rem 1rem;
+  margin-bottom:1.5rem;
+}
+.chart-box{height:260px}
+.sensor-card{
+  font-size:1.1rem;
+  padding:.6rem 1rem;
+  top:12px;left:12px;
+}
 
-  .lookup-grid input[type="number"] {
-    min-width: 100px;
-  }
+/* ===== THRESHOLD (xếp dọc) ===== */
+.threshold-box{
+  width:max-content;
+  margin:1.2rem auto 0;
+  padding:1rem 1.5rem;
+  font-size:.95rem;
+  display:grid;
+  grid-template-columns:1fr;
+  row-gap:.8rem;
+  text-align:center;
+}
+.threshold-box label{font-weight:bold;justify-self:center}
+.threshold-box input{width:90px}
+.threshold-box button{
+  grid-column:1/-1;
+  justify-self:center;
+  padding:.5rem 1rem;
+  max-width:240px;
+  margin-top:.2rem;
+}
+.threshold-box .status-message{
+  grid-column:1/-1;
+  margin-top:1rem;
+  font-weight:bold;
+}
 
-  /* định dạng icon chỗ nhập dữ liệu */
-  .date-input-wrapper {
-    position: relative;
-    display: inline-block;
-  }
+/* ===== LOOKUP ===== */
+.lookup-grid{
+  flex-direction:column;       /* xếp dọc toàn bộ */
+  gap:.85rem;
+  align-items:stretch;
+}
 
-  .date-input-wrapper input {
-    padding-right: 30px; /* để chừa chỗ icon */
-  }
 
-  .calendar-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #888;
-    pointer-events: none;
-  }
+/* ẩn “order” cũ, chuyển sang hàng mới */
+.lookup-btn{
+  align-self:center;           /* căn giữa */
+  order:3;                     /* luôn ở cuối */
+  width:100%;                  /* full khối – giống ảnh */
+  max-width:320px;
+  padding:.7rem 1rem;
+  font-size:1.05rem;
+  background:#4eb9b7;
+  color:#fff;
+  border:none;
+  border-radius:30px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* bảng kết quả */
+.table-container{
+  margin-top:.75rem;
+  max-height:260px;
+  overflow:auto;
+}
+}
+    @media (min-width: 769px) {
+      .header{
+        font-size:1.3rem;
+        padding:1rem;
+        text-align:center;
+      }
+
+      .lookup-grid {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+  
+      .lookup-grid > * {
+        flex: 1 1 calc(50% - 0.5rem);
+      }
+  
+      #tempMin,
+      #tempMax {
+        flex: 1 1 calc(50% - 0.5rem);
+      }
+    }
   </style>
   
-  </style>
 </head>
 <body>
 
@@ -403,16 +372,18 @@
             <input id="lookupDate" placeholder="yyyy/MM/dd">
             <i class="fas fa-calendar-alt calendar-icon"></i>
           </div>
-          <select id="lookupHour">
-            <option value="">-- Chọn giờ --</option>
-            <script>
-              for(let h=0; h<24; h++){
-                const start = h.toString().padStart(2, '0');
-                const end = ((h + 1) % 24).toString().padStart(2, '0');
-                document.write(`<option value="${start}">${start}:00 - ${end}:00</option>`);
-              }
-            </script>
-          </select>
+          <div class="date-wrapper">
+            <select id="lookupHour">
+              <option value="">-- Chọn giờ --</option>
+              <script>
+                for(let h=0; h<24; h++){
+                  const start = h.toString().padStart(2, '0');
+                  const end = ((h + 1) % 24).toString().padStart(2, '0');
+                  document.write(`<option value="${start}">${start}:00 - ${end}:00</option>`);
+                }
+              </script>
+            </select>
+          </div>
           <button id="lookup" class="lookup-btn">Tra cứu</button>
         </div>
         <div class="table-container">
@@ -430,39 +401,41 @@
       </div>
     </div>
   </div>
+  
 
   
-<div class="chart-container" style="margin: 0 auto;">
-  <div class="sensor-card">
-    <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
-    Tra cứu theo nhiệt độ
-  </div>
-  <div style="padding-top:20px">
-    <div class="lookup-grid">
-      <div class="date-wrapper">
-        <input id="tempLookupDate" placeholder="yyyy/MM/dd">
-        <i class="fas fa-calendar-alt calendar-icon"></i>
+  <div class="dashboard">
+    <div class="chart-container">
+      <div class="sensor-card">
+        <i class="fas fa-temperature-high" style="color:#ff5722;margin-right:8px"></i>
+        Tra cứu theo nhiệt độ
       </div>
-      <input type="number" id="tempMin" placeholder="Từ (°C)">
-      <input type="number" id="tempMax" placeholder="Đến (°C)">
-      <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
-    </div>
-        
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
-            <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
-            <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
-          </tr>
-        </thead>
-        <tbody id="tempFilterTable"></tbody>
-      </table>
+      <div style="padding-top:20px">
+        <div class="lookup-grid">
+          <div class="date-wrapper">
+            <input id="tempLookupDate" placeholder="yyyy/MM/dd">
+            <i class="fas fa-calendar-alt calendar-icon"></i>
+          </div>
+          <input type="number" id="tempMin" placeholder="Từ (°C)">
+          <input type="number" id="tempMax" placeholder="Đến (°C)">
+          <button onclick="filterByTemperature()" class="lookup-btn">Lọc</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th>
+                <th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th>
+                <th>Nhiệt độ 1(°C)</th><th>Nhiệt độ 2(°C)</th>
+              </tr>
+            </thead>
+            <tbody id="tempFilterTable"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
+  
 <div class="link">
     <a href="https://docs.google.com/spreadsheets/d/1Ykm-1BM1CLbGPo0fSaqCAMS0vFZ6tS3gDCXYmSM1pzI/edit?gid=0#gid=0" target="_blank">
       XEM DỮ LIỆU TRÊN GOOGLE SHEET
@@ -798,10 +771,10 @@ async function fetchSensorData() {
   })
   .then(res => {
     if (!res.ok) throw new Error('Lưu ngưỡng thất bại');
-    alert('✅ Đã lưu ngưỡng thành công!');
+    alert(' Đã lưu ngưỡng thành công!');
   })
   .catch(err => {
-    alert('❌ Lỗi: ' + err.message);
+    alert(' Lỗi: ' + err.message);
   });
 }
 
