@@ -566,31 +566,60 @@
 }
 
   let lastTs = 0;
-  function updateCharts(p) {
-    const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
-    if (!ts || ts <= lastTs) return;
-    lastTs = ts;
+ function updateCharts(p) {
+  const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
+  if (!ts || ts <= lastTs) return;
+  lastTs = ts;
 
-    const map = [
-      ['Temperature1', temp1, 'temp'],
-      ['Temperature2', temp2, 'temp2'],
-      ['Voltage', voltage, 'voltage'],
-      ['Current', current, 'current'],
-      ['Power', power, 'power'],
-      ['Energy', energy, 'energy'],
-      ['Frequency', frequency, 'frequency']
-    ];
+  // Lưu dữ liệu mới nhất vào localStorage
+  localStorage.setItem('latestData', JSON.stringify(p));
 
-    map.forEach(([title, val, spanId]) => {
-      if (isNaN(val)) return;
-      const s = charts[title].series[0];
-      s.addPoint([ts, val], true, s.data.length >= MAX_POINTS);
-      const el = document.getElementById(spanId);
-      if (el) el.textContent = val.toFixed(2);
-    });
-    checkTempStatus();
-    checkTempStatus1();
+  const map = [
+    ['Temperature1', temp1, 'temp'],
+    ['Temperature2', temp2, 'temp2'],
+    ['Voltage', voltage, 'voltage'],
+    ['Current', current, 'current'],
+    ['Power', power, 'power'],
+    ['Energy', energy, 'energy'],
+    ['Frequency', frequency, 'frequency']
+  ];
+
+  map.forEach(([title, val, spanId]) => {
+    if (isNaN(val)) return;
+    const s = charts[title].series[0];
+    s.addPoint([ts, val], true, s.data.length >= MAX_POINTS);
+    const el = document.getElementById(spanId);
+    if (el) el.textContent = val.toFixed(2);
+  });
+
+  checkTempStatus();
+  checkTempStatus1();
+}
+  window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('latestData');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      const fields = {
+        temp: data.temp1,
+        temp2: data.temp2,
+        voltage: data.voltage,
+        current: data.current,
+        power: data.power,
+        energy: data.energy,
+        frequency: data.frequency
+      };
+      for (let id in fields) {
+        const val = fields[id];
+        if (!isNaN(val)) document.getElementById(id).textContent = val.toFixed(2);
+      }
+    } catch (e) {
+      console.warn('Dữ liệu cache lỗi:', e);
+    }
   }
+});
+
+
 async function fetchSensorData() {
   try {
     const r = await fetch('/api/sensor', { cache: 'no-store' });
