@@ -595,30 +595,7 @@
   checkTempStatus();
   checkTempStatus1();
 }
-  window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('latestData');
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      const fields = {
-        temp: data.temp1,
-        temp2: data.temp2,
-        voltage: data.voltage,
-        current: data.current,
-        power: data.power,
-        energy: data.energy,
-        frequency: data.frequency
-      };
-      for (let id in fields) {
-        const val = fields[id];
-        if (!isNaN(val)) document.getElementById(id).textContent = val.toFixed(2);
-      }
-    } catch (e) {
-      console.warn('Dữ liệu cache lỗi:', e);
-    }
-  }
-});
-
+  
 
 async function fetchSensorData() {
   try {
@@ -794,8 +771,11 @@ async function fetchSensorData() {
   });
 }
 
-fetchSensorData();
-setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
+window.addEventListener('DOMContentLoaded', () => {
+  showLastCachedData();     // Hiển thị dữ liệu ngay khi trang tải xong
+  fetchSensorData();        // Sau đó mới gọi API lấy dữ liệu mới
+  setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
+});
 </script>
 
 </body>
