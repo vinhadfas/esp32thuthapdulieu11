@@ -511,7 +511,7 @@
     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">CẢNH BÁO' + diff + '</span>';
     status.className = 'status-message warning';
   } else {
-    status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
+    status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">BÌNH THƯỜNG</span>';
     status.className = 'status-message normal';
   }
 }
@@ -531,10 +531,10 @@
       const diff = !isNaN(high) && t > high
         ? ` (vượt ${(t-high).toFixed(2)}°C)`
         : ` (thấp hơn ${(low-t).toFixed(2)}°C)`;
-      status.textContent = 'Trạng thái nhiệt độ: CẢNH BÁO' + diff;
+      status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">CẢNH BÁO' + diff + '</span>';
       status.className = 'status-message warning';
     } else {
-      status.textContent = 'Trạng thái nhiệt độ: BÌNH THƯỜNG';
+     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">BÌNH THƯỜNG</span>';
       status.className = 'status-message normal';
     }
   }
