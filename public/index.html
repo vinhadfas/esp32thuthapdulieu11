@@ -562,22 +562,21 @@ thead th:last-child {
 
     // 🔧 Gán lại ngưỡng cài đặt nếu có
     if (thresholds) {
-  const upperThreshold1 = document.getElementById('upperThreshold1');
-  const lowerThreshold1 = document.getElementById('lowerThreshold1');
-  const upperThreshold2 = document.getElementById('upperThreshold2');
-  const lowerThreshold2 = document.getElementById('lowerThreshold2');
+      const upperThreshold1 = document.getElementById('upperThreshold1');
+      const lowerThreshold1 = document.getElementById('lowerThreshold1');
+      const upperThreshold2 = document.getElementById('upperThreshold2');
+      const lowerThreshold2 = document.getElementById('lowerThreshold2');
 
-  if (upperThreshold1 && thresholds.tempHigh1 !== undefined)
-    upperThreshold1.value = thresholds.tempHigh1;
-  if (lowerThreshold1 && thresholds.tempLow1 !== undefined)
-    lowerThreshold1.value = thresholds.tempLow1;
+      if (upperThreshold1 && !upperThreshold1.value && thresholds.tempHigh1 !== undefined)
+        upperThreshold1.value = thresholds.tempHigh1;
+      if (lowerThreshold1 && !lowerThreshold1.value && thresholds.tempLow1 !== undefined)
+        lowerThreshold1.value = thresholds.tempLow1;
 
-  if (upperThreshold2 && thresholds.tempHigh2 !== undefined)
-    upperThreshold2.value = thresholds.tempHigh2;
-  if (lowerThreshold2 && thresholds.tempLow2 !== undefined)
-    lowerThreshold2.value = thresholds.tempLow2;
-}
-
+      if (upperThreshold2 && !upperThreshold2.value && thresholds.tempHigh2 !== undefined)
+        upperThreshold2.value = thresholds.tempHigh2;
+      if (lowerThreshold2 && !lowerThreshold2.value && thresholds.tempLow2 !== undefined)
+        lowerThreshold2.value = thresholds.tempLow2;
+    }
 
     if (Array.isArray(history) && history.length > 0) {
       history.forEach(updateCharts);
