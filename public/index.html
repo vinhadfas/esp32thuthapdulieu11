@@ -835,6 +835,18 @@ function restoreThresholdsFromLocalStorage() {
   if (t2High !== null) document.getElementById('upperThreshold2').value = t2High;
 }
 
+async function fetchLatestPoint() {
+  try {
+    const res = await fetch('/api/sensor', { cache: 'no-store' });
+    const { history } = await res.json();
+    const latest = history?.at(-1);
+    if (latest) updateCharts(latest);
+  } catch (err) {
+    console.warn('Fetch latest error:', err);
+  }
+}
+
+
 
 
 restoreThresholdsFromLocalStorage();
