@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const DATA_PATH = path.join('/tmp', 'data.json');
-const MAX_POINTS = 10; // ✅ Giới hạn lưu tối đa 10 điểm
+const MAX_POINTS = 13; // ✅ Giới hạn lưu tối đa 10 điểm
 
 /* Đọc dữ liệu từ file JSON */
 async function readStore() {
