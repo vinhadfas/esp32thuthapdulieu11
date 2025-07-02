@@ -1,170 +1,505 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Thông số cảm biến</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard ESP32 IoT</title>
+
+  <!-- Thư viện -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
-  <script>
-    Highcharts.setOptions({ time: { useUTC: false } });
-  </script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #eef9f8;
+    * { box-sizing: border-box; }
+    html, body {
       margin: 0;
-      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      background: #eef9f8;
     }
     .header {
-      background-color: #4eb9b7;
-      color: white;
+      background: #4eb9b7;
+      color: #fff;
       text-align: center;
-      padding: 1rem;
-      font-size: 2rem;
-      font-weight: bold;
+      padding: 1.2rem;
+      font-size: 1.8rem;
+      font-weight: 700;
     }
+  
+    .threshold-box {
+      background: #fff;
+      border-radius: 10px;
+      margin: 1.2rem auto;
+      padding: 1rem 2rem;
+      max-width: 800px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.1);
+      text-align: center;
+      font-weight: 700;
+    }
+    .threshold-box label {
+      font-weight: bold;
+      margin: 0 .5rem;
+    }
+    .threshold-box input {
+      width: 70px;
+      text-align: center;
+      padding: .3rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .threshold-box button {
+      margin-left: .8rem;
+      background: #4eb9b7;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: .5rem 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  
+    .status-message { margin-top: .6rem; font-weight: 700; }
+    .normal { color: #2e7d32; }
+    .warning { color: #c62828; }
+  
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+  
     .chart-container {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 6px 16px rgba(0,0,0,.1);
+      width: 650px;
+      max-width: 95vw;
+      position: relative;
+      padding: 3.2rem 1rem 1rem;
+    }
+  
+    .chart-box { height: 290px; margin-bottom: 1rem; }
+  
+    .sensor-card {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #fff;
+      border-radius: 12px;
+      padding: .6rem 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+  
+    /* LOOKUP: tra cứu ngày giờ */
+    .lookup-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+  
+    .lookup-grid input, .lookup-grid select {
+      padding: .55rem;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      text-align: center;
+      font-size: 1rem;
+      background: #fff;
+    }
+  
+    .lookup-grid select {
+      width: 150px;
+    }
+  
+    .date-wrapper {
+      position: relative;
+    }
+  
+    .date-wrapper input {
+      width: 180px;
+      padding: .6rem 2.5rem .6rem .8rem;
+      font-size: 1rem;
+      border-radius: 20px;
+    }
+  
+    .calendar-icon {
+      position: absolute;
+      right: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 1.2rem;
+      pointer-events: none;
+    }
+  
+    .lookup-btn {
+      background: #4eb9b7;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: .6rem 1.6rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+  
+    .lookup-btn:hover {
+      background-color: #3baaa8;
+    }
+  
+    .table-container {
+      max-height: 260px;
+      overflow: auto;
+      margin-top: .75rem;
+    }
+  
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  
+    th, td {
+      border: 1px solid #ccc;
+      padding: .35rem .55rem;
+      font-size: .9rem;
+      text-align: center;
+    }
+  
+    thead {
+      background: #b2dfdb;
+      position: sticky;
+      top: 0;
+      font-weight: 700;
+    }
+  
+    tbody tr:nth-child(even) {
+      background: #f5f5f5;
+    }
+  
+    .link {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
-      padding: 1rem;
+      justify-content: center;
+      gap: .35rem;
+      margin: 2rem auto 3rem;
     }
-    .chart-box {
-      background: white;
-      border-radius: 1rem;
-      padding: 1rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 800px;
+  
+    .link a {
+      background: #4eb9b7;
+      color: #fff;
+      padding: .5rem 1.2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(0,0,0,.1);
     }
+  
+    .link small {
+      color: #333;
+    }
+  
+    /* ---------- MOBILE ≤ 768px ---------- */
+   /* ---------- MOBILE ≤ 768px ---------- */
+@media (max-width: 768px) {
+
+  /* ===== HEADER ===== */
+  .header{
+    font-size:1.3rem;
+    padding:1rem;
+    text-align:center;
+  }
+
+  /* ===== DASHBOARD ===== */
+  .dashboard{
+    flex-direction:column;
+    align-items:center;
+  }
+  .chart-container{
+    width:94%;
+    padding:3.2rem 1rem 1rem;
+    margin-bottom:1.5rem;
+  }
+  .chart-box{height:260px}
+  .sensor-card{
+    font-size:1.1rem;
+    padding:.6rem 1rem;
+    top:12px;left:12px;
+  }
+
+  /* ===== THRESHOLD (xếp dọc) ===== */
+  .threshold-box{
+    width:max-content;
+    margin:1.2rem auto 0;
+    padding:1rem 1.5rem;
+    font-size:.95rem;
+    display:grid;
+    grid-template-columns:1fr;
+    row-gap:.8rem;
+    text-align:center;
+  }
+  .threshold-box label{font-weight:bold;justify-self:center}
+  .threshold-box input{width:90px}
+  .threshold-box button{
+    grid-column:1/-1;
+    justify-self:center;
+    padding:.5rem 1rem;
+    max-width:240px;
+    margin-top:.2rem;
+  }
+  .threshold-box .status-message{
+    grid-column:1/-1;
+    margin-top:1rem;
+    font-weight:bold;
+  }
+
+  /* ===== LOOKUP ===== */
+  .lookup-grid{
+    flex-direction:column;       /* xếp dọc toàn bộ */
+    gap:.85rem;
+    align-items:stretch;
+  }
+
+  /* cụm ngày + icon */
+  .date-wrapper,
+  #lookupTime{
+    flex:1 1 100%;
+  }
+  .date-wrapper input,
+  #lookupTime {
+    width: 100%;
+    border-radius: 20px;
+    font-size: 1rem;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    /* GỠ dòng này nếu ảnh hưởng đến dropdown */
+     text-align: left; 
+    box-sizing: border-box;
+  }
+
+  /* ẩn “order” cũ, chuyển sang hàng mới */
+  .lookup-btn{
+    align-self:center;           /* căn giữa */
+    order:3;                     /* luôn ở cuối */
+    width:100%;                  /* full khối – giống ảnh */
+    max-width:320px;
+    padding:.7rem 1rem;
+    font-size:1.05rem;
+    background:#4eb9b7;
+    color:#fff;
+    border:none;
+    border-radius:30px;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  /* bảng kết quả */
+  .table-container{
+    margin-top:.75rem;
+    max-height:260px;
+    overflow:auto;
+  }
+  input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+ }
+}
+
+.board-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.2rem;
+}
+
+.board-switch a {
+  border: 2px solid #000;
+  padding: 0.6rem 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  color: #000;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.board-switch small {
+  margin-top: 0.5rem;
+  color: #333;
+}
+
+  </style>
+  
+
   </style>
 </head>
 <body>
-  <div class="header">Thông số cảm biến</div>
-  <div class="chart-container">
-    <div id="voltageChart" class="chart-box"></div>
-    <div id="currentChart" class="chart-box"></div>
-    <div id="powerChart" class="chart-box"></div>
-    <div id="frequencyChart" class="chart-box"></div>
-    <div id="tempChart" class="chart-box"></div>
+
+  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
+
+  <div class="threshold-box">
+    <label>Ngưỡng trên:<input id="upperThreshold" type="number">°C</label>
+    <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold" type="number">°C</label>
+    <button onclick="updateThresholds()">Áp dụng</button>
+    <div id="tempStatus" class="status-message">Trạng thái nhiệt độ: --</div>
+  </div>
+
+  <div class="board-switch">
+    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1" id="esp2-link">board esp thứ 2</a>
+    <small>(Click vào đây để chuyển sang board khác)</small>
+  </div>
+  
+  <div class="dashboard">
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ: <span id="temp">--</span>°C</div><div id="tempChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-charging-station" style="color:#41f947;margin-right:8px"></i>Điện áp: <span id="voltage">--</span>V</div><div id="voltageChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-bolt" style="color:#f3722c;margin-right:8px"></i>Dòng điện: <span id="current">--</span>A</div><div id="currentChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-lightbulb" style="color:#f9c74f;margin-right:8px"></i>Công suất: <span id="power">--</span>W</div><div id="powerChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-battery-full" style="color:#9b51e0;margin-right:8px"></i>Năng lượng: <span id="energy">--</span>kWh</div><div id="energyChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-broadcast-tower" style="color:#00bcd4;margin-right:8px"></i>Tần số: <span id="frequency">--</span>Hz</div><div id="frequencyChart" class="chart-box"></div></div>
+
+    <div class="chart-container">
+      <div class="sensor-card"><i class="fas fa-table" style="color:#4eb9b7;margin-right:8px"></i>Tra cứu dữ liệu</div>
+      <div style="padding-top:20px">
+        <div class="lookup-grid">
+          <div class="date-wrapper">
+            <input id="lookupDate" placeholder="yyyy/MM/dd">
+            <i class="fas fa-calendar-alt calendar-icon"></i>
+          </div>
+          <select id="lookupHour">
+            <option value="">-- Chọn giờ --</option>
+            <script>
+              for(let h=0; h<24; h++){
+                const start = h.toString().padStart(2, '0');
+                const end = ((h + 1) % 24).toString().padStart(2, '0');
+                document.write(`<option value="${start}">${start}:00 - ${end}:00</option>`);
+              }
+            </script>
+          </select>
+          <button id="lookup" class="lookup-btn">Tra cứu</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Ngày</th><th>Giờ</th><th>Điện áp(V)</th><th>Dòng(A)</th><th>Công suất(kW)</th><th>Năng lượng(kWh)</th><th>Tần số(Hz)</th><th>Nhiệt độ(°C)</th></tr></thead>
+            <tbody id="resultTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="link">
+    <a href="https://docs.google.com/spreadsheets/d/1NLCgAlLXS6J-eH7V6OyM9uFFbyT4AjIgkRzPXgzPujg/edit?gid=0#gid=0" target="_blank">
+      XEM DỮ LIỆU TRÊN GOOGLE SHEET
+    </a>
+    <small>(Click để xem lại các giá trị đã lưu)</small>
   </div>
 
   <script>
-    const MAX_POINTS = 20;
-    const charts = {};
-    let isOnline = true;
-    let fetchInterval = null;
-    const syncKey = 'latest_sensor_data';
+    flatpickr('#lookupDate',{dateFormat:'Y/m/d',altInput:true,altFormat:'Y/m/d'});
+    Highcharts.setOptions({time:{useUTC:false}});
+    const COLORS={Temperature:'#07d3f2',Voltage:'#41f947',Current:'#f3722c',Power:'#f9c74f',Energy:'#9b51e0',Frequency:'#00bcd4'};
+    const charts={},MAX_POINTS=50;
+    const metrics=[['Temperature','°C','tempChart'],['Voltage','V','voltageChart'],['Current','A','currentChart'],['Power','W','powerChart'],['Energy','kWh','energyChart'],['Frequency','Hz','frequencyChart']];
+    metrics.forEach(([title,u,div])=>{charts[title]=Highcharts.chart(div,{chart:{type:'line',marginRight:10},title:{text:title},xAxis:{type:'datetime',tickInterval:30000,labels:{format:'{value:%H:%M:%S}'}},yAxis:{title:{text:null}},legend:{enabled:false},credits:{enabled:false},tooltip:{formatter(){return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S',this.x)}<br/>${Highcharts.numberFormat(this.y,2)} ${u}`}},series:[{name:title,data:[],color:COLORS[title]}]})});
 
-    const chartOptions = (title, unit) => ({
-      chart: { type: 'spline', animation: Highcharts.svg, marginRight: 10 },
-      title: { text: title },
-      xAxis: {
-        type: 'datetime',
-        tickInterval: 30000,
-        labels: { format: '{value:%H:%M:%S}' },
-        tickPixelInterval: 150
-      },
-      yAxis: {
-        title: { text: unit },
-        plotLines: [{ value: 0, width: 1, color: '#808080' }]
-      },
-      tooltip: {
-        formatter: function () {
-          return `<b>${this.series.name}</b><br/>` +
-                 Highcharts.dateFormat('%H:%M:%S', this.x) +
-                 `<br/>Giá trị: ${Highcharts.numberFormat(this.y, 2)} ${unit}`;
+    function checkTempStatus(){
+      const low=parseFloat(lowerThreshold.value),high=parseFloat(upperThreshold.value),t=parseFloat(temp.textContent)||NaN;
+      if(isNaN(t)){
+        tempStatus.textContent='Trạng thái nhiệt độ: --';
+        tempStatus.className='status-message';
+        return;
+      }
+      if((!isNaN(low)&&t<low)||(!isNaN(high)&&t>high)){
+        let diff='';
+        if(!isNaN(high)&&t>high){
+          diff=` (vượt ${(t-high).toFixed(2)}°C)`;
+        }else if(!isNaN(low)&&t<low){
+          diff=` (thấp hơn ${(low-t).toFixed(2)}°C)`;
         }
-      },
-      legend: { enabled: true },
-      exporting: { enabled: false },
-      series: [{
-        name: title,
-        data: [],
-        color: {
-          'Voltage': '#f94144',
-          'Current': '#f3722c',
-          'Power': '#f9c74f',
-          'Frequency': '#43aa8b',
-          'Temperature': '#577590'
-        }[title] || undefined
-      }]
-    });
-
-    charts.voltage = Highcharts.chart('voltageChart', chartOptions('Voltage', 'V'));
-    charts.current = Highcharts.chart('currentChart', chartOptions('Current', 'A'));
-    charts.power = Highcharts.chart('powerChart', chartOptions('Power', 'W'));
-    charts.frequency = Highcharts.chart('frequencyChart', chartOptions('Frequency', 'Hz'));
-    charts.temp = Highcharts.chart('tempChart', chartOptions('Temperature', '°C'));
-
-    function updateChartsFromData(payload) {
-      const { timestamp, voltage, current, power, frequency, temp } = payload;
-      if (!isNaN(voltage)) charts.voltage.series[0].addPoint([timestamp, voltage], true, charts.voltage.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(current)) charts.current.series[0].addPoint([timestamp, current], true, charts.current.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(power)) charts.power.series[0].addPoint([timestamp, power], true, charts.power.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(frequency)) charts.frequency.series[0].addPoint([timestamp, frequency], true, charts.frequency.series[0].data.length >= MAX_POINTS);
-      if (!isNaN(temp)) charts.temp.series[0].addPoint([timestamp, temp], true, charts.temp.series[0].data.length >= MAX_POINTS);
-    }
-
-    async function fetchSensorData() {
-      try {
-        const res = await fetch('/api/sensor', { cache: 'no-store' });
-        const d = await res.json();
-
-        if (!d.alive) {
-          if (isOnline) {
-            isOnline = false;
-            clearInterval(fetchInterval);
-            fetchInterval = null;
-            alert('ESP32 mất kết nối. Đồ thị tạm dừng.');
-          }
-          return;
-        }
-
-        if (!isOnline) {
-          isOnline = true;
-          alert('ESP32 đã kết nối lại. Tiếp tục cập nhật đồ thị.');
-          startFetching();
-        }
-
-        const list = d.history || [];
-        list.forEach(payload => updateChartsFromData(payload));
-
-        if (list.length > 0) {
-          localStorage.setItem(syncKey, JSON.stringify(list[list.length - 1]));
-        }
-      } catch (e) {
-        console.warn('Lỗi khi kết nối tới API: ', e);
-        if (isOnline) {
-          isOnline = false;
-          clearInterval(fetchInterval);
-          fetchInterval = null;
-        }
+        tempStatus.textContent='Trạng thái nhiệt độ: CẢNH BÁO'+diff;
+        tempStatus.className='status-message warning';
+      }
+      else{
+        tempStatus.textContent='Trạng thái nhiệt độ: BÌNH THƯỜNG';
+        tempStatus.className='status-message normal';
       }
     }
 
-    function startFetching() {
-      if (fetchInterval) return;
-      fetchSensorData();
-      const now = new Date();
-      const seconds = now.getSeconds();
-      const ms = now.getMilliseconds();
-      const delayToNext30s = ((30 - (seconds % 30)) % 30) * 1000 - ms;
-      setTimeout(() => {
-        fetchSensorData();
-        fetchInterval = setInterval(fetchSensorData, 30000);
-      }, delayToNext30s);
+    let lastTs=0;
+    function updateCharts(p){
+      const {timestamp:ts,voltage,current,power,energy,temp:tc,frequency}=p;
+      if(!ts||ts<=lastTs)return;lastTs=ts;
+      const map=[['Temperature',tc,'temp'],['Voltage',voltage,'voltage'],['Current',current,'current'],['Power',power,'power'],['Energy',energy,'energy'],['Frequency',frequency,'frequency']];
+      map.forEach(([title,val,spanId])=>{
+        if(isNaN(val))return;
+        const s=charts[title].series[0];
+        s.addPoint([ts,val],true,s.data.length>=MAX_POINTS);
+        document.getElementById(spanId).textContent=val.toFixed(2);
+      });
+      checkTempStatus();
     }
 
-    window.addEventListener('storage', (event) => {
-      if (event.key === syncKey && event.newValue) {
-        const data = JSON.parse(event.newValue);
-        updateChartsFromData(data);
-      }
-    });
+    async function fetchSensorData(){
+      try{
+        const r=await fetch('/api/sensor',{cache:'no-store'});
+        const {history,thresholds}=await r.json();
+        if(thresholds){
+          if(!upperThreshold.value) upperThreshold.value=thresholds.tempHigh;
+          if(!lowerThreshold.value) lowerThreshold.value=thresholds.tempLow;
+        }
+        (history||[]).forEach(updateCharts);
+      }catch(e){console.warn('Fetch error',e);}
+    }
 
-    window.addEventListener('beforeunload', () => {});
-    startFetching();
+    async function updateThresholds(){
+      const low=parseFloat(lowerThreshold.value),high=parseFloat(upperThreshold.value);
+      if(isNaN(low)||isNaN(high)){alert('Nhập đủ hai ngưỡng!');return;}
+      if(low>high){alert('Ngưỡng thấp phải ≤ ngưỡng cao!');return;}
+      try{
+        const r=await fetch('/api/sensor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tempLow:low,tempHigh:high})});
+        if(!r.ok)throw new Error(await r.text());
+        alert('Đã lưu ngưỡng thành công!');
+        checkTempStatus();
+      }catch(e){alert('Lỗi: '+e.message);}
+    }
+
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSm0VAJ9cLUq6NIXvtkbUYoGkx-NJsih5pUqcMb9SjXx_7lfBT14vVv0dSV-nREnmKuixmXchXy0b6w/pub?gid=0&single=true&output=csv';
+    let cacheRows=null;
+    async function loadData(){if(cacheRows)return cacheRows;const t=await (await fetch(CSV_URL)).text();cacheRows=Papa.parse(t.trim(),{dynamicTyping:false}).data;return cacheRows;}
+    function appendRow(r){const tr=document.createElement('tr');r.forEach(c=>{const td=document.createElement('td');td.textContent=c||'';tr.appendChild(td);});resultTable.appendChild(tr);}
+    function clearTable(msg){resultTable.innerHTML='';if(msg){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=8;td.textContent=msg;tr.appendChild(td);resultTable.appendChild(tr);}}
+
+    document.getElementById('lookup').addEventListener('click',async()=>{
+      const d=document.getElementById('lookupDate').value;
+      const h=document.getElementById('lookupHour').value;
+      if(!d||!h){alert('Chọn ngày & giờ!');return;}
+      const [y,m,dd]=d.split('/');
+      const targetDate=`${y}-${m}-${dd}`;
+      const targetTime=h+':';
+      try{
+        const rows=await loadData(),match=rows.slice(1).filter(r=>r[0]===targetDate&&String(r[1]).startsWith(targetTime));
+        clearTable();if(!match.length){clearTable('Không tìm thấy dữ liệu.');return;}match.forEach(appendRow);
+      }catch(e){console.error(e);clearTable('Lỗi tải dữ liệu');}
+    });
+    fetchSensorData();
+    setInterval(fetchSensorData,30000);
   </script>
 </body>
 </html>
+
