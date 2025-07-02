@@ -445,52 +445,66 @@
 
   <script>
     flatpickr('#lookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
-    flatpickr('#tempLookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
-    Highcharts.setOptions({ time: { useUTC: false } });
-  
-    const COLORS = {
-      Temperature1: '#07d3f2',
-      Temperature2: '#2b09a7',
-      Voltage: '#41f947',
-      Current: '#f3722c',
-      Power: '#f9c74f',
-      Energy: '#9b51e0',
-      Frequency: '#00bcd4'
-    };
-  
-    const charts = {}, MAX_POINTS = 10;
-  
-    const metrics = [
-      ['Temperature1', '°C', 'tempChart'],
-      ['Temperature2', '°C', 'temp2Chart'],
-      ['Voltage', 'V', 'voltageChart'],
-      ['Current', 'A', 'currentChart'],
-      ['Power', 'W', 'powerChart'],
-      ['Energy', 'kWh', 'energyChart'],
-      ['Frequency', 'Hz', 'frequencyChart']
-    ];
-  
-    metrics.forEach(([title, u, div]) => {
-      charts[title] = Highcharts.chart(div, {
-        chart: { type: 'line', marginRight: 10 },
-        title: { text: title },
-        xAxis: {
-          type: 'datetime',
-          tickInterval: 30000,
-          labels: { format: '{value:%H:%M:%S}' }
-        },
-        yAxis: { title: { text: null } },
-        legend: { enabled: false },
-        credits: { enabled: false },
-        tooltip: {
-          formatter() {
-            return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>${Highcharts.numberFormat(this.y, 2)} ${u}`;
-          }
-        },
-        series: [{ name: title, data: [], color: COLORS[title] }]
-      });
+  flatpickr('#tempLookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
+  Highcharts.setOptions({ time: { useUTC: false } });
+
+  const COLORS = {
+    Temperature1: '#07d3f2',
+    Temperature2: '#2b09a7',
+    Voltage: '#41f947',
+    Current: '#f3722c',
+    Power: '#f9c74f',
+    Energy: '#9b51e0',
+    Frequency: '#00bcd4'
+  };
+
+  const charts = {}, MAX_POINTS = 10;
+
+  const metrics = [
+    ['Temperature1', '°C', 'tempChart'],
+    ['Temperature2', '°C', 'temp2Chart'],
+    ['Voltage', 'V', 'voltageChart'],
+    ['Current', 'A', 'currentChart'],
+    ['Power', 'W', 'powerChart'],
+    ['Energy', 'kWh', 'energyChart'],
+    ['Frequency', 'Hz', 'frequencyChart']
+  ];
+
+  metrics.forEach(([title, u, div]) => {
+    const chart = Highcharts.chart(div, {
+      chart: { type: 'line', marginRight: 10 },
+      title: { text: title },
+      xAxis: {
+        type: 'datetime',
+        tickInterval: 30000,
+        labels: { format: '{value:%H:%M:%S}' }
+      },
+      yAxis: { title: { text: null } },
+      legend: { enabled: false },
+      credits: { enabled: false },
+      tooltip: {
+        formatter() {
+          return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>${Highcharts.numberFormat(this.y, 2)} ${u}`;
+        }
+      },
+      series: [{ name: title, data: [], color: COLORS[title] }]
     });
-  
+
+    charts[title] = chart;
+
+    const saved = localStorage.getItem(`chartData_${title}`);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        parsed.forEach(pt => chart.series[0].addPoint(pt, false));
+        chart.redraw();
+      } catch (e) {
+        console.warn(`Không thể khôi phục dữ liệu cho ${title}`, e);
+      }
+    }
+  });
+
+
     function checkTempStatus1() {
     const low = parseFloat(lowerThreshold1.value),
           high = parseFloat(upperThreshold1.value),
@@ -541,64 +555,35 @@
       
   
     let lastTs = 0;
-    function updateCharts(p) {
-      const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
-      if (!ts || ts <= lastTs) return;
-      lastTs = ts;
-  
-      const map = [
-        ['Temperature1', temp1, 'temp'],
-        ['Temperature2', temp2, 'temp2'],
-        ['Voltage', voltage, 'voltage'],
-        ['Current', current, 'current'],
-        ['Power', power, 'power'],
-        ['Energy', energy, 'energy'],
-        ['Frequency', frequency, 'frequency']
-      ];
-  
-      map.forEach(([title, val, spanId]) => {
-        if (isNaN(val)) return;
-        const s = charts[title].series[0];
-        s.addPoint([ts, val], true, s.data.length >= MAX_POINTS);
-        const el = document.getElementById(spanId);
-        if (el) el.textContent = val.toFixed(2);
-      });
-      checkTempStatus1();
-      checkTempStatus2();  
-    }
-  async function fetchSensorData() {
-    try {
-      const r = await fetch('/api/sensor', { cache: 'no-store' });
-      const { history, thresholds } = await r.json();
-  
-      if (thresholds) {
-        if (!upperThreshold1.value) upperThreshold1.value = thresholds.tempHigh1;
-        if (!lowerThreshold1.value) lowerThreshold1.value = thresholds.tempLow1;
-        if (!upperThreshold2.value) upperThreshold2.value = thresholds.tempHigh2;
-        if (!lowerThreshold2.value) lowerThreshold2.value = thresholds.tempLow2;
-      }
-  
-      // ✅ Vẽ lại toàn bộ dữ liệu
-      if (Array.isArray(history) && history.length > 0) {
-        history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
-  
-        const latest = history[history.length - 1];
-        if (latest) {
-          document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
-          document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
-          document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
-          document.getElementById('current').textContent   = !isNaN(latest.current) ? latest.current.toFixed(2) : '--';
-          document.getElementById('power').textContent     = !isNaN(latest.power) ? latest.power.toFixed(2) : '--';
-          document.getElementById('energy').textContent    = !isNaN(latest.energy) ? latest.energy.toFixed(3) : '--';
-          document.getElementById('frequency').textContent = !isNaN(latest.frequency) ? latest.frequency.toFixed(2) : '--';
-        }
-  
-        checkTempStatus();
-      }
-  
-    } catch (e) {
-      console.warn('Fetch error', e);
-    }
+  function updateCharts(p) {
+    const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
+    if (!ts || ts <= lastTs) return;
+    lastTs = ts;
+
+    const map = [
+      ['Temperature1', temp1, 'temp'],
+      ['Temperature2', temp2, 'temp2'],
+      ['Voltage', voltage, 'voltage'],
+      ['Current', current, 'current'],
+      ['Power', power, 'power'],
+      ['Energy', energy, 'energy'],
+      ['Frequency', frequency, 'frequency']
+    ];
+
+    map.forEach(([title, val, spanId]) => {
+      if (isNaN(val)) return;
+      const s = charts[title].series[0];
+      s.addPoint([ts, val], true, s.data.length >= MAX_POINTS);
+
+      const trimmed = s.data.map(p => [p.x, p.y]);
+      localStorage.setItem(`chartData_${title}`, JSON.stringify(trimmed));
+
+      const el = document.getElementById(spanId);
+      if (el) el.textContent = val.toFixed(2);
+    });
+
+    checkTempStatus1();
+    checkTempStatus2();
   }
   
     async function updateThresholds(sensorIndex) {
@@ -812,9 +797,6 @@
     if (t2Low !== null) document.getElementById('lowerThreshold2').value = t2Low;
     if (t2High !== null) document.getElementById('upperThreshold2').value = t2High;
   }
-  
-  
-  
   restoreThresholdsFromLocalStorage();
   syncThresholdsToServer();
   fetchSensorData();
