@@ -540,6 +540,8 @@
   }
     
 
+  let lastTs = 0;
+
   function updateCharts(p) {
   const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
 
@@ -571,7 +573,6 @@
   checkTempStatus1();
   checkTempStatus2();
 }
-
 
 async function fetchSensorData() {
   try {
