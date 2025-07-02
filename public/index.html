@@ -458,7 +458,7 @@
     Frequency: '#00bcd4'
   };
 
-  const charts = {}, MAX_POINTS = 50;
+  const charts = {}, MAX_POINTS = 13;
 
   const metrics = [
     ['Temperature1', '°C', 'tempChart'],
@@ -578,11 +578,12 @@ async function fetchSensorData() {
       if (!lowerThreshold2.value) lowerThreshold2.value = thresholds.tempLow2;
     }
 
-    // ✅ Vẽ lại toàn bộ dữ liệu
+    // ✅ Chỉ vẽ lại 10 điểm mới nhất
     if (Array.isArray(history) && history.length > 0) {
-      history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
+      const last10 = history.slice(-13);     // 👈 GIỚI HẠN CHỈ ĐIỂM
+      last10.forEach(updateCharts);
 
-      const latest = history[history.length - 1];
+      const latest = last10.at(-1);
       if (latest) {
         document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
         document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
@@ -600,6 +601,7 @@ async function fetchSensorData() {
     console.warn('Fetch error', e);
   }
 }
+
 
   async function updateThresholds(sensorIndex) {
     const low  = parseFloat(document.getElementById(`lowerThreshold${sensorIndex}`).value),
