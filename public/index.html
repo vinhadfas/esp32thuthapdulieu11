@@ -458,7 +458,7 @@
     Frequency: '#00bcd4'
   };
 
-  const charts = {}, MAX_POINTS = 6;
+  const charts = {}, MAX_POINTS = 50;
 
   const metrics = [
     ['Temperature1', '°C', 'tempChart'],
@@ -484,7 +484,7 @@
       credits: { enabled: false },
       tooltip: {
         formatter() {
-          return <b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>${Highcharts.numberFormat(this.y, 2)} ${u};
+          return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S', this.x)}<br/>${Highcharts.numberFormat(this.y, 2)} ${u}`;
         }
       },
       series: [{ name: title, data: [], color: COLORS[title] }]
@@ -506,12 +506,12 @@
 
   if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
     let diff = '';
-    if (!isNaN(high) && t > high) diff =  (vượt ${(t - high).toFixed(2)}°C);
-    else if (!isNaN(low) && t < low) diff =  (thấp hơn ${(low - t).toFixed(2)}°C);
+    if (!isNaN(high) && t > high) diff = ` (vượt ${(t - high).toFixed(2)}°C)`;
+    else if (!isNaN(low) && t < low) diff = ` (thấp hơn ${(low - t).toFixed(2)}°C)`;
     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">CẢNH BÁO' + diff + '</span>';
     status.className = 'status-message warning';
   } else {
-    status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:green; font-weight:bold;">BÌNH THƯỜNG</span>';
+    status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">BÌNH THƯỜNG</span>';
     status.className = 'status-message normal';
   }
 }
@@ -529,12 +529,12 @@
     }
     if ((!isNaN(low) && t < low) || (!isNaN(high) && t > high)) {
       const diff = !isNaN(high) && t > high
-        ?  (vượt ${(t-high).toFixed(2)}°C)
-        :  (thấp hơn ${(low-t).toFixed(2)}°C);
+        ? ` (vượt ${(t-high).toFixed(2)}°C)`
+        : ` (thấp hơn ${(low-t).toFixed(2)}°C)`;
       status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">CẢNH BÁO' + diff + '</span>';
       status.className = 'status-message warning';
     } else {
-     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:green; font-weight:bold;">BÌNH THƯỜNG</span>';
+     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">BÌNH THƯỜNG</span>';
       status.className = 'status-message normal';
     }
   }
@@ -602,8 +602,8 @@ async function fetchSensorData() {
 }
 
   async function updateThresholds(sensorIndex) {
-    const low  = parseFloat(document.getElementById(lowerThreshold${sensorIndex}).value),
-          high = parseFloat(document.getElementById(upperThreshold${sensorIndex}).value),
+    const low  = parseFloat(document.getElementById(`lowerThreshold${sensorIndex}`).value),
+          high = parseFloat(document.getElementById(`upperThreshold${sensorIndex}`).value),
           statusId = sensorIndex === 1 ? 'tempStatus1' : 'tempStatus';
 
     if (isNaN(low) || isNaN(high)) {
@@ -611,21 +611,21 @@ async function fetchSensorData() {
       return;
     }
     if (low > high) {
-      alert(⚠️ Ngưỡng thấp Sensor ${sensorIndex} phải ≤ ngưỡng cao!);
+      alert(`⚠️ Ngưỡng thấp Sensor ${sensorIndex} phải ≤ ngưỡng cao!`);
       return;
     }
 
     // gửi lên server, ví dụ:
     const body = {};
-    body[tempLow${sensorIndex}]  = low;
-    body[tempHigh${sensorIndex}] = high;
+    body[`tempLow${sensorIndex}`]  = low;
+    body[`tempHigh${sensorIndex}`] = high;
     const r = await fetch('/api/sensor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
     if (!r.ok) throw new Error(await r.text());
-    alert(✅ Đã lưu ngưỡng Sensor ${sensorIndex} thành công!);
+    alert(`✅ Đã lưu ngưỡng Sensor ${sensorIndex} thành công!`);
 
     // cập nhật ngay trạng thái
     if (sensorIndex === 1) checkTempStatus1();
@@ -672,7 +672,7 @@ async function fetchSensorData() {
     }
 
     const [y, m, dd] = d.split('/');
-    const targetDate = ${y}-${m}-${dd};
+    const targetDate = `${y}-${m}-${dd}`;
     const targetTime = h + ':';
 
     try {
@@ -698,18 +698,18 @@ async function fetchSensorData() {
   tbody.innerHTML = '';
 
   if (isNaN(min) || isNaN(max)) {
-    tbody.innerHTML = <tr><td colspan="9">Vui lòng nhập khoảng nhiệt độ hợp lệ.</td></tr>;
+    tbody.innerHTML = `<tr><td colspan="9">Vui lòng nhập khoảng nhiệt độ hợp lệ.</td></tr>`;
     return;
   }
 
   if (min > max) {
-    tbody.innerHTML = <tr><td colspan="9">Giá trị "Từ" phải nhỏ hơn hoặc bằng "Đến".</td></tr>;
+    tbody.innerHTML = `<tr><td colspan="9">Giá trị "Từ" phải nhỏ hơn hoặc bằng "Đến".</td></tr>`;
     return;
   }
 
   loadData().then(rows => {
     const [y, m, d] = dateInput ? dateInput.split('/') : [null, null, null];
-    const targetDate = y && m && d ? ${y}-${m}-${d} : null;
+    const targetDate = y && m && d ? `${y}-${m}-${d}` : null;
 
     const matches = rows.slice(1).filter(r => {
       const t1 = parseFloat(r[7]);
@@ -720,7 +720,7 @@ async function fetchSensorData() {
     });
 
     if (!matches.length) {
-      tbody.innerHTML = <tr><td colspan="9">Không tìm thấy dữ liệu phù hợp.</td></tr>;
+      tbody.innerHTML = `<tr><td colspan="9">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
       return;
     }
 
@@ -734,14 +734,14 @@ async function fetchSensorData() {
       tbody.appendChild(tr);
     });
   }).catch(err => {
-    tbody.innerHTML = <tr><td colspan="9">Lỗi khi tải dữ liệu.</td></tr>;
+    tbody.innerHTML = `<tr><td colspan="9">Lỗi khi tải dữ liệu.</td></tr>`;
   });
 }
 
   // ✅ Thêm hàm xử lý áp dụng ngưỡng và lưu localStorage
   function applyThreshold(sensorIndex) {
-  const lowInput = document.getElementById(lowerThreshold${sensorIndex});
-  const highInput = document.getElementById(upperThreshold${sensorIndex});
+  const lowInput = document.getElementById(`lowerThreshold${sensorIndex}`);
+  const highInput = document.getElementById(`upperThreshold${sensorIndex}`);
 
   const low = parseFloat(lowInput.value);
   const high = parseFloat(highInput.value);
@@ -757,16 +757,16 @@ async function fetchSensorData() {
   }
 
   // Lưu localStorage
-  localStorage.setItem(tempLow${sensorIndex}, low);
-  localStorage.setItem(tempHigh${sensorIndex}, high);
+  localStorage.setItem(`tempLow${sensorIndex}`, low);
+  localStorage.setItem(`tempHigh${sensorIndex}`, high);
 
   // Gửi lên server
   fetch('/api/sensor', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      [tempLow${sensorIndex}]: low,
-      [tempHigh${sensorIndex}]: high
+      [`tempLow${sensorIndex}`]: low,
+      [`tempHigh${sensorIndex}`]: high
     })
   })
   .then(res => {
