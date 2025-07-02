@@ -294,6 +294,7 @@
     box-sizing: border-box;
   }
 
+
   /* ẩn “order” cũ, chuyển sang hàng mới */
   .lookup-btn{
     align-self:center;           /* căn giữa */
@@ -321,29 +322,6 @@
   -webkit-appearance: none;
  }
 }
-
-.board-switch {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1.2rem;
-}
-
-.board-switch a {
-  border: 2px solid #000;
-  padding: 0.6rem 1.5rem;
-  text-decoration: none;
-  font-weight: bold;
-  color: #000;
-  border-radius: 6px;
-  background-color: #fff;
-}
-
-.board-switch small {
-  margin-top: 0.5rem;
-  color: #333;
-}
-
   </style>
   
 
@@ -360,11 +338,6 @@
     <div id="tempStatus" class="status-message">Trạng thái nhiệt độ: --</div>
   </div>
 
-  <div class="board-switch">
-    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1" id="esp2-link">board esp thứ 2</a>
-    <small>(Click vào đây để chuyển sang board khác)</small>
-  </div>
-  
   <div class="dashboard">
     <div class="chart-container"><div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ: <span id="temp">--</span>°C</div><div id="tempChart" class="chart-box"></div></div>
     <div class="chart-container"><div class="sensor-card"><i class="fas fa-charging-station" style="color:#41f947;margin-right:8px"></i>Điện áp: <span id="voltage">--</span>V</div><div id="voltageChart" class="chart-box"></div></div>
@@ -414,7 +387,7 @@
     flatpickr('#lookupDate',{dateFormat:'Y/m/d',altInput:true,altFormat:'Y/m/d'});
     Highcharts.setOptions({time:{useUTC:false}});
     const COLORS={Temperature:'#07d3f2',Voltage:'#41f947',Current:'#f3722c',Power:'#f9c74f',Energy:'#9b51e0',Frequency:'#00bcd4'};
-    const charts={},MAX_POINTS=13;
+    const charts={},MAX_POINTS=50;
     const metrics=[['Temperature','°C','tempChart'],['Voltage','V','voltageChart'],['Current','A','currentChart'],['Power','W','powerChart'],['Energy','kWh','energyChart'],['Frequency','Hz','frequencyChart']];
     metrics.forEach(([title,u,div])=>{charts[title]=Highcharts.chart(div,{chart:{type:'line',marginRight:10},title:{text:title},xAxis:{type:'datetime',tickInterval:30000,labels:{format:'{value:%H:%M:%S}'}},yAxis:{title:{text:null}},legend:{enabled:false},credits:{enabled:false},tooltip:{formatter(){return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S',this.x)}<br/>${Highcharts.numberFormat(this.y,2)} ${u}`}},series:[{name:title,data:[],color:COLORS[title]}]})});
 
@@ -502,4 +475,3 @@
   </script>
 </body>
 </html>
-
