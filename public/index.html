@@ -540,12 +540,9 @@
   }
     
 
-  let lastTs = 0;
-
-function updateCharts(p) {
+  function updateCharts(p) {
   const { timestamp: ts, voltage, current, power, energy, temp1, temp2, frequency } = p;
 
-  // Bỏ qua nếu không có timestamp hợp lệ hoặc timestamp trùng
   if (!ts || ts <= lastTs) return;
   lastTs = ts;
 
@@ -562,30 +559,24 @@ function updateCharts(p) {
   map.forEach(([title, val, spanId]) => {
     if (isNaN(val)) return;
 
-    const chartSeries = charts[title].series[0];
+    const series = charts[title].series[0];
+    series.addPoint([ts, val], false);
+    const trimmed = series.data.slice(-MAX_POINTS);
+    series.setData(trimmed, true);
 
-    // Thêm điểm mới vào cuối, chỉ giữ lại MAX_POINTS điểm gần nhất
-    chartSeries.addPoint([ts, val], false); // không redraw ngay
-    const trimmedData = chartSeries.data.slice(-MAX_POINTS); // lấy 10 điểm cuối
-    chartSeries.setData(trimmedData, true); // redraw 1 lần duy nhất
-
-    // Cập nhật text hiển thị cho thẻ <span>
     const el = document.getElementById(spanId);
     if (el) el.textContent = val.toFixed(2);
   });
 
-  // Cập nhật trạng thái cảnh báo nhiệt độ
   checkTempStatus1();
   checkTempStatus2();
 }
+
 
 async function fetchSensorData() {
   try {
     const res = await fetch('/api/sensor', { cache: 'no-store' });
     const { history, thresholds } = await res.json();
-
-    // reset để updateCharts luôn xử lý dữ liệu mới nhất
-    lastTs = 0;
 
     // Cập nhật ngưỡng nếu chưa có
     if (thresholds) {
@@ -595,13 +586,22 @@ async function fetchSensorData() {
       if (!lowerThreshold2.value) lowerThreshold2.value = thresholds.tempLow2;
     }
 
-    // VẼ LẠI 10 ĐIỂM GẦN NHẤT
+    // ✅ Nếu mới load lại trang: clear toàn bộ data trước khi vẽ lại
+    metrics.forEach(([title]) => {
+      charts[title].series[0].setData([]);  // xoá sạch
+    });
+
+    // ✅ Vẽ lại 10 điểm gần nhất (không cần check lastTs)
     const recent = history?.slice(-10);
     if (Array.isArray(recent)) {
-      recent.forEach(updateCharts);
+      recent.forEach(p => {
+        const { timestamp: ts, ...rest } = p;
+        lastTs = ts;  // cập nhật dần dần, không reset toàn cục
+        updateCharts(p); // KHÔNG cần reset lastTs trước đó
+      });
     }
 
-    // Cập nhật chỉ số hiển thị từ điểm mới nhất
+    // ✅ Cập nhật giá trị cuối cùng
     const latest = recent?.at(-1);
     if (latest) {
       document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
@@ -620,7 +620,6 @@ async function fetchSensorData() {
     console.warn('Fetch error:', err);
   }
 }
-
 
 
   async function updateThresholds(sensorIndex) {
