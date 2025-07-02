@@ -558,13 +558,23 @@
 
     map.forEach(([title, val, spanId]) => {
   if (isNaN(val)) return;
+
   const s = charts[title].series[0];
+
+  // Thêm điểm mới
   s.addPoint([ts, val], false); // không redraw ngay
-  const trimmed = s.data.slice(-MAX_POINTS);
-  s.setData(trimmed, true);     // redraw với đúng 10 điểm
+
+  // Lấy lại danh sách 10 điểm gần nhất dạng [x, y]
+  const trimmed = s.data.slice(-MAX_POINTS).map(p => [p.x, p.y]);
+
+  // Ghi lại dữ liệu, ép chỉ giữ 10 điểm
+  s.setData(trimmed, true); // redraw = true
+
+  // Cập nhật hiển thị chỉ số
   const el = document.getElementById(spanId);
   if (el) el.textContent = val.toFixed(2);
 });
+
 
     checkTempStatus1();
     checkTempStatus2();  
