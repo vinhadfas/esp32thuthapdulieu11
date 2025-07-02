@@ -458,7 +458,7 @@
     Frequency: '#00bcd4'
   };
 
-  const charts = {}, MAX_POINTS = 50;
+  const charts = {}, MAX_POINTS = 10;
 
   const metrics = [
     ['Temperature1', '°C', 'tempChart'],
@@ -490,7 +490,7 @@
       series: [{ name: title, data: [], color: COLORS[title] }]
     });
   });
-
+//kiểm tra trạng thái nhiệt độ
   function checkTempStatus1() {
   const low = parseFloat(lowerThreshold1.value),
         high = parseFloat(upperThreshold1.value),
@@ -557,20 +557,25 @@
     ];
 
     map.forEach(([title, val, spanId]) => {
-      if (isNaN(val)) return;
-      const s = charts[title].series[0];
-      s.addPoint([ts, val], true, s.data.length >= MAX_POINTS);
-      const el = document.getElementById(spanId);
-      if (el) el.textContent = val.toFixed(2);
-    });
+  if (isNaN(val)) return;
+  const s = charts[title].series[0];
+  s.addPoint([ts, val], false); // không redraw ngay
+  const trimmed = s.data.slice(-MAX_POINTS);
+  s.setData(trimmed, true);     // redraw với đúng 10 điểm
+  const el = document.getElementById(spanId);
+  if (el) el.textContent = val.toFixed(2);
+});
+
     checkTempStatus1();
     checkTempStatus2();  
   }
+
 async function fetchSensorData() {
   try {
-    const r = await fetch('/api/sensor', { cache: 'no-store' });
-    const { history, thresholds } = await r.json();
+    const res = await fetch('/api/sensor', { cache: 'no-store' });
+    const { history, thresholds } = await res.json();
 
+    // Cập nhật ngưỡng nếu chưa có
     if (thresholds) {
       if (!upperThreshold1.value) upperThreshold1.value = thresholds.tempHigh1;
       if (!lowerThreshold1.value) lowerThreshold1.value = thresholds.tempLow1;
@@ -578,28 +583,32 @@ async function fetchSensorData() {
       if (!lowerThreshold2.value) lowerThreshold2.value = thresholds.tempLow2;
     }
 
-    // ✅ Vẽ lại toàn bộ dữ liệu
-    if (Array.isArray(history) && history.length > 0) {
-      history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
-
-      const latest = history[history.length - 1];
-      if (latest) {
-        document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
-        document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
-        document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
-        document.getElementById('current').textContent   = !isNaN(latest.current) ? latest.current.toFixed(2) : '--';
-        document.getElementById('power').textContent     = !isNaN(latest.power) ? latest.power.toFixed(2) : '--';
-        document.getElementById('energy').textContent    = !isNaN(latest.energy) ? latest.energy.toFixed(3) : '--';
-        document.getElementById('frequency').textContent = !isNaN(latest.frequency) ? latest.frequency.toFixed(2) : '--';
-      }
-
-      checkTempStatus();
+    // 🟡 VẼ LẠI 10 ĐIỂM GẦN NHẤT
+    const recent = history?.slice(-10);
+    if (Array.isArray(recent)) {
+      recent.forEach(updateCharts);
     }
 
-  } catch (e) {
-    console.warn('Fetch error', e);
+    // ✅ Cập nhật chỉ số hiển thị từ điểm mới nhất
+    const latest = recent?.at(-1);
+    if (latest) {
+      document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
+      document.getElementById('temp2').textContent     = !isNaN(latest.temp2) ? latest.temp2.toFixed(2) : '--';
+      document.getElementById('voltage').textContent   = !isNaN(latest.voltage) ? latest.voltage.toFixed(2) : '--';
+      document.getElementById('current').textContent   = !isNaN(latest.current) ? latest.current.toFixed(2) : '--';
+      document.getElementById('power').textContent     = !isNaN(latest.power) ? latest.power.toFixed(2) : '--';
+      document.getElementById('energy').textContent    = !isNaN(latest.energy) ? latest.energy.toFixed(3) : '--';
+      document.getElementById('frequency').textContent = !isNaN(latest.frequency) ? latest.frequency.toFixed(2) : '--';
+
+      checkTempStatus1();
+      checkTempStatus2();
+    }
+
+  } catch (err) {
+    console.warn('Fetch error:', err);
   }
 }
+
 
   async function updateThresholds(sensorIndex) {
     const low  = parseFloat(document.getElementById(`lowerThreshold${sensorIndex}`).value),
@@ -724,7 +733,7 @@ async function fetchSensorData() {
       return;
     }
 
-    matches.forEach(row => {
+    matches.slice(0, 50).forEach(row => {
       const tr = document.createElement('tr');
       row.forEach(c => {
         const td = document.createElement('td');
@@ -818,7 +827,7 @@ function restoreThresholdsFromLocalStorage() {
 restoreThresholdsFromLocalStorage();
 syncThresholdsToServer();
 fetchSensorData();
-setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
+setInterval(fetchSensorData, 60000); // cập nhật mỗi 30 giây
 </script>
 
 </body>
