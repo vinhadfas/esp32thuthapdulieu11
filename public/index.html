@@ -306,7 +306,7 @@
 }
     @media (min-width: 769px) {
       .header{
-        font-size:1.3rem;
+        font-size:1.8rem;
         padding:1rem;
         text-align:center;
       }
@@ -334,14 +334,14 @@
   <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
 
   <div class="threshold-box">
-    <div style="margin-bottom: 10px;">Ngưỡng cảm biến 1:</div>
+    <div style="margin-bottom: 10px;">Ngưỡng Nhiệt Độ 1:</div>
     <label>Ngưỡng trên:<input id="upperThreshold1" type="number">°C</label>
     <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold1" type="number">°C</label>
     <button onclick="updateThresholds(1)">Áp dụng Sensor 1</button>
     <div id="tempStatus1" class="status-message">Trạng thái nhiệt độ: --</div>
   </div>    
   <div class="threshold-box">
-    <div style="margin-bottom: 10px;">Ngưỡng cảm biến 2:</div>
+    <div style="margin-bottom: 10px;">Ngưỡng Nhiệt Độ 2:</div>
     <label>Ngưỡng trên:<input id="upperThreshold2" type="number">°C</label>
     <label style="margin-left:.8rem;">Ngưỡng dưới:<input id="lowerThreshold2" type="number">°C</label>
     <button onclick="updateThresholds(2)">Áp dụng Sensor 2</button>
@@ -349,20 +349,20 @@
   </div>  
 
   <div class="dashboard">
-    <div class="chart-container"><div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ 1: <span id="temp">--</span>°C</div><div id="tempChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#07d3f2;margin-right:8px"></i>Nhiệt độ 1 : <span id="temp">--</span>°C</div><div id="tempChart" class="chart-box"></div></div>
     <div class="chart-container">
       <div class="sensor-card">
         <i class="fas fa-thermometer-half" style="color:#2b09a7;margin-right:8px"></i>
-        Nhiệt độ 2: <span id="temp2">--</span>°C
+        Nhiệt độ 2 : <span id="temp2">--</span>°C
       </div>
       <div id="temp2Chart" class="chart-box"></div>
     </div>
     
-    <div class="chart-container"><div class="sensor-card"><i class="fas fa-charging-station" style="color:#41f947;margin-right:8px"></i>Điện áp: <span id="voltage">--</span>V</div><div id="voltageChart" class="chart-box"></div></div>
-    <div class="chart-container"><div class="sensor-card"><i class="fas fa-bolt" style="color:#f3722c;margin-right:8px"></i>Dòng điện: <span id="current">--</span>A</div><div id="currentChart" class="chart-box"></div></div>
-    <div class="chart-container"><div class="sensor-card"><i class="fas fa-lightbulb" style="color:#f9c74f;margin-right:8px"></i>Công suất: <span id="power">--</span>W</div><div id="powerChart" class="chart-box"></div></div>
-    <div class="chart-container"><div class="sensor-card"><i class="fas fa-battery-full" style="color:#9b51e0;margin-right:8px"></i>Năng lượng: <span id="energy">--</span>kWh</div><div id="energyChart" class="chart-box"></div></div>
-    <div class="chart-container"><div class="sensor-card"><i class="fas fa-broadcast-tower" style="color:#00bcd4;margin-right:8px"></i>Tần số: <span id="frequency">--</span>Hz</div><div id="frequencyChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-charging-station" style="color:#41f947;margin-right:8px"></i>Điện áp : <span id="voltage">--</span>V</div><div id="voltageChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-bolt" style="color:#f3722c;margin-right:8px"></i>Dòng điện : <span id="current">--</span>A</div><div id="currentChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-lightbulb" style="color:#f9c74f;margin-right:8px"></i>Công suất : <span id="power">--</span>W</div><div id="powerChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-battery-full" style="color:#9b51e0;margin-right:8px"></i>Năng lượng : <span id="energy">--</span>kWh</div><div id="energyChart" class="chart-box"></div></div>
+    <div class="chart-container"><div class="sensor-card"><i class="fas fa-broadcast-tower" style="color:#00bcd4;margin-right:8px"></i>Tần số : <span id="frequency">--</span>Hz</div><div id="frequencyChart" class="chart-box"></div></div>
 
     <div class="chart-container">
       <div class="sensor-card"><i class="fas fa-table" style="color:#4eb9b7;margin-right:8px"></i>Tra cứu dữ liệu</div>
