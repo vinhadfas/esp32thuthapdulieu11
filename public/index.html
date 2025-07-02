@@ -580,6 +580,7 @@ async function fetchSensorData() {
 
     // ✅ Vẽ lại toàn bộ dữ liệu
     if (Array.isArray(history) && history.length > 0) {
+      localStorage.setItem('cachedHistory', JSON.stringify(history));
       history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
 
       const latest = history[history.length - 1];
@@ -600,6 +601,22 @@ async function fetchSensorData() {
     console.warn('Fetch error', e);
   }
 }
+
+function loadCachedDataIfNeeded() {
+  const cached = localStorage.getItem('cachedHistory');
+  if (cached) {
+    try {
+      const history = JSON.parse(cached);
+      if (Array.isArray(history)) {
+        history.forEach(updateCharts);
+        console.log('Đã khôi phục dữ liệu từ localStorage');
+      }
+    } catch (e) {
+      console.warn('Không thể đọc dữ liệu từ localStorage:', e);
+    }
+  }
+}
+
 
   async function updateThresholds(sensorIndex) {
     const low  = parseFloat(document.getElementById(`lowerThreshold${sensorIndex}`).value),
@@ -817,6 +834,7 @@ function restoreThresholdsFromLocalStorage() {
 
 restoreThresholdsFromLocalStorage();
 syncThresholdsToServer();
+loadCachedDataIfNeeded();
 fetchSensorData();
 setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
 </script>
