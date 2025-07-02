@@ -387,7 +387,7 @@
     flatpickr('#lookupDate',{dateFormat:'Y/m/d',altInput:true,altFormat:'Y/m/d'});
     Highcharts.setOptions({time:{useUTC:false}});
     const COLORS={Temperature:'#07d3f2',Voltage:'#41f947',Current:'#f3722c',Power:'#f9c74f',Energy:'#9b51e0',Frequency:'#00bcd4'};
-    const charts={},MAX_POINTS=13;
+    const charts={},MAX_POINTS=4;
     const metrics=[['Temperature','°C','tempChart'],['Voltage','V','voltageChart'],['Current','A','currentChart'],['Power','W','powerChart'],['Energy','kWh','energyChart'],['Frequency','Hz','frequencyChart']];
     metrics.forEach(([title,u,div])=>{charts[title]=Highcharts.chart(div,{chart:{type:'line',marginRight:10},title:{text:title},xAxis:{type:'datetime',tickInterval:30000,labels:{format:'{value:%H:%M:%S}'}},yAxis:{title:{text:null}},legend:{enabled:false},credits:{enabled:false},tooltip:{formatter(){return `<b>${this.series.name}</b><br/>${Highcharts.dateFormat('%H:%M:%S',this.x)}<br/>${Highcharts.numberFormat(this.y,2)} ${u}`}},series:[{name:title,data:[],color:COLORS[title]}]})});
 
