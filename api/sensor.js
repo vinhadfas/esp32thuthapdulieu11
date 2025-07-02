@@ -2,13 +2,19 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const DATA_PATH = path.join('/tmp', 'data.json');
-const MAX_POINTS = 50;
 
+/* đọc / ghi store */
 async function readStore() {
   try {
     return JSON.parse(await fs.readFile(DATA_PATH, 'utf8'));
   } catch {
-    return { history: [], thresholds: { tempLow: -30, tempHigh: 30 } };
+    return {
+      history: [],
+      thresholds: {
+        tempLow1: -30, tempHigh1: 30,
+        tempLow2: -30, tempHigh2: 30
+      }
+    };
   }
 }
 
@@ -16,6 +22,7 @@ async function writeStore(store) {
   await fs.writeFile(DATA_PATH, JSON.stringify(store));
 }
 
+/* ------------ API ------------ */
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -26,28 +33,45 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     const {
-      voltage, current, power, energy, frequency, temp,
-      tempLow, tempHigh
+      voltage, current, power, energy, frequency,
+      temp1, temp2,
+      tempLow1, tempHigh1,
+      tempLow2, tempHigh2
     } = req.body;
 
     let changed = false;
 
-    // Lưu dữ liệu cảm biến
-    if ([voltage, current, power, energy, frequency, temp].some(v => typeof v === 'number')) {
-      store.history.push({ timestamp: Date.now(), voltage, current, power, energy, frequency, temp });
-      if (store.history.length > MAX_POINTS) store.history.shift();
+    // Ghi dữ liệu cảm biến mới
+    if ([voltage, current, power, energy, frequency, temp1, temp2].some(v => typeof v === 'number')) {
+      store.history.push({
+        timestamp: Date.now(),
+        voltage,
+        current,
+        power,
+        energy,
+        frequency,
+        temp1,
+        temp2
+      });
       changed = true;
     }
 
-    // Cập nhật ngưỡng
-    if (typeof tempLow === 'number' && typeof tempHigh === 'number') {
-      if (tempLow > tempHigh)
-        return res.status(400).json({ message: 'tempLow ≤ tempHigh' });
-
-      store.thresholds = { tempLow, tempHigh };
+    // Ghi ngưỡng temp1
+    if (typeof tempLow1 === 'number' && typeof tempHigh1 === 'number') {
+      if (tempLow1 > tempHigh1)
+        return res.status(400).json({ message: 'Ngưỡng thấp 1 phải nhỏ hơn hoặc bằng ngưỡng cao 1' });
+      store.thresholds.tempLow1 = tempLow1;
+      store.thresholds.tempHigh1 = tempHigh1;
       changed = true;
-    } else if (tempLow !== undefined || tempHigh !== undefined) {
-      return res.status(400).json({ message: 'Need both tempLow & tempHigh' });
+    }
+
+    // Ghi ngưỡng temp2
+    if (typeof tempLow2 === 'number' && typeof tempHigh2 === 'number') {
+      if (tempLow2 > tempHigh2)
+        return res.status(400).json({ message: 'Ngưỡng thấp 2 phải nhỏ hơn hoặc bằng ngưỡng cao 2' });
+      store.thresholds.tempLow2 = tempLow2;
+      store.thresholds.tempHigh2 = tempHigh2;
+      changed = true;
     }
 
     if (!changed)
@@ -62,6 +86,13 @@ export default async function handler(req, res) {
     }
   }
 
-  // GET: gửi ngưỡng và lịch sử về
-  return res.status(200).json({ thresholds: store.thresholds, history: store.history });
+  /* ----------- GET ----------- */
+  // ❌ BỎ lọc minTemp/maxTemp để không trả lại toàn bộ history
+  // ✅ Thay bằng chỉ trả 1 điểm mới nhất
+  const lastPoint = store.history.at(-1); // lấy điểm cuối
+
+  return res.status(200).json({
+    thresholds: store.thresholds,
+    history: lastPoint ? [lastPoint] : []
+  });
 }
