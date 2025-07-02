@@ -1,39 +1,67 @@
-// pages/api/sensor.js
+import fs from 'fs/promises';
+import path from 'path';
 
-let latest = {
-  voltage: 0,
-  current: 0,
-  power:   0,
-  energy:  0,
-  frequency: 0,
-  temp:    0,
-  timestamp: Date.now()
-};
+const DATA_PATH = path.join('/tmp', 'data.json');
+const MAX_POINTS = 50;
 
-let history = []; // Lưu dữ liệu trôi
-const MAX_POINTS = 20;
+async function readStore() {
+  try {
+    return JSON.parse(await fs.readFile(DATA_PATH, 'utf8'));
+  } catch {
+    return { history: [], thresholds: { tempLow: -30, tempHigh: 30 } };
+  }
+}
 
-export default function handler(req, res) {
+async function writeStore(store) {
+  await fs.writeFile(DATA_PATH, JSON.stringify(store));
+}
+
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  const store = await readStore();
+
   if (req.method === 'POST') {
-    const { voltage, current, power, energy, frequency, temp } = req.body;
-    const timestamp = Date.now();
+    const {
+      voltage, current, power, energy, frequency, temp,
+      tempLow, tempHigh
+    } = req.body;
 
-    latest = { voltage, current, power, energy, frequency, temp, timestamp };
-    history.push({ timestamp, voltage, current, power, frequency, temp });
-    if (history.length > MAX_POINTS) history.shift();
+    let changed = false;
 
-    return res.status(200).json({ message: 'Updated' });
+    // Lưu dữ liệu cảm biến
+    if ([voltage, current, power, energy, frequency, temp].some(v => typeof v === 'number')) {
+      store.history.push({ timestamp: Date.now(), voltage, current, power, energy, frequency, temp });
+      if (store.history.length > MAX_POINTS) store.history.shift();
+      changed = true;
+    }
+
+    // Cập nhật ngưỡng
+    if (typeof tempLow === 'number' && typeof tempHigh === 'number') {
+      if (tempLow > tempHigh)
+        return res.status(400).json({ message: 'tempLow ≤ tempHigh' });
+
+      store.thresholds = { tempLow, tempHigh };
+      changed = true;
+    } else if (tempLow !== undefined || tempHigh !== undefined) {
+      return res.status(400).json({ message: 'Need both tempLow & tempHigh' });
+    }
+
+    if (!changed)
+      return res.status(400).json({ message: 'No valid fields' });
+
+    try {
+      await writeStore(store);
+      return res.status(200).json({ message: 'Saved' });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Cannot write data (read-only FS?)' });
+    }
   }
 
-  const now = Date.now();
-  const alive = (now - latest.timestamp) < 40000;
-
-  // Trả về danh sách MAX_POINTS cuối
-  return res.status(200).json({ history, alive });
+  // GET: gửi ngưỡng và lịch sử về
+  return res.status(200).json({ thresholds: store.thresholds, history: store.history });
 }
