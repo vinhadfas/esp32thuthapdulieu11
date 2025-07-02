@@ -511,7 +511,7 @@
     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">CẢNH BÁO' + diff + '</span>';
     status.className = 'status-message warning';
   } else {
-    status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:green; font-weight:bold;">BÌNH THƯỜNG</span>';
+    status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">BÌNH THƯỜNG</span>';
     status.className = 'status-message normal';
   }
 }
@@ -534,7 +534,7 @@
       status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">CẢNH BÁO' + diff + '</span>';
       status.className = 'status-message warning';
     } else {
-     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:green; font-weight:bold;">BÌNH THƯỜNG</span>';
+     status.innerHTML = 'Trạng thái nhiệt độ:<br><span style="color:red; font-weight:bold;">BÌNH THƯỜNG</span>';
       status.className = 'status-message normal';
     }
   }
@@ -566,11 +566,12 @@
     checkTempStatus1();
     checkTempStatus2();  
   }
-async function fetchSensorData() {
+  async function fetchSensorData() {
   try {
     const r = await fetch('/api/sensor', { cache: 'no-store' });
     const { history, thresholds } = await r.json();
 
+    // Cập nhật ngưỡng nếu chưa có
     if (thresholds) {
       if (!upperThreshold1.value) upperThreshold1.value = thresholds.tempHigh1;
       if (!lowerThreshold1.value) lowerThreshold1.value = thresholds.tempLow1;
@@ -578,11 +579,21 @@ async function fetchSensorData() {
       if (!lowerThreshold2.value) lowerThreshold2.value = thresholds.tempLow2;
     }
 
-    // ✅ Vẽ lại toàn bộ dữ liệu
     if (Array.isArray(history) && history.length > 0) {
-      localStorage.setItem('cachedHistory', JSON.stringify(history));
-      history.forEach(updateCharts);  // ← Cập nhật toàn bộ biểu đồ từ lịch sử
+      // Lọc chỉ lấy bản ghi mới
+      const last = Number(localStorage.getItem('lastTimestamp') || 0);
+      const newData = history.filter(p => p.timestamp > last);
 
+      if (newData.length) {
+        newData.forEach(updateCharts);
+        localStorage.setItem('lastTimestamp', newData[newData.length - 1].timestamp);
+        
+        const trimmedHistory = history.slice(-20); // Giới hạn 20 bản ghi gần nhất
+        localStorage.setItem('cachedHistory', JSON.stringify(trimmedHistory));
+        localStorage.setItem('cachedTime', Date.now().toString());
+      }
+
+      // Luôn cập nhật trạng thái hiện tại
       const latest = history[history.length - 1];
       if (latest) {
         document.getElementById('temp').textContent      = !isNaN(latest.temp1) ? latest.temp1.toFixed(2) : '--';
