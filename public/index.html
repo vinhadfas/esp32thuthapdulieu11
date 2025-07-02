@@ -852,7 +852,7 @@ async function fetchLatestPoint() {
 restoreThresholdsFromLocalStorage();
 syncThresholdsToServer();
 fetchSensorData();
-setInterval(fetchSensorData, 60000); // cập nhật mỗi 60 giây
+setInterval(fetchLatestPoint(), 60000); // cập nhật mỗi 60 giây
 </script>
 
 </body>
