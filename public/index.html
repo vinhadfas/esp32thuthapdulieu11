@@ -476,7 +476,7 @@
       title: { text: title },
       xAxis: {
         type: 'datetime',
-        tickInterval: 60000,
+        tickInterval: 30000,
         labels: { format: '{value:%H:%M:%S}' }
       },
       yAxis: { title: { text: null } },
@@ -820,7 +820,7 @@ function restoreThresholdsFromLocalStorage() {
 restoreThresholdsFromLocalStorage();
 syncThresholdsToServer();
 fetchSensorData();
-setInterval(fetchSensorData, 60000); // cập nhật mỗi 30 giây
+setInterval(fetchSensorData, 30000); // cập nhật mỗi 30 giây
 </script>
 
 </body>
