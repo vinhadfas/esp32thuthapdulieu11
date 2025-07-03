@@ -220,6 +220,33 @@
     }
   
     .link small { color: #333; }
+    .back-btn {
+  position: absolute;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.15); /* nền nhạt nổi bật */
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.title-text {
+  flex: none;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
     @media (max-width: 768px) {
 
 
@@ -229,6 +256,12 @@
   padding:1rem;
   text-align:center;
 }
+.title-text {
+    font-size: 1rem;
+    padding: 0 0.5rem;
+    max-width: 100%;
+    text-align: center;
+  }
 
 /* ===== DASHBOARD ===== */
 .dashboard{
@@ -303,6 +336,12 @@
   max-height:260px;
   overflow:auto;
 }
+.back-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    left: 8px;
+  }
 }
     @media (min-width: 769px) {
       .header{
@@ -331,8 +370,14 @@
 </head>
 <body>
 
-  <div class="header">MÔ HÌNH HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH DÙNG IoT ESP32</div>
-
+  <div class="header">
+    <a class="back-btn" href="https://esp32thuthapdulieu.vercel.app/">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    </button>
+    <span class="title-text">MÔ HÌNH 1 HỆ THỐNG GIÁM SÁT XE TẢI ĐÔNG LẠNH <br>DÙNG IoT ESP32</span>
+  </div>  
+  
   <div class="threshold-box">
     <div style="margin-bottom: 10px;">Ngưỡng Nhiệt Độ 1:</div>
     <label>Ngưỡng trên:<input id="upperThreshold1" type="number">°C</label>
@@ -446,6 +491,7 @@
 <script>
   flatpickr('#lookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
   flatpickr('#tempLookupDate', { dateFormat: 'Y/m/d', altInput: true, altFormat: 'Y/m/d' });
+
   Highcharts.setOptions({ time: { useUTC: false } });
 
   const COLORS = {
@@ -476,7 +522,7 @@
       title: { text: title },
       xAxis: {
         type: 'datetime',
-        tickInterval: 30000,
+        tickInterval: 60000,
         labels: { format: '{value:%H:%M:%S}' }
       },
       yAxis: { title: { text: null } },
@@ -578,9 +624,9 @@ async function fetchSensorData() {
       if (!lowerThreshold2.value) lowerThreshold2.value = thresholds.tempLow2;
     }
 
-    // ✅ Chỉ vẽ lại 10 điểm mới nhất
+    // 10 điểm mới nhất
     if (Array.isArray(history) && history.length > 0) {
-      const last10 = history.slice(-13);     // 👈 GIỚI HẠN CHỈ ĐIỂM
+      const last10 = history.slice(-13);     // 
       last10.forEach(updateCharts);
 
       const latest = last10.at(-1);
@@ -740,7 +786,7 @@ async function fetchSensorData() {
   });
 }
 
-  // ✅ Thêm hàm xử lý áp dụng ngưỡng và lưu localStorage
+  //  Thêm hàm xử lý áp dụng ngưỡng và lưu localStorage
   function applyThreshold(sensorIndex) {
   const lowInput = document.getElementById(`lowerThreshold${sensorIndex}`);
   const highInput = document.getElementById(`upperThreshold${sensorIndex}`);
